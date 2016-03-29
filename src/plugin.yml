@@ -1,0 +1,11 @@
+name: LegendCraft
+version: 0.9.3
+depend: [WorldEdit]
+softdepend: [Multiverse-Core]
+main: me.plasmarob.legendcraft.LegendCraft
+description: LoZ / AdventureCraft plugin
+commands:
+  lc:
+    description: main command. Type /lc help for more.
+  legendCraft:
+    description: main command. Type /lc help for more.
