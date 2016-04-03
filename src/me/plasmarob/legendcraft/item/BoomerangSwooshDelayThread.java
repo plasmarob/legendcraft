@@ -22,7 +22,7 @@ public class BoomerangSwooshDelayThread implements Runnable {
 	
 	public void update() {
 		if (!player.isDead() && !e.isDead()) {
-			player.playSound(e.getLocation(), Sound.SHOOT_ARROW, 0.2f, 0.5f);
+			player.playSound(e.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.2f, 0.5f);
 			Boomerang.repeatSound(player);
 		}
 	}

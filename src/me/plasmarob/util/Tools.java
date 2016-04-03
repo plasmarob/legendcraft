@@ -313,7 +313,7 @@ public class Tools {
 			if (power && !button.isPowered())
 			{
 				//on sound
-				buttonBlock.getWorld().playSound(buttonBlock.getLocation(), Sound.CLICK, 0.3f, 0.6f);
+				buttonBlock.getWorld().playSound(buttonBlock.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1f, 1f);
 				
 				int delay = 20;
 				if (buttonBlock.getType() == Material.WOOD_BUTTON)
@@ -325,7 +325,7 @@ public class Tools {
 			if (!power && button.isPowered())
 			{
 				//off sound
-				buttonBlock.getWorld().playSound(buttonBlock.getLocation(), Sound.CLICK, 0.3f, 0.5f);
+				buttonBlock.getWorld().playSound(buttonBlock.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_OFF, 1f, 1f);
 			}
 			
 			button.setPowered(power);
@@ -353,12 +353,12 @@ public class Tools {
 			if (!lever.isPowered())
 			{
 				//on sound
-				leverBlock.getWorld().playSound(leverBlock.getLocation(), Sound.CLICK, 0.3f, 0.6f);
+				leverBlock.getWorld().playSound(leverBlock.getLocation(), Sound.BLOCK_LEVER_CLICK, 1f, 1f);
 			}
 			if (lever.isPowered())
 			{
 				//off sound
-				leverBlock.getWorld().playSound(leverBlock.getLocation(), Sound.CLICK, 0.3f, 0.5f);
+				leverBlock.getWorld().playSound(leverBlock.getLocation(), Sound.BLOCK_LEVER_CLICK, 1f, 1f);
 			}
 			
 			lever.setPowered(!lever.isPowered());

@@ -204,7 +204,7 @@ public class ChestBlock implements Receiver {
 			chest.update();
 			List<Player> players = Tools.getPlayersAroundPoint(b.getLocation(), 24);
 			for (Player p : players)
-				p.playSound(p.getLocation(), Sound.DIG_WOOD, 2.0f, 0.5f);
+				p.playSound(p.getLocation(), Sound.BLOCK_WOOD_BREAK, 2.0f, 0.5f);
 		}
 	}
 

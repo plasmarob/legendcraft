@@ -1,5 +1,5 @@
 name: LegendCraft
-version: 0.9.3
+version: 0.10.0
 depend: [WorldEdit]
 softdepend: [Multiverse-Core]
 main: me.plasmarob.legendcraft.LegendCraft

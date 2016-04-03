@@ -3,8 +3,10 @@ package me.plasmarob.legendcraft;
 import me.plasmarob.legendcraft.blocks.Tune;
 import me.plasmarob.legendcraft.item.Bomb;
 import me.plasmarob.legendcraft.item.Boomerang;
+import me.plasmarob.legendcraft.item.FireRodBlast;
 import me.plasmarob.legendcraft.item.GustJar;
 import me.plasmarob.legendcraft.item.Hookshot;
+import me.plasmarob.legendcraft.item.IceRodBlast;
 
 /**
  * manager, which manages moves each tick
@@ -33,6 +35,8 @@ public class ThreadManager implements Runnable {
 		Boomerang.progressAll();
 		Hookshot.progressAll();
 		Bomb.progressAll();
+		IceRodBlast.progressAll();
+		FireRodBlast.progressAll();
 	}
 	
 	public void run()

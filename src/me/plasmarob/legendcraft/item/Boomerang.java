@@ -7,12 +7,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.legendcraft.LegendCraft;
 import me.plasmarob.util.Tools;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R1.EntityLiving;
+import net.minecraft.server.v1_9_R1.NBTTagCompound;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -271,7 +272,23 @@ public class Boomerang {
 	}
 	
 	static void noAI(Entity bukkitEntity, int ai) {
-	    net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) bukkitEntity).getHandle();
+	    
+		//New code
+		net.minecraft.server.v1_9_R1.Entity nmsEntity = ((CraftEntity) bukkitEntity).getHandle();
+
+        NBTTagCompound tag = new NBTTagCompound();
+        
+        nmsEntity.c(tag);
+        tag.setBoolean("NoAI", ai==1);
+        tag.setInt("Silent", ai);
+        EntityLiving el = (EntityLiving) nmsEntity;
+        el.a(tag);
+		
+		
+        // Old code
+        
+		/*
+		net.minecraft.server.v1_9_R1.Entity nmsEntity = ((CraftEntity) bukkitEntity).getHandle();
 	    NBTTagCompound tag = nmsEntity.getNBTTag();
 	    if (tag == null) {
 	        tag = new NBTTagCompound();
@@ -280,6 +297,7 @@ public class Boomerang {
 	    tag.setInt("NoAI", ai);
 	    tag.setInt("Silent", ai);
 	    nmsEntity.f(tag);
+	    */
 	}
 	
 	public static void repeatSound(Player player) {

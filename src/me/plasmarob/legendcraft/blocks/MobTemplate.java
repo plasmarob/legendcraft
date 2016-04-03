@@ -62,13 +62,13 @@ public class MobTemplate {
 		chest = mob.getEquipment().getChestplate();
 		legs = mob.getEquipment().getLeggings();
 		boots = mob.getEquipment().getBoots();
-		hand = mob.getEquipment().getItemInHand();
+		hand = mob.getEquipment().getItemInMainHand();
 		
 		helmProb = mob.getEquipment().getHelmetDropChance();
 		chestProb = mob.getEquipment().getChestplateDropChance();
 		legProb = mob.getEquipment().getLeggingsDropChance();
 		bootProb = mob.getEquipment().getBootsDropChance();
-		handProb = mob.getEquipment().getItemInHandDropChance();
+		handProb = mob.getEquipment().getItemInMainHandDropChance();
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -336,13 +336,13 @@ public class MobTemplate {
 		mob.getEquipment().setChestplate(chest);
 		mob.getEquipment().setLeggings(legs);
 		mob.getEquipment().setBoots(boots);
-		mob.getEquipment().setItemInHand(hand);
+		mob.getEquipment().setItemInMainHand(hand);
 		
 		mob.getEquipment().setHelmetDropChance(helmProb);
 		mob.getEquipment().setChestplateDropChance(chestProb);
 		mob.getEquipment().setLeggingsDropChance(legProb);
 		mob.getEquipment().setBootsDropChance(bootProb);
-		mob.getEquipment().setItemInHandDropChance(handProb);
+		mob.getEquipment().setItemInMainHandDropChance(handProb);
 		
 		for (PotionEffect pe: potioneffects) {
 			mob.addPotionEffect(pe);

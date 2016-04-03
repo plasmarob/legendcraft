@@ -3,14 +3,15 @@ package me.plasmarob.legendcraft.item;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.util.Tools;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
+import net.minecraft.server.v1_9_R1.PacketPlayOutNamedSoundEffect;
+import net.minecraft.server.v1_9_R1.SoundEffect;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -60,7 +61,7 @@ public class Hookshot {
 						(next.getType() == Material.SMOOTH_BRICK && (int)next.getData() == 3) ||
 						 next.getType() == Material.CHEST) {
 						stage = 1;
-						player.playSound(player.getLocation(), Sound.DIG_WOOD, 2.0f, 0.5f);
+						player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 2.0f, 0.5f);
 						break;
 					} else if (next.getType() == Material.COBBLE_WALL) {
 						if (next.getRelative(BlockFace.NORTH).getType().isSolid() ||
@@ -70,17 +71,17 @@ public class Hookshot {
 						{
 							player.setItemInHand(null);
 							stage = 2;
-							player.playSound(fh.getLocation(), Sound.ANVIL_LAND, 0.4f, 1.1f);
+							player.playSound(fh.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.4f, 1.1f);
 							break;
 						} else {
 							stage = 1;
-							player.playSound(fh.getLocation(), Sound.DIG_WOOD, 2.0f, 0.5f);
+							player.playSound(fh.getLocation(), Sound.BLOCK_WOOD_BREAK, 2.0f, 0.5f);
 							break;
 						}
 					} else if (!Tools.canSeeThrough(next.getType())) {
 						player.setItemInHand(null);
 						stage = 2;
-						player.playSound(fh.getLocation(), Sound.ANVIL_LAND, 0.4f, 1.1f);
+						player.playSound(fh.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.4f, 1.1f);
 						break;
 					}
 					next = bit.next();
@@ -113,13 +114,20 @@ public class Hookshot {
 		return false;
 	}
 
+	SoundEffect e = new SoundEffect(null);
 	
 	private void sound(Location loc) {
+		/*
 		PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(
+				// TODO: needs SoundEffect and SoundCategory
+				new SoundEffect(), 
 				"note.snare", 
 				loc.getX(),loc.getY(),loc.getZ(), 
 				0.5f, 2f);
+		new PacketPlayOutNamedSoundEffect(null, null, 1, previousDist, previousDist, delay, delay);
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(sound);
+		*/
+		player.playSound(loc, Sound.BLOCK_NOTE_SNARE, 0.5f, 2f);
 	}
 	
 	public static void progressAll() {

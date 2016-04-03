@@ -8,23 +8,27 @@ import me.plasmarob.legendcraft.blocks.ChestBlock;
 import me.plasmarob.legendcraft.blocks.Door;
 import me.plasmarob.legendcraft.item.Bomb;
 import me.plasmarob.legendcraft.item.Boomerang;
+import me.plasmarob.legendcraft.item.FireRodBlast;
 import me.plasmarob.legendcraft.item.GustJar;
 import me.plasmarob.legendcraft.item.Hookshot;
+import me.plasmarob.legendcraft.item.IceRodBlast;
 import me.plasmarob.util.Tools;
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
+import net.minecraft.server.v1_9_R1.PacketPlayOutChat;
+import net.minecraft.server.v1_9_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_9_R1.PacketPlayOutNamedSoundEffect;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.FishHook;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -81,9 +85,10 @@ public class MainListener implements Listener {
 		if (!strings.contains(p.getWorld().getName()))
 			return;
 
-		if (p.getItemInHand().getType() == Material.INK_SACK)
+		// Gust Jar
+		if (p.getInventory().getItemInMainHand().getType() == Material.INK_SACK)
 		{
-			int dat = (int)p.getItemInHand().getData().getData();
+			int dat = (int)p.getInventory().getItemInMainHand().getData().getData();
 			if (event.isSneaking())
 			{
 				if (dat == 0) {
@@ -91,7 +96,7 @@ public class MainListener implements Listener {
 				}
 			} else {
 				if (dat > 0 && dat <= 3) {
-					p.setItemInHand(new ItemStack(Material.INK_SACK, 1, (short)0, (byte)0));
+					p.getInventory().setItemInMainHand(new ItemStack(Material.INK_SACK, 1, (short)0, (byte)0));
 					GustJar.remove(p);
 				}
 			}	
@@ -141,7 +146,7 @@ public class MainListener implements Listener {
 		{
 			FishHook fh = event.getHook();
 			new Hookshot(event.getPlayer(), fh);
-			// event.getPlayer().getItemInHand().getType();
+			// event.getPlayer().getInventory().getItemInMainHand().getType();
 		}
 		
 		
@@ -213,41 +218,76 @@ public class MainListener implements Listener {
 		if (!strings.contains(p.getWorld().getName()))
 			return;
 		
-		if (p.getItemInHand().getType() == Material.CLAY_BRICK && (event.getAction() == Action.RIGHT_CLICK_AIR || 
+		// Boomerang
+		if (p.getInventory().getItemInMainHand().getType() == Material.CLAY_BRICK && (event.getAction() == Action.RIGHT_CLICK_AIR || 
 				event.getAction() == Action.RIGHT_CLICK_BLOCK))
 		{
 			new Boomerang(p);
-			p.setItemInHand(null);
+			p.getInventory().setItemInMainHand(null);
 		} 
 		
-		if (p.getItemInHand().getType() == Material.INK_SACK && (event.getAction() == Action.RIGHT_CLICK_AIR || 
+		// Bomb
+		if (p.getInventory().getItemInMainHand().getType() == Material.INK_SACK && (event.getAction() == Action.RIGHT_CLICK_AIR || 
 				event.getAction() == Action.RIGHT_CLICK_BLOCK))
 		{
-			if (((int)p.getItemInHand().getData().getData()) == 5)
+			if (((int)p.getInventory().getItemInMainHand().getData().getData()) == 5)
 			{
 				new Bomb(p);
-				int amount = p.getItemInHand().getAmount();
+				int amount = p.getInventory().getItemInMainHand().getAmount();
 				if (amount == 1)
-					p.setItemInHand(null);
+					p.getInventory().setItemInMainHand(null);
+				
 				else if (amount > 1)
-					p.getItemInHand().setAmount(amount - 1);
+					p.getInventory().getItemInMainHand().setAmount(amount - 1);
 					
 			}
 		} 
 		
-		if (p.getItemInHand().getType() == Material.INK_SACK && (event.getAction() == Action.RIGHT_CLICK_AIR || 
+		// Gust Jar
+		if (p.getInventory().getItemInMainHand().getType() == Material.INK_SACK && (event.getAction() == Action.RIGHT_CLICK_AIR || 
 				event.getAction() == Action.RIGHT_CLICK_BLOCK))
 		{
-			if (((int)p.getItemInHand().getData().getData()) <= 3)
+			if (((int)p.getInventory().getItemInMainHand().getData().getData()) <= 3)
 			{
-				p.setItemInHand(new ItemStack(Material.INK_SACK, 1, (short)0, (byte)0));
+				p.getInventory().setItemInMainHand(new ItemStack(Material.INK_SACK, 1, (short)0, (byte)0));
 				GustJar.remove(p);
 			}
 		}
 		
+		// Ice Rod
+		if (p.getInventory().getItemInMainHand().getType() == Material.INK_SACK && (event.getAction() == Action.LEFT_CLICK_AIR || 
+				event.getAction() == Action.LEFT_CLICK_BLOCK))
+		{
+			if (((int)p.getInventory().getItemInMainHand().getData().getData()) == 4)
+			{
+				if (p.getFoodLevel() > 1 || p.getGameMode() == GameMode.CREATIVE) {
+					new IceRodBlast(p);
+					if (p.getGameMode() != GameMode.CREATIVE) {
+						p.setFoodLevel(p.getFoodLevel()-1);
+					}
+				}
+				
+			}
+		}
+		
+		// Fire Rod
+		if (p.getInventory().getItemInMainHand().getType() == Material.INK_SACK && (event.getAction() == Action.LEFT_CLICK_AIR || 
+				event.getAction() == Action.LEFT_CLICK_BLOCK))
+		{
+			if (((int)p.getInventory().getItemInMainHand().getData().getData()) == 13)
+			{
+				if (p.getFoodLevel() > 1 || p.getGameMode() == GameMode.CREATIVE) {
+					new FireRodBlast(p);
+					if (p.getGameMode() != GameMode.CREATIVE) {
+						p.setFoodLevel(p.getFoodLevel()-1);
+					}
+				}
+				
+			}
+		}
 		
 		/*
-		if (p.getItemInHand().getType() == Material.STICK && 
+		if (p.getInventory().getItemInMainHand().getType() == Material.STICK && 
 				(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR))
 		{
 			//Block b = event.getClickedBlock();
@@ -258,7 +298,7 @@ public class MainListener implements Listener {
 			if (b.getType() == Material.TORCH && 
 					b.getRelative(BlockFace.DOWN).getType() == Material.COBBLE_WALL)
 			{
-				p.setItemInHand(new ItemStack(Material.TORCH, 1, (short)0, (byte)0));
+				p.getInventory().setItemInMainHand(new ItemStack(Material.TORCH, 1, (short)0, (byte)0));
 			}
 		}
 		*/
@@ -267,10 +307,10 @@ public class MainListener implements Listener {
 		//TODO: Unlock door with a key
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			//p.sendMessage("Right!");
-			ItemStack itemHeld = p.getItemInHand();
-			Material heldItem = p.getItemInHand().getType();
+			ItemStack itemHeld = p.getInventory().getItemInMainHand();
+			Material heldItem = p.getInventory().getItemInMainHand().getType();
 			
-			byte heldData = p.getItemInHand().getData().getData();
+			byte heldData = p.getInventory().getItemInMainHand().getData().getData();
 			Block block = event.getClickedBlock();
 			
 			for (String s : Dungeon.dungeons.keySet())
@@ -294,7 +334,7 @@ public class MainListener implements Listener {
 								if (itemHeld.getAmount() > 1)
 									itemHeld.setAmount(itemHeld.getAmount() - 1);
 								else
-									p.setItemInHand(null);
+									p.getInventory().setItemInMainHand(null);
 							}
 							break;
 						}
@@ -320,7 +360,7 @@ public class MainListener implements Listener {
 			event.setCancelled(true);
 			event.getItem().remove();
 			
-			p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 1.7f);
+			p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.7f);
 			
 			if (p.getMaxHealth() - p.getHealth() <= 2*size)
 				p.setHealth(p.getMaxHealth());
@@ -332,7 +372,14 @@ public class MainListener implements Listener {
 	@EventHandler
 	public void damageEvent(EntityDamageEvent event)
 	{
-		if (event.getEntity() instanceof Player && event.getCause() == DamageCause.FALL) {
+		// No ice suffocate
+		if (event.getCause() == DamageCause.SUFFOCATION) {
+			if (event.getEntity() instanceof LivingEntity){
+				LivingEntity le = (LivingEntity)event.getEntity();
+				if (le.getEyeLocation().getBlock().getType() == Material.ICE)
+					event.setCancelled(true);
+			}
+		} else if (event.getEntity() instanceof Player && event.getCause() == DamageCause.FALL) {
 			
 			Player p = (Player)event.getEntity();
 			List<String> strings = LegendCraft.mainConfig.getStringList("worlds");

@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.util.Tools;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
+import net.minecraft.server.v1_9_R1.PacketPlayOutNamedSoundEffect;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -27,7 +28,7 @@ public class Tune {
 	List<String> song;
 	List<Player> players = new ArrayList<Player>();
 	float volume = 1f;
-	
+	Sound sound = Sound.BLOCK_NOTE_HARP;
 	
 	String next = "";
 	String instrument = "note.harp";
@@ -322,26 +323,32 @@ public class Tune {
 				return false;
 			}
 			
+			
 			switch (next)
 			{
 			case "$":
 				instrument = "note.bass";
+				sound = Sound.BLOCK_NOTE_BASS;
 				noErr = true;
 				break;
 			case "!":
 				instrument = "note.bd";
+				sound = Sound.BLOCK_NOTE_BASEDRUM;
 				noErr = true;
 				break;
 			case "^":
 				instrument = "note.hat";
+				sound = Sound.BLOCK_NOTE_HAT;
 				noErr = true;
 				break;
 			case "~":
 				instrument = "note.pling";
+				sound = Sound.BLOCK_NOTE_PLING;
 				noErr = true;
 				break;
 			case "\"":
 				instrument = "note.snare";
+				sound = Sound.BLOCK_NOTE_SNARE;
 				noErr = true;
 				break;
 			case "_":
@@ -349,20 +356,26 @@ public class Tune {
 			case "-":
 			default:
 				instrument = "note.harp";
+				sound = Sound.BLOCK_NOTE_HARP;
 				noErr = true;
 				break;
 			}
 	
 		}
 		
+	
+		
 		//The packet witchcraft that makes this all possible
 		for (Player p : players)
 		{
+			p.playSound(p.getEyeLocation(), sound, volume, getPitch(note));
+			/*
 			PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(
 					instrument, 
 					p.getEyeLocation().getX(),p.getEyeLocation().getY(),p.getEyeLocation().getZ(), 
 					volume, getPitch(note));
 			((CraftPlayer)p).getHandle().playerConnection.sendPacket(sound);
+			*/
 		}
 
 		return false;

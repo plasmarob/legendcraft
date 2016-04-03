@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="C:/Users/Robert/eclipse/bendingjars/spigot-BT38_1.8.7_06.3.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Robert/eclipse/bendingjars/worldedit-bukkit-6.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Robert/eclipse/bendingjars/EffectLib-3.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Robert/eclipse/bendingjars/Multiverse-Core-2.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ROG_Thorne/Documents/eclipse_workspace/MCJars/Multiverse-Core-2.5-b717.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ROG_Thorne/Documents/eclipse_workspace/MCJars/worldedit-bukkit-6.1.1-SNAPSHOT-dist.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ROG_Thorne/Documents/eclipse_workspace/MCJars/spigot-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ROG_Thorne/Documents/eclipse_workspace/MCJars/EffectLib-4.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

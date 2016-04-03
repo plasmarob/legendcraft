@@ -195,7 +195,7 @@ public class GustJar {
 		
 		
 		if (sound == 0){
-			p.playSound(p.getLocation(), Sound.GHAST_FIREBALL, 0.7f, 0.1f);
+			p.playSound(p.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.7f, 0.1f);
 			// sound = (int)Math.pow(2, 4-phase); // 1:8, 2:4, 3:2
 			switch (phase) {
 			case 1: sound = 7;
