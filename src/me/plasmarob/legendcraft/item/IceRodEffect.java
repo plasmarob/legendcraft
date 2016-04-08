@@ -2,21 +2,15 @@ package me.plasmarob.legendcraft.item;
 
 import java.util.Random;
 
-import me.plasmarob.util.Tools;
-
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.ParticleEffect;
-import de.slikey.effectlib.util.ParticleEffect.ParticleData;
 
 public class IceRodEffect extends Effect{
 		

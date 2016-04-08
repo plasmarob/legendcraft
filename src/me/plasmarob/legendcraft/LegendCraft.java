@@ -21,34 +21,23 @@ import de.slikey.effectlib.EffectLib;
 import de.slikey.effectlib.EffectManager;
 
 // TODO: make long grass in dungeons respawn
-
-// TODO: add hookshot from fishing pole
-
 // TODO: make pot block model, implement pots
-
 // TODO: make heart container and heart container piece
-
 // TODO: ice arrow
-
 // TODO: add dungeon reset when no players present
-// TODO: gust jar
 public class LegendCraft extends JavaPlugin {
+	
 	// Primary objects 
 	public static LegendCraft plugin;
 	public static ThreadManager manager;
 	public final MainListener listener = new MainListener(this); // Player Listener 
-	
 	// Effects Library
     private static EffectManager effectManager; 
-    
 	// YAML file config objects
 	File mainConfigFile;
 	public static FileConfiguration mainConfig;
-	
-	
 	// WorldEdit 
 	public static WorldEditPlugin worldEditPlugin = null;	
-	
 	// Globals (bare minimum)
 	Location spawn;
 	
@@ -65,14 +54,13 @@ public class LegendCraft extends JavaPlugin {
 		// Primary object setups
 		plugin = this;
 		
-		manager = new ThreadManager();
 		// Create the thread that updates every tick
-		getServer().getScheduler().scheduleSyncRepeatingTask(this, manager, 0, 1);
-				
+		manager = new ThreadManager();
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, manager, 0, 1);	
+		
 		// Register the main listener
 		Bukkit.getServer().getPluginManager().registerEvents(listener, this);
 				
-		
 		// Create EffectManager for special effects library
 		EffectLib lib = EffectLib.instance();
 		effectManager = new EffectManager(lib);
@@ -81,7 +69,6 @@ public class LegendCraft extends JavaPlugin {
 		// Setup the YAML 
 		
 		// Create files in memory
-		mainConfigFile = new File(getDataFolder(), "config.yml");
 		try {
 	        firstRun();	// Create files on disk if necessary
 	    } catch (Exception e) {
@@ -89,6 +76,7 @@ public class LegendCraft extends JavaPlugin {
 	    }
 		// Create the YAML Config in memory
 		mainConfig = new YamlConfiguration();
+		
 		
 		//create dungeon directory if needed.
 	    Dungeon.dungeonFolder = new File(getDataFolder(), "dungeons");
@@ -124,20 +112,14 @@ public class LegendCraft extends JavaPlugin {
 	 * * puts it all to YAML
 	 */
 	@Override
-	public void onDisable()
-	{
+	public void onDisable() {
 		effectManager.dispose();	// Dump the effects manager
 		Dungeon.disableDungeons();
 		Dungeon.saveDungeons();
 		MobTemplate.saveMobs();
 		saveYamls();
 	}
-	
-	
-	
-	
-	
-	
+
 	// Save YAMLs to file
 	public void saveYamls() {
 	    try {
@@ -147,12 +129,10 @@ public class LegendCraft extends JavaPlugin {
 	
 	// Load YAMLs from file
 	public void loadYamls() {
-	    
 		//MUST load before dungeons, so mobs are in memory for spawners
 		MobTemplate.loadMobs();
 		//Load Dungeons, its blocks, and their data
 		Dungeon.loadDungeons();
-		
 	    try {	
 	        mainConfig.load(mainConfigFile);
 	    } catch (Exception e) {e.printStackTrace();}
@@ -179,6 +159,7 @@ public class LegendCraft extends JavaPlugin {
 	 * Create the files if they don't exist
 	 */
 	private void firstRun() throws Exception {
+		mainConfigFile = new File(getDataFolder(), "config.yml");
 	    if(!mainConfigFile.exists()){
 	    	mainConfigFile.getParentFile().mkdirs();
 	    	copyYamlsToFile(getResource("config.yml"), mainConfigFile);

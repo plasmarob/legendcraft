@@ -1,16 +1,10 @@
 package me.plasmarob.legendcraft.item;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
 import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -19,11 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
-
 import me.plasmarob.legendcraft.LegendCraft;
-import net.minecraft.server.v1_9_R1.EntityLiving;
-import net.minecraft.server.v1_9_R1.NBTTagCompound;
 
 
 public class FireRodBlast {

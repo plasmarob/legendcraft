@@ -3,7 +3,6 @@ package me.plasmarob.legendcraft.item;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.util.Tools;
-import net.minecraft.server.v1_9_R1.PacketPlayOutNamedSoundEffect;
 import net.minecraft.server.v1_9_R1.SoundEffect;
 
 import org.bukkit.Location;
@@ -11,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

@@ -138,8 +138,7 @@ public class Tools {
 	
 	public static void createMainFolder (File folder, String success)
 	{
-	    if (!folder.exists()) 
-	    {
+	    if (!folder.exists()) {
 		    Bukkit.getConsoleSender().sendMessage("creating directory: " + folder.toString());
 			boolean result = false;
 			try{
@@ -154,8 +153,7 @@ public class Tools {
 	public static File findFile(String dungeonName, String fileName)
 	{
 		File[] listOfFiles = Dungeon.dungeonFolder.listFiles();
-		for (int i = 0; i < listOfFiles.length; i++) 
-    	{
+		for (int i = 0; i < listOfFiles.length; i++) {
     		if (!listOfFiles[i].isDirectory() || !listOfFiles[i].getName().equals(dungeonName)) 
     			continue;
     		File[] inner_list = listOfFiles[i].listFiles();
@@ -163,8 +161,7 @@ public class Tools {
     		{
     			if (!inner_list[j].isFile()) 
     				continue;
-    			if (inner_list[j].getName().equals(fileName + ".yml"))
-    			{
+    			if (inner_list[j].getName().equals(fileName + ".yml")) {
     				return inner_list[j];
     			}
     		}

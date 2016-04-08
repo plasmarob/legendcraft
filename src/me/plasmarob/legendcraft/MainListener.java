@@ -209,6 +209,15 @@ public class MainListener implements Listener {
 		}
 	}
 	
+	
+	// No messing with armor stands
+	@EventHandler
+	public void onArmorStandInteract(PlayerArmorStandManipulateEvent event) {
+		if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+			event.setCancelled(true);
+		}
+	}
+	
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {

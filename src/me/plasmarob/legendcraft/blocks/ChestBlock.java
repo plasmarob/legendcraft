@@ -230,6 +230,8 @@ public class ChestBlock implements Receiver {
 			p.sendMessage(prp + "  Inverted set to " + inverted + ".");	
 		}	
 	}
+
+
 	
 
 }

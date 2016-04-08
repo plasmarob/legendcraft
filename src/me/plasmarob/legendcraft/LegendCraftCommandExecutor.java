@@ -150,8 +150,10 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				say(c+"playsound <tune> : "+r+"plays a written tune.");
 				say(c+"ps <tune> : "+r+"see playSound");
 				say(c+"saveMob <name> : "+r+"Save closest mob as <name>");
+				say(c+"save : "+r+"Save current dungeon");
 				break;
 			case 4:	
+				say(c+"save: "+r+"Save the current dungeon");
 				say(c+"select <dungeon> : "+r+"Select dungeon to edit");
 				say(c+"setWorld: "+r+"adds/removes current world to/from plugin");
 				say(c+"show [block] : "+r+"Details dungeon or block");
@@ -655,6 +657,26 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			say(red + "Usage: /lc ps <tune>");
 		
 
+		/**
+		 * Save
+		 * - Saves the dungeon to a file
+		 * --- /lc save
+		 */
+		//TODO: after CustomName is added, add <Custom> was saved as <Name>.
+		if (args[0].toLowerCase().equals("save"))
+		{
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).saveDungeon(dungeonStr))
+					say(red + "Saving Dungeon failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("save"))
+			say(red + "Usage: /lc save");
+		
+		
 		/**
 		 * Save Mob
 		 * - Saves the nearest mob to a file, for spawner use

@@ -2,13 +2,8 @@ package me.plasmarob.legendcraft.item;
 
 import java.util.Random;
 
-import me.plasmarob.util.Tools;
-
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import de.slikey.effectlib.Effect;

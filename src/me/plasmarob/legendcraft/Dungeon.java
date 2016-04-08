@@ -459,6 +459,61 @@ public class Dungeon {
 	
 	
 	
+	//universal careful file saver for setConfig
+	public boolean saveObject(File folder, String name, Receiver obj) {
+		
+		if (!(obj instanceof Door) && 
+			!(obj instanceof SpawnerBlock) &&
+			!(obj instanceof StorageBlock)) 
+			return false;
+		
+		// Do a trial run
+		File objFile = new File(folder, name + "-temp.yml");
+		try {
+			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + "-temp.yml"), objFile);
+			FileConfiguration objConfig = new YamlConfiguration();
+			
+			if (obj instanceof Door)
+				((Door)obj).setConfig(objConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
+			if (obj instanceof SpawnerBlock)
+				((SpawnerBlock)obj).setConfig(objConfig); // file w/ {mainBlock, min, max, mobList name&count}
+			if (obj instanceof StorageBlock)
+				((StorageBlock)obj).setConfig(objConfig);
+				objConfig.save(objFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+			objFile.delete();
+			return false;
+		}
+		try {
+			objFile.delete();
+		} catch (Exception e){ e.printStackTrace(); }
+		objFile = null;
+		
+		// Actually create file if we got this far
+		objFile = new File(folder, name + ".yml");
+		try {
+			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + ".yml"), objFile);
+			FileConfiguration objConfig = new YamlConfiguration();
+			
+			if (obj instanceof Door)
+				((Door)obj).setConfig(objConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
+			if (obj instanceof SpawnerBlock)
+				((SpawnerBlock)obj).setConfig(objConfig); // file w/ {mainBlock, min, max, mobList name&count}
+			if (obj instanceof StorageBlock)
+				((StorageBlock)obj).setConfig(objConfig);
+				objConfig.save(objFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
+	
+	
 	public void setConfig(File folder, FileConfiguration config) {
 		
 		int i = 1; // block #
@@ -528,14 +583,7 @@ public class Dungeon {
 			config.set("doors.d" + i + ".default", door.isDefaultOnOff());	// default			
 			config.set("doors.d" + i + ".inverted", door.isInverted()); // inverted
 			
-			File doorFile = new File(folder, name + ".yml");
-			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + ".yml"), doorFile);
-			FileConfiguration doorConfig = new YamlConfiguration();
-			door.setConfig(doorConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
-			try {
-				doorConfig.save(doorFile);
-			} catch (IOException e) {e.printStackTrace();}
-		
+			saveObject(folder, name, door);
 			i++;
 		}
 		
@@ -599,14 +647,7 @@ public class Dungeon {
 				j++;
 			}
 			
-			File spawnerFile = new File(folder, name + ".yml");
-			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + ".yml"), spawnerFile);
-			FileConfiguration spawnerConfig = new YamlConfiguration();
-			sp.setConfig(spawnerConfig); // file w/ {mainBlock, min, max, mobList name&count}
-			try {
-				spawnerConfig.save(spawnerFile);
-			} catch (IOException e) {e.printStackTrace();}
-		
+			saveObject(folder, name, sp);
 			i++;
 		}
 		
@@ -617,15 +658,7 @@ public class Dungeon {
 			config.set("storages.s" + i + ".default", sb.isDefaultOnOff());	// default			
 			config.set("storages.s" + i + ".inverted", sb.isInverted()); // inverted
 		
-			File storageFile = new File(folder, name + ".yml");	
-			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + ".yml"), storageFile);
-			FileConfiguration storageConfig = new YamlConfiguration();
-			
-			sb.setConfig(storageConfig); // file w/ {mainBlock, min, max, blockList mat&dat}
-			try {
-				storageConfig.save(storageFile);
-			} catch (IOException e) {e.printStackTrace();}
-			
+			saveObject(folder, name, sb);
 			i++;
 		}
 		
@@ -1226,7 +1259,10 @@ public class Dungeon {
 	
 	
 	
-
+	public void updateIfEnabled() {
+		if(enabled)
+			update();
+	}
 	//Actually check for players around.
 	public void update() {
 		
@@ -1551,7 +1587,9 @@ public class Dungeon {
 	    	    	}
 	    		}
 	    	}
-		} catch (Exception e) {e.printStackTrace();}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
 	}
 	
 	
@@ -1564,6 +1602,10 @@ public class Dungeon {
 		}
 	}
 	
+	
+	
+	// Static Dungeon load & save
+	// --------------------------
 	public static void saveDungeons()
 	{
 		for (String name : dungeons.keySet())
@@ -1601,6 +1643,64 @@ public class Dungeon {
 			} catch (IOException e) {e.printStackTrace();}
 		}
 	}
+	
+	
+	// Save single dungeon
+	public boolean saveDungeon(String name)
+	{
+		File currentFolder = new File(dungeonFolder, name); 
+		if (!currentFolder.exists()) {
+			try{
+				currentFolder.mkdir();
+			} catch(SecurityException se) { }
+		}
+		
+		//see if we can save successfully.
+		boolean canSave = tryDungeonSave(currentFolder, name + "-temp", true);
+		if (canSave)
+			tryDungeonSave(currentFolder, name);
+		
+		return true;
+	}
+	
+	// Attempt to save to a file
+	public boolean tryDungeonSave(File currentFolder, String name) {
+		return tryDungeonSave(currentFolder, name, false);
+	}
+	public boolean tryDungeonSave(File currentFolder, String name, boolean deleteFile)
+	{
+		File dungeonFile = new File(currentFolder, name + ".yml");
+		try {
+			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + ".yml"), dungeonFile);
+			 	
+			FileConfiguration dungeonConfig = new YamlConfiguration();
+			dungeonConfig.set("world", getWorld().getName());
+			double[] corners = getCorners();
+			List<Double> min = new ArrayList<Double>();
+			List<Double> max = new ArrayList<Double>();
+			min.add(corners[0]);
+			min.add(corners[1]);
+			min.add(corners[2]);
+			max.add(corners[3]);
+			max.add(corners[4]);
+			max.add(corners[5]);
+			dungeonConfig.set("min", min);
+			dungeonConfig.set("max", max);
+			
+			setConfig(currentFolder, dungeonConfig);
+		
+			dungeonConfig.save(dungeonFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+			dungeonFile.delete();
+			return false;
+		}	
+		if (deleteFile)
+			dungeonFile.delete();
+		return true;
+	}
+	
+	
 	
 	public static File findDungeonDir(String dungeonName)
 	{
@@ -1664,10 +1764,6 @@ public class Dungeon {
 	}
 
 
-
-	
-
-
 	public static void checkChests(Block b)
 	{
 		for (String s : Dungeon.dungeons.keySet())
@@ -1675,9 +1771,12 @@ public class Dungeon {
 			for (String c : Dungeon.dungeons.get(s).chestBlocks.keySet()) {
 				dungeons.get(s).chestBlocks.get(c).check(b);
 			}
-		}
-		
+		}		
 	}
+
+
+
+	
 
 
 	

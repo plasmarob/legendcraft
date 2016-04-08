@@ -362,7 +362,6 @@ public class MobTemplate {
 	public static void loadMobs()
 	{
 		try {
-			  
 	    	File[] mobList = mobsFolder.listFiles();
 	    	for (int i = 0; i < mobList.length; i++) 
 	    	{

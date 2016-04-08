@@ -22,12 +22,8 @@ public class ThreadManager implements Runnable {
 	
 	public void update()
 	{
-		
 		for (String s : Dungeon.dungeons.keySet())
-		{
-			if (Dungeon.dungeons.get(s).isEnabled())
-				Dungeon.dungeons.get(s).update();
-		}
+			Dungeon.dungeons.get(s).updateIfEnabled();
 		
 		Tune.progressAll();
 		
@@ -47,5 +43,4 @@ public class ThreadManager implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	
 }
