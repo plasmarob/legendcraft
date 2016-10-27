@@ -11,6 +11,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import me.plasmarob.legendcraft.util.Tools;
+
 public class TorchBlock implements Sender,Receiver  {
 	private String name;
 	private boolean enabled = false;
@@ -302,6 +304,7 @@ public class TorchBlock implements Sender,Receiver  {
 		
 		for (Receiver r : receivers.keySet()) {
 			p.sendMessage(prp + "  Links to " + receivers.get(r) + "("+messageTypes.get(r)+")");
+			Tools.showLine(mainBlock.getWorld(), this, r);
 		}
 	}
 
@@ -380,4 +383,16 @@ public class TorchBlock implements Sender,Receiver  {
 			run();
 	}
 	
+	@Override
+	public int getX() {
+		return mainBlock.getX();
+	}
+	@Override
+	public int getY() {
+		return mainBlock.getY();
+	}
+	@Override
+	public int getZ() {
+		return mainBlock.getZ();
+	}
 }

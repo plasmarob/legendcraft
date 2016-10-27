@@ -3,6 +3,7 @@ package me.plasmarob.legendcraft.blocks;
 import java.util.HashMap;
 
 import me.plasmarob.legendcraft.LegendCraft;
+import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -207,6 +208,7 @@ public class Timer implements Sender, Receiver {
 		
 		for (Receiver r : receivers.keySet()) {
 			p.sendMessage(prp + "  Links to " + r.name() + " ("+messageTypes.get(r)+")");
+			Tools.showLine(mainBlock.getWorld(), this, r);
 		}
 		//TODO: show inbound links
 	}
@@ -244,5 +246,17 @@ public class Timer implements Sender, Receiver {
 		}
 		
 	}
-
+	
+	@Override
+	public int getX() {
+		return mainBlock.getX();
+	}
+	@Override
+	public int getY() {
+		return mainBlock.getY();
+	}
+	@Override
+	public int getZ() {
+		return mainBlock.getZ();
+	}
 }

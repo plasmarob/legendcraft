@@ -157,4 +157,17 @@ public class MusicBlock implements Receiver {
 			p.sendMessage(prp + "  Inverted set to " + inverted + ".");	
 		} 
 	}
+	
+	@Override
+	public int getX() {
+		return block.getX();
+	}
+	@Override
+	public int getY() {
+		return block.getY();
+	}
+	@Override
+	public int getZ() {
+		return block.getZ();
+	}
 }

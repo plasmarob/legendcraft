@@ -2,13 +2,13 @@ package me.plasmarob.legendcraft.blocks;
 
 import java.util.HashMap;
 
-import me.plasmarob.util.Tools;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+
+import me.plasmarob.legendcraft.util.Tools;
 
 public class RedstoneDetector implements Sender, Receiver {
 	
@@ -216,6 +216,7 @@ public class RedstoneDetector implements Sender, Receiver {
 		
 		for (Receiver r : receivers.keySet()) {
 			p.sendMessage(prp + "  Links to " + r.name() + " ("+messageTypes.get(r)+")");
+			Tools.showLine(mainBlock.getWorld(), this, r);
 		}
 	}
 
@@ -266,5 +267,16 @@ public class RedstoneDetector implements Sender, Receiver {
 		}		
 	}
 
-
+	@Override
+	public int getX() {
+		return mainBlock.getX();
+	}
+	@Override
+	public int getY() {
+		return mainBlock.getY();
+	}
+	@Override
+	public int getZ() {
+		return mainBlock.getZ();
+	}
 }

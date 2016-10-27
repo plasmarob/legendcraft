@@ -22,7 +22,7 @@ import me.plasmarob.legendcraft.blocks.StorageBlock;
 import me.plasmarob.legendcraft.blocks.Timer;
 import me.plasmarob.legendcraft.blocks.TorchBlock;
 import me.plasmarob.legendcraft.blocks.Tune;
-import me.plasmarob.util.Tools;
+import me.plasmarob.legendcraft.util.Tools;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -48,7 +48,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 public class Dungeon {
 
 	// Global static data ///////////////////////
-	public static File dungeonFolder;
+	public static File dungeonFolder = null;
 	public static ConcurrentHashMap<String, Dungeon> dungeons = new ConcurrentHashMap<String, Dungeon>();
 	public static ConcurrentHashMap<String, FileConfiguration> dungeonConfigs = new ConcurrentHashMap<String, FileConfiguration>();
 	public static ConcurrentHashMap<Player, String> selectedDungeons = new ConcurrentHashMap<Player, String>();
@@ -1340,26 +1340,38 @@ public class Dungeon {
 	public void showLinksFrom(Player player, Receiver rec)
 	{
 		for (String s : detectors.keySet()) {
-			if (detectors.get(s).getTargets().containsKey(rec)) 
+			if (detectors.get(s).getTargets().containsKey(rec)) {
 				player.sendMessage(prp + "  Link from " + s + " ("+ detectors.get(s).getMessageTypes().get(rec) +")" );
+				Tools.showLine(world, detectors.get(s), rec);
+			}
 		}
 		for (String s : rsDetectors.keySet()) {
-			if (rsDetectors.get(s).getTargets().containsKey(rec)) 
+			if (rsDetectors.get(s).getTargets().containsKey(rec)) {
 				player.sendMessage(prp + "  Link from " + s + " ("+ rsDetectors.get(s).getMessageTypes().get(rec) +")" );
+				Tools.showLine(world, rsDetectors.get(s), rec);
+			}
 		}
 		for (String s : spawners.keySet()) {
-			if (spawners.get(s).getTargets().containsKey(rec)) 
+			if (spawners.get(s).getTargets().containsKey(rec)) {
 				player.sendMessage(prp + "  Link from " + s + " ("+ spawners.get(s).getMessageTypes().get(rec) +")" );
+				Tools.showLine(world, spawners.get(s), rec);
+			}
 		}
 		for (String s : torchBlocks.keySet()) {
-			if (torchBlocks.get(s).getTargets().containsKey(rec)) 
+			if (torchBlocks.get(s).getTargets().containsKey(rec)) {
 				player.sendMessage(prp + "  Link from " + s + " ("+ torchBlocks.get(s).getMessageTypes().get(rec) +")" );
+				Tools.showLine(world, torchBlocks.get(s), rec);
+			}
 		}
 		for (String s : timerBlocks.keySet()) {
-			if (timerBlocks.get(s).getTargets().containsKey(rec)) 
+			if (timerBlocks.get(s).getTargets().containsKey(rec)) {
 				player.sendMessage(prp + "  Link from " + s + " ("+ timerBlocks.get(s).getMessageTypes().get(rec) +")" );
+				Tools.showLine(world, timerBlocks.get(s), rec);
+			}
 		}
 	}
+	
+
 	
 	
 	public void testForRedstone(Block block) {

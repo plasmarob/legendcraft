@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.plasmarob.legendcraft.LegendCraft;
-import me.plasmarob.util.Tools;
+import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -225,5 +225,18 @@ public class StorageBlock implements Receiver {
 			inverted = Boolean.parseBoolean(value); 
 			p.sendMessage(prp + "  Inverted set to " + inverted + ".");	
 		}	
+	}
+	
+	@Override
+	public int getX() {
+		return block.getX();
+	}
+	@Override
+	public int getY() {
+		return block.getY();
+	}
+	@Override
+	public int getZ() {
+		return block.getZ();
 	}
 }

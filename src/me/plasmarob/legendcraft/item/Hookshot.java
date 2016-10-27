@@ -2,7 +2,6 @@ package me.plasmarob.legendcraft.item;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.plasmarob.util.Tools;
 import net.minecraft.server.v1_9_R1.SoundEffect;
 
 import org.bukkit.Location;
@@ -15,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
+
+import me.plasmarob.legendcraft.util.Tools;
 
 public class Hookshot {
 

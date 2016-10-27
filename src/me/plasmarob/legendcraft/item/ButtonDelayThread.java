@@ -1,8 +1,8 @@
 package me.plasmarob.legendcraft.item;
 
-import me.plasmarob.util.Tools;
-
 import org.bukkit.block.Block;
+
+import me.plasmarob.legendcraft.util.Tools;
 
 /**
  * button delay, which simulating redstone interaction for boomerang

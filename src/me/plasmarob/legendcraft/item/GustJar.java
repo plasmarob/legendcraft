@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.legendcraft.LegendCraft;
-import me.plasmarob.util.Tools;
+import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

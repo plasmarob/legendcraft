@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.legendcraft.blocks.MobTemplate;
 import me.plasmarob.legendcraft.blocks.Tune;
-import me.plasmarob.util.Tools;
+import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -374,7 +374,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			        Vector min = sel.getNativeMinimumPoint();
 			        Vector max = sel.getNativeMaximumPoint();
 			        dungeons.put(args[1], new Dungeon(sel.getWorld(), min, max));
-			        say("Dungeon Created!");
+			        say("Dungeon created and selected!");
 			        selectedDungeons.put(player, args[1]);
 			    } else {
 			        say(red + "Invalid Selection!");
@@ -665,14 +665,17 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		//TODO: after CustomName is added, add <Custom> was saved as <Name>.
 		if (args[0].toLowerCase().equals("save"))
 		{
+			plugin.saveYamls();
 			if (!selectedDungeons.containsKey(player))
 				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
 			else {
 				String dungeonStr = selectedDungeons.get(player);
 				if (!dungeons.get(dungeonStr).saveDungeon(dungeonStr))
-					say(red + "Saving Dungeon failed.");
+					say(red + "Saving Dungeon " + dungeonStr + " failed.");
+				else
+					say(red + "Saved Dungeon " + dungeonStr + " !");
 			}
-		}
+		} //TODO - allow naming a dungeon to save
 		else if (args[0].toLowerCase().equals("save"))
 			say(red + "Usage: /lc save");
 		

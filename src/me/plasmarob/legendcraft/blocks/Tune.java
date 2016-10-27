@@ -1,14 +1,12 @@
 package me.plasmarob.legendcraft.blocks;
 
 import io.netty.util.internal.ConcurrentSet;
+import me.plasmarob.legendcraft.util.Tools;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
-import me.plasmarob.util.Tools;
-//import net.minecraft.server.v1_9_R1.PacketPlayOutNamedSoundEffect;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

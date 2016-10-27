@@ -12,7 +12,6 @@ import me.plasmarob.legendcraft.item.FireRodBlast;
 import me.plasmarob.legendcraft.item.GustJar;
 import me.plasmarob.legendcraft.item.Hookshot;
 import me.plasmarob.legendcraft.item.IceRodBlast;
-import me.plasmarob.util.Tools;
 import net.minecraft.server.v1_9_R1.PacketPlayOutChat;
 import net.minecraft.server.v1_9_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_9_R1.PacketPlayOutNamedSoundEffect;

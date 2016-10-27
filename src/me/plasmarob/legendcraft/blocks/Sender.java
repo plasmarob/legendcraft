@@ -24,4 +24,7 @@ public interface Sender {
 	public void off();
 	
 	public void show(Player p);
+	public int getX();
+	public int getY();
+	public int getZ();
 }

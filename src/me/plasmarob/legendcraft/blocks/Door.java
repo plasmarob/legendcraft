@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.plasmarob.legendcraft.LegendCraft;
+import me.plasmarob.legendcraft.util.Tools;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Material;
@@ -216,6 +217,7 @@ public class Door implements Receiver {
 		return enabled;
 	}
 	public void setEnabled(boolean bool) {
+		Tools.say("Here!");
 		enabled = bool;
 		if (!enabled)
 			reset();
@@ -272,5 +274,19 @@ public class Door implements Receiver {
 			inverted = Boolean.parseBoolean(value); 
 			p.sendMessage(prp + "  Inverted set to " + inverted + ".");	
 		}	
+	}
+	
+	
+	@Override
+	public int getX() {
+		return (min.getBlockX() + max.getBlockX())/2;
+	}
+	@Override
+	public int getY() {
+		return (min.getBlockY() + max.getBlockY())/2;
+	}
+	@Override
+	public int getZ() {
+		return (min.getBlockZ() + max.getBlockZ())/2;
 	}
 }

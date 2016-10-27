@@ -25,6 +25,9 @@ public interface Receiver {
 	
 	public String type();
 	public String name();
+	public int getX();
+	public int getY();
+	public int getZ();
 	
 	public void show(Player p);
 }

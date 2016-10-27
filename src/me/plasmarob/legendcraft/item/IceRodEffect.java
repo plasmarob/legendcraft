@@ -108,6 +108,7 @@ public class IceRodEffect extends Effect{
 				
 				//ParticleEffect.VILLAGER_ANGRY.display(dir, 10, loc, 32);
 				reddust.display(null, loc, Color.fromRGB(255, 255, 255), 32, 0f, 0f, 0f, 0, 1);
+				
 			}
 			
 			

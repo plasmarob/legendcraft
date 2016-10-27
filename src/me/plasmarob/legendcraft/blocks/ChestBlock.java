@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.plasmarob.util.Tools;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Material;
@@ -19,6 +18,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.DirectionalContainer;
 import org.bukkit.util.Vector;
+
+import me.plasmarob.legendcraft.util.Tools;
 
 public class ChestBlock implements Receiver {
 	
@@ -229,6 +230,19 @@ public class ChestBlock implements Receiver {
 			inverted = Boolean.parseBoolean(value); 
 			p.sendMessage(prp + "  Inverted set to " + inverted + ".");	
 		}	
+	}
+
+	@Override
+	public int getX() {
+		return block.getX();
+	}
+	@Override
+	public int getY() {
+		return block.getY();
+	}
+	@Override
+	public int getZ() {
+		return block.getZ();
 	}
 
 

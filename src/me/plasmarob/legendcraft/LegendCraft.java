@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import me.plasmarob.legendcraft.blocks.MobTemplate;
-import me.plasmarob.util.Tools;
+import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -80,6 +80,7 @@ public class LegendCraft extends JavaPlugin {
 		
 		//create dungeon directory if needed.
 	    Dungeon.dungeonFolder = new File(getDataFolder(), "dungeons");
+	    
 	    Tools.createMainFolder(Dungeon.dungeonFolder, "dungeon dir created");
 	    //create mobs directory if needed.
 	    MobTemplate.mobsFolder = new File(getDataFolder(), "mobs");
@@ -115,7 +116,7 @@ public class LegendCraft extends JavaPlugin {
 	public void onDisable() {
 		effectManager.dispose();	// Dump the effects manager
 		Dungeon.disableDungeons();
-		Dungeon.saveDungeons();
+		//Dungeon.saveDungeons();
 		MobTemplate.saveMobs();
 		saveYamls();
 	}

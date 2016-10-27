@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.plasmarob.legendcraft.LegendCraft;
-import me.plasmarob.util.Tools;
+import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -277,6 +277,7 @@ public class SpawnerBlock implements Receiver, Sender{
 		
 		for (Receiver r : receivers.keySet()) {
 			p.sendMessage(prp + "  Links to " + r.name() + " ("+messageTypes.get(r)+")");
+			Tools.showLine(world, this, r);
 		}
 	}
 	
@@ -335,5 +336,19 @@ public class SpawnerBlock implements Receiver, Sender{
 			run();
 		}
 			
+	}
+	
+	
+	@Override
+	public int getX() {
+		return block.getX();
+	}
+	@Override
+	public int getY() {
+		return block.getY();
+	}
+	@Override
+	public int getZ() {
+		return block.getZ();
 	}
 }
