@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("unused")
 public interface Receiver {
 	
 	// 0 is start by default, 0 and 1 are switched if it is inverted.

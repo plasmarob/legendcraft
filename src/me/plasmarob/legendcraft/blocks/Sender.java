@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("unused")
 public interface Sender {
 	public HashMap<Receiver, String> getTargets();
 	public HashMap<Receiver, String> getMessageTypes();

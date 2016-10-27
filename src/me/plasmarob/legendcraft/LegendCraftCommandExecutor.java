@@ -31,6 +31,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 
+@SuppressWarnings("unused")
 public class LegendCraftCommandExecutor implements CommandExecutor {
 
 	//TODO: show dungeon XYZ range
