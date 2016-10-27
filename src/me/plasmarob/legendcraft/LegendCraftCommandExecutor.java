@@ -1,6 +1,8 @@
 package me.plasmarob.legendcraft;
 
+import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -114,7 +116,8 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			
 			String c = ChatColor.DARK_GREEN + "/lc ";
 			String r = ChatColor.RESET + "";
-
+			//TODO:
+			// Put these in a simple array, and use the number to pick a range of them
 			switch (page)
 			{
 			case 1:
@@ -357,7 +360,29 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			say(red + "Usage: /lc addTorchBlock <name>");
 		
 		
-		
+		/*
+		if(args[0].toLowerCase().equals("testsave"))
+		{
+			HashMap<Integer,Selection> map = new HashMap<Integer,Selection>();
+			Selection sel = LegendCraft.worldEditPlugin.getSelection(player);
+			map.put(0, sel);
+			if (sel instanceof CuboidSelection) {
+				Tools.saveObject(map, new File(plugin.getDataFolder(), "temp.dat"));
+			}
+		}
+		if(args[0].toLowerCase().equals("testload"))
+		{
+			HashMap<Integer,Selection> map = (HashMap<Integer,Selection>)Tools.loadObject(new File(plugin.getDataFolder(), "temp.dat"));
+			if (map != null) {
+				Selection sel = map.get(0);
+				if (sel instanceof CuboidSelection) {
+			        sel.getMaximumPoint().getBlock().setType(Material.PACKED_ICE);
+			        sel.getMinimumPoint().getBlock().setType(Material.PACKED_ICE);
+				}
+			}
+		}
+		*/    
+		        		
 		
 
 		

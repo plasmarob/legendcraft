@@ -289,4 +289,19 @@ public class Door implements Receiver {
 	public int getZ() {
 		return (min.getBlockZ() + max.getBlockZ())/2;
 	}
+
+	@Override
+	public boolean hasBlock(Block b) {
+		for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+        	for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+        		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        			if (b.equals(world.getBlockAt(x, y, z)))
+        				return true;
+                }
+            }
+        }
+		return false;
+	}
+	
+	
 }

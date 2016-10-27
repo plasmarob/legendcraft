@@ -1774,6 +1774,47 @@ public class Dungeon {
 			//TODO: show generic properties
 		}
 	}
+	
+	public String getBlock(Block b)
+	{	
+		for (String s : chestBlocks.keySet()) {
+			if (chestBlocks.get(s).hasBlock(b))
+				return s;
+		}
+		for (String s : detectors.keySet()) {
+			if (detectors.get(s).hasBlock(b))
+				return s;
+		}
+		for (String s : rsDetectors.keySet()) {
+			if (rsDetectors.get(s).hasBlock(b))
+				return s;
+		}
+		for (String s : storages.keySet()) {
+			if (storages.get(s).hasBlock(b))
+				return s;
+		}
+		for (String s : spawners.keySet()) {
+			if (spawners.get(s).hasBlock(b))
+				return s;
+		}
+		for (String s : doors.keySet()) {
+			if (doors.get(s).hasBlock(b))
+				return s;
+		}
+		for (String s : musics.keySet()) {
+			if (musics.get(s).hasBlock(b))
+				return s;
+		}
+		for (String s : timerBlocks.keySet()) {
+			if (timerBlocks.get(s).hasBlock(b))
+				return s;
+		}
+		for (String s : torchBlocks.keySet()) {
+			if (torchBlocks.get(s).hasBlock(b))
+				return s;
+		}
+		return null;
+	}
 
 
 	public static void checkChests(Block b)

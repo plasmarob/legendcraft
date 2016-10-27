@@ -1,7 +1,9 @@
 package me.plasmarob.legendcraft.blocks;
 
 import java.util.HashMap;
+import java.util.List;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public interface Sender {
@@ -24,6 +26,7 @@ public interface Sender {
 	public void off();
 	
 	public void show(Player p);
+	public boolean hasBlock(Block b);
 	public int getX();
 	public int getY();
 	public int getZ();

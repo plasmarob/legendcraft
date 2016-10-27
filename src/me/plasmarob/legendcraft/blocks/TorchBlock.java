@@ -395,4 +395,9 @@ public class TorchBlock implements Sender,Receiver  {
 	public int getZ() {
 		return mainBlock.getZ();
 	}
+	
+	@Override
+	public boolean hasBlock(Block b) {
+		return b.equals(mainBlock) || torchList.contains(b);
+	}
 }

@@ -334,4 +334,9 @@ public class Detector implements Sender, Receiver {
 		return mainBlock.getZ();
 	}
 	
+	@Override
+	public boolean hasBlock(Block b) {
+		return blockList.contains(b);
+	}
+	
 }

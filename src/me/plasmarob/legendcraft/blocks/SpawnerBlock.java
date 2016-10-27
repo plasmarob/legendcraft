@@ -351,4 +351,9 @@ public class SpawnerBlock implements Receiver, Sender{
 	public int getZ() {
 		return block.getZ();
 	}
+	
+	@Override
+	public boolean hasBlock(Block b) {
+		return b.equals(block);
+	}
 }

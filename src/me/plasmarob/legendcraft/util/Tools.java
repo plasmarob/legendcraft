@@ -1,6 +1,10 @@
 package me.plasmarob.legendcraft.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -386,5 +390,30 @@ public class Tools {
 				new Location(world, send.getX(), send.getY(), send.getZ()), 
 				new Location(world, rec.getX(), rec.getY(), rec.getZ()), 
 				Color.fromRGB(0, 255, 0), Color.fromRGB(0, 0, 255)).start();
+	}
+	
+	public static void saveObject(Object o, File f) {
+		try {
+			if (!f.exists())
+				f.createNewFile();
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+			oos.writeObject(o);
+			oos.flush();
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Object loadObject(File f) {
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+			Object result = ois.readObject();
+			ois.close();
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

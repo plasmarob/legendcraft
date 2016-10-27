@@ -28,7 +28,7 @@ public class StorageBlock implements Receiver {
 	List<Material> matList = new ArrayList<Material>();
 	List<Byte> datList = new ArrayList<Byte>();
 	
-	Block block;
+	Block mainBlock;
 	Vector min;
     Vector max;
     
@@ -39,7 +39,7 @@ public class StorageBlock implements Receiver {
      */
 	@SuppressWarnings("deprecation")
 	public StorageBlock(Player player, Block block, String name) {
-		this.block = block;
+		this.mainBlock = block;
 		this.name = name;
 		Selection sel = LegendCraft.worldEditPlugin.getSelection(player);
 		min = sel.getNativeMinimumPoint();
@@ -68,7 +68,7 @@ public class StorageBlock implements Receiver {
 		this.name = name;
 		
 		List<Integer> blkCoord = storageConfig.getIntegerList("block");
-		block = world.getBlockAt(blkCoord.get(0),blkCoord.get(1),blkCoord.get(2));
+		mainBlock = world.getBlockAt(blkCoord.get(0),blkCoord.get(1),blkCoord.get(2));
 		List<Double> minCoord = storageConfig.getDoubleList("min");
 		min = new Vector(minCoord.get(0),minCoord.get(1),minCoord.get(2));
 		List<Double> maxCoord = storageConfig.getDoubleList("max");
@@ -92,7 +92,7 @@ public class StorageBlock implements Receiver {
 	 * @param storageConfig
 	 */
 	public void setConfig(FileConfiguration storageConfig) {
-		storageConfig.set("block", Arrays.asList(block.getX(),block.getY(),block.getZ()));
+		storageConfig.set("block", Arrays.asList(mainBlock.getX(),mainBlock.getY(),mainBlock.getZ()));
 		storageConfig.set("min", Arrays.asList(min.getX(),min.getY(),min.getZ()));
 		storageConfig.set("max", Arrays.asList(max.getX(),max.getY(),max.getZ()));
 
@@ -118,7 +118,7 @@ public class StorageBlock implements Receiver {
             {
         		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++)
                 {
-        			tmpB = block.getWorld().getBlockAt(x, y, z);
+        			tmpB = mainBlock.getWorld().getBlockAt(x, y, z);
         			tmpB.setType(matList.get(i));
         			tmpB.setData(datList.get(i));
         			i++;
@@ -172,9 +172,9 @@ public class StorageBlock implements Receiver {
 	public void setEnabled(boolean bool) {
 		enabled = bool;
 		if (enabled) 
-			block.setType(Material.AIR);
+			mainBlock.setType(Material.AIR);
 		else
-			block.setType(Material.EMERALD_ORE);
+			mainBlock.setType(Material.EMERALD_ORE);
 	}
 	
 	@Override
@@ -206,7 +206,7 @@ public class StorageBlock implements Receiver {
 		
 		p.sendMessage(r + "  Inverted"+prp+"?: " + inverted);
 		
-		p.sendMessage(prp + "  Block: " + block.getX() + " " + block.getY() + " " + block.getZ());
+		p.sendMessage(prp + "  Block: " + mainBlock.getX() + " " + mainBlock.getY() + " " + mainBlock.getZ());
 		
 		p.sendMessage(prp + "  Min XYZ: " + min.getX() + " / " + min.getY() + " / " + min.getZ() + "");
 		p.sendMessage(prp + "  Max XYZ: " + max.getX() + " / " + max.getY() + " / " + max.getZ() + "");
@@ -229,14 +229,29 @@ public class StorageBlock implements Receiver {
 	
 	@Override
 	public int getX() {
-		return block.getX();
+		return mainBlock.getX();
 	}
 	@Override
 	public int getY() {
-		return block.getY();
+		return mainBlock.getY();
 	}
 	@Override
 	public int getZ() {
-		return block.getZ();
+		return mainBlock.getZ();
+	}
+	
+	@Override
+	public boolean hasBlock(Block b) {
+		if (b.equals(mainBlock))
+			return true;
+		for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+        	for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+        		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        			if (b.equals(mainBlock.getWorld().getBlockAt(x, y, z)))
+        				return true;
+                }
+            }
+        }
+		return false;
 	}
 }

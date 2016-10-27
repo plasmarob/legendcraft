@@ -1,5 +1,8 @@
 package me.plasmarob.legendcraft.blocks;
 
+import java.util.List;
+
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public interface Receiver {
@@ -30,4 +33,5 @@ public interface Receiver {
 	public int getZ();
 	
 	public void show(Player p);
+	public boolean hasBlock(Block b);
 }

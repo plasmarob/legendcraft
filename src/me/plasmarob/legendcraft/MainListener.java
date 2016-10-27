@@ -311,6 +311,20 @@ public class MainListener implements Listener {
 		}
 		*/
 		
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			if (!p.isSneaking()) {
+				if (Dungeon.selectedDungeons.containsKey(p)) {
+					String dungeonStr = Dungeon.selectedDungeons.get(p);
+					Dungeon d = Dungeon.dungeons.get(dungeonStr);
+					if (!d.isEnabled() && d.getBlock(event.getClickedBlock()) != null) {
+						String block = d.getBlock(event.getClickedBlock());
+						Dungeon.dungeons.get(dungeonStr).show(p, block);
+						event.setCancelled(true);
+					}
+				}
+			}
+		}
+		
 		
 		//TODO: Unlock door with a key
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
