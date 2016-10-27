@@ -34,5 +34,6 @@ public interface Receiver {
 	public int getZ();
 	
 	public void show(Player p);
+	public void edit(Player p, String key, String value);
 	public boolean hasBlock(Block b);
 }

@@ -344,7 +344,7 @@ public class MainListener implements Listener {
 					{
 						//p.sendMessage("is a door!");
 						Door d = doors.get(dName);
-						if (d.containsBlock(block) &&
+						if (d.hasBlock(block) &&
 								d.isEnabled() && d.isOn())
 						{
 							//p.sendMessage("has block!");

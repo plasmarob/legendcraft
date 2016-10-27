@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.plasmarob.legendcraft.blocks.AutoDoor;
 import me.plasmarob.legendcraft.blocks.ChestBlock;
 import me.plasmarob.legendcraft.blocks.Detector;
 import me.plasmarob.legendcraft.blocks.Door;
@@ -69,6 +70,7 @@ public class Dungeon {
 	private ConcurrentHashMap<String, TorchBlock> torchBlocks = new ConcurrentHashMap<String, TorchBlock>();
 	private ConcurrentHashMap<String, Timer> timerBlocks = new ConcurrentHashMap<String, Timer>();
 	private ConcurrentHashMap<String, ChestBlock> chestBlocks = new ConcurrentHashMap<String, ChestBlock>();
+	private ConcurrentHashMap<String, AutoDoor> autoDoors = new ConcurrentHashMap<String, AutoDoor>();
 	
 	private List<Player> players = new ArrayList<Player>();
 	
@@ -1288,10 +1290,12 @@ public class Dungeon {
 		for (String d : detectors.keySet()) {
 			detectors.get(d).testPlayers(players);
 		}
+		for (String d : autoDoors.keySet()) {
+			autoDoors.get(d).update();
+		}
 		for (String t : torchBlocks.keySet()) {
 			torchBlocks.get(t).testPlayers(players);
 		}
-		
 		for (String s : spawners.keySet()) {
 			spawners.get(s).updateMobs();
 		}

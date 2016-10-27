@@ -95,22 +95,6 @@ public class Door implements Receiver {
 			doorConfig.set("d"+Integer.toString(i+1),Integer.valueOf(datList.get(i)));
 		}
 	}
-
-	public boolean containsBlock(Block b)
-	{
-		//Bukkit.getConsoleSender().sendMessage("Is trying!");
-		Block tmpB;
-		for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-        for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-        for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-        			tmpB = world.getBlockAt(x, y, z);
-        			if (tmpB.getX() == b.getX() && tmpB.getY() == b.getY() &&
-        			tmpB.getZ() == b.getZ() && tmpB.getWorld().equals(b.getWorld()))
-        				return true;
-        }}}
-		return false;
-	}
-
 	
 	public boolean isDefaultOnOff() {
 		return defaultOnOff;
@@ -217,7 +201,6 @@ public class Door implements Receiver {
 		return enabled;
 	}
 	public void setEnabled(boolean bool) {
-		Tools.say("Here!");
 		enabled = bool;
 		if (!enabled)
 			reset();
