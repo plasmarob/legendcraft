@@ -64,6 +64,16 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		
+		//alias to /lca to /lc add 
+		if (commandLabel.equals("lca")) {
+			String[] argsOld = args.clone();
+			args = new String[argsOld.length+1];
+			args[0] = "add";
+			for (int i=0; i < argsOld.length; i++) {
+				args[i+1] = argsOld[i];
+			}
+		}
+		
 		int last = args.length - 1;
 		
 		if (sender instanceof Player) {
@@ -170,6 +180,23 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		}
 		
 		
+		if (last >= 2 && args[0].toLowerCase().equals("add")) {
+			String addType = args[1].toLowerCase();
+			
+			if (addType.equals("chest")) {
+				if (!selectedDungeons.containsKey(player))
+					say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+				else {
+					String dungeonStr = selectedDungeons.get(player);
+					if (!dungeons.get(dungeonStr).tryAddChest(player, args[1]))
+						say(red + "Chest creation failed.");
+				}
+			}
+		}
+
+		// delete this and insert the other ones into add.
+		// TODO need to add an error message that captures them all and explains too.
+		// will have to do something else with the timer one.
 		/**
 		 * Add Chest
 		 * - attempts to create a new chest

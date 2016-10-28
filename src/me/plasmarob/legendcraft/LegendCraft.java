@@ -101,6 +101,7 @@ public class LegendCraft extends JavaPlugin {
 	    
 	    //----------------------
 	  	// Send off valid commands
+	    this.getCommand("lca").setExecutor(new LegendCraftCommandExecutor(this));
 		this.getCommand("lc").setExecutor(new LegendCraftCommandExecutor(this));
 		this.getCommand("legendcraft").setExecutor(new LegendCraftCommandExecutor(this));
 	
