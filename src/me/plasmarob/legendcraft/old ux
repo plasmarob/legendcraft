@@ -1,0 +1,194 @@
+		
+		// delete this and insert the other ones into add.
+		// TODO need to add an error message that captures them all and explains too.
+		// will have to do something else with the timer one.
+		/**
+		 * Add Chest
+		 * - attempts to create a new chest
+		 * --- /lc addchest <name>
+		 */
+		if (last >= 1 && (args[0].toLowerCase().equals("addchest") ||
+				args[0].toLowerCase().equals("achest")))
+		{
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddChest(player, args[1]))
+					say(red + "Chest creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("addchest"))
+			say(red + "Usage: /lc addChest <name>");
+		
+		/**
+		 * Add Detector
+		 * - attempts to create a trigger via looked-at coal_ore
+		 * --- /lc addDetector <name>
+		 */
+		if (last >=1 && 
+				(args[0].toLowerCase().equals("adddetector") ||
+						args[0].toLowerCase().equals("adddet") ||
+						args[0].toLowerCase().equals("adet"))) {
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddDetector(player, args[1]))
+					say(red + "Detector creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("adddetector"))
+			say(red + "Usage: /lc addDet <name>");
+		
+		/**
+		 * Add Door
+		 * - attempts to create a new door, 
+		 * -	a selection that disappears when hit by currently held item 
+		 * --- /lc adddoor <name>
+		 */
+		if (last >= 1 && (args[0].toLowerCase().equals("adddoor") ||
+				args[0].toLowerCase().equals("adoor")))
+		{
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddDoor(player, args[1]))
+					say(red + "Door creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("adddoor"))
+			say(red + "Usage: /lc addDoor <name>");
+		
+		
+		/**
+		 * Add Music
+		 * - attempts to create a music block via looked-at diamond_ore
+		 * --- /lc addmusic <name>
+		 */
+		if (last >=1 && (args[0].toLowerCase().equals("addmusic") ||
+				args[0].toLowerCase().equals("amusic"))) {
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddMusic(player, args[1]))
+					say(red + "Music block creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("addmusic"))
+			say(red + "Usage: /lc addMusic <name>");
+		
+		/**
+		 * Add Redstone Detector
+		 * - attempts to create a RS detector via looked-at redstone ore
+		 * --- /lc addRSDetector <name>
+		 */
+		if (last >=1 && (args[0].toLowerCase().equals("addrsdetector") || 
+				args[0].toLowerCase().equals("addrsdet") ||
+				args[0].toLowerCase().equals("arsdet"))) {
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddRSDetector(player, args[1]))
+					say(red + "RS Detector creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("addrsdetector"))
+			say(red + "Usage: /lc addRSDet <name>");
+		
+		/**
+		 * Add Spawner
+		 * - attempts to create a spawner via looked-at gold_ore
+		 * --- /lc addspawner <name>
+		 */
+		if (last >= 1 && (args[0].toLowerCase().equals("addspawner") ||
+				args[0].toLowerCase().equals("aspawner")))
+		{
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddSpawner(player, args[1]))
+					say(red + "Spawner creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("addspawner"))
+			say(red + "Usage: /lc addSpawner <name>");
+
+		
+		/**
+		 * Add Storage
+		 * - attempts to create a storage block via looked-at emerald_ore
+		 * --- /lc addstorage <name>
+		 */
+		if (last >= 1 && (args[0].toLowerCase().equals("addstorage") ||
+				args[0].toLowerCase().equals("astorage")))
+		{
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddStorageBlock(player, args[1]))
+					say(red + "Storage block creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("addstorage"))
+			say(red + "Usage: /lc addStorage <name>");
+		
+		/**
+		 * Add Timer
+		 * - attempts to create a timer via looked-at IDC
+		 * --- /lc addTimer <name>
+		 */
+		if (last >=2 && (args[0].toLowerCase().equals("addtimer") ||
+				args[0].toLowerCase().equals("atimer"))) {
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddTimer(player, args[1], args[2]))
+					say(red + "Timer creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("addsimer"))
+			say(red + "Usage: /lc addTimer <name> <delay>");
+		
+		/**
+		 * Add Torch
+		 * - attempts to create a torch
+		 * --- /lc addTorch <torchBlock>
+		 */
+		if (last >=1 && (args[0].toLowerCase().equals("addtorch") ||
+				args[0].toLowerCase().equals("atorch"))) {
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddTorch(player, args[1]))
+					say(red + "Torch addition failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("addtorch"))
+			say(red + "Usage: /lc addTorch <torchBlock>");
+		
+		/**
+		 * Add TorchBlock
+		 * - attempts to create a torch via looked-at iron_ore
+		 * --- /lc addDetector <name>
+		 */
+		if (last >=1 && (args[0].toLowerCase().equals("addtorchblock") ||
+				args[0].toLowerCase().equals("atorchblock"))) {
+			if (!selectedDungeons.containsKey(player))
+				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+			else {
+				String dungeonStr = selectedDungeons.get(player);
+				if (!dungeons.get(dungeonStr).tryAddTorchBlock(player, args[1]))
+					say(red + "Torch block creation failed.");
+			}
+		}
+		else if (args[0].toLowerCase().equals("addtorchblock"))
+			say(red + "Usage: /lc addTorchBlock <name>");
+		

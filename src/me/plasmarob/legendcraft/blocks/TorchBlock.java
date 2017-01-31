@@ -272,7 +272,7 @@ public class TorchBlock implements Sender,Receiver  {
 	static String r = "" + ChatColor.RESET;
 	@Override
 	public void show(Player p) {
-		p.sendMessage(prp + "Storage Block \"" + name + "\":");
+		p.sendMessage(prp + "Torch Block \"" + name + "\":");
 
 		String enable = "enabled";
 		if (!enabled) enable = "disabled";
@@ -300,6 +300,7 @@ public class TorchBlock implements Sender,Receiver  {
 		
 		for (Block b : torchList) {
 			p.sendMessage(prp + "" + b.getX() + " " + b.getY() + " " + b.getZ());
+			Tools.showLine(mainBlock.getWorld(), mainBlock, b, 200,200,000);
 		}
 		
 		for (Receiver r : receivers.keySet()) {

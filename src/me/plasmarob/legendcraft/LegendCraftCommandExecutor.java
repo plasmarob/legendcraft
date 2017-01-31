@@ -127,8 +127,54 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			
 			String c = ChatColor.DARK_GREEN + "/lc ";
 			String r = ChatColor.RESET + "";
+			
+			String[] helptext = new String[36];
+			helptext[0]=ChatColor.GRAY+"Use /lc help [n] to get page n of help.";
+			helptext[1]=c+"addChest <name> : "+r+"New chest";
+			helptext[2]=c+"addDetector <name> : "+r+"New detector";
+			helptext[3]=c+"addDoor <name> : "+r+"New door";
+			helptext[4]=c+"addMusic <name> : "+r+"Music block from last played tune";
+			helptext[5]=c+"addRSDetector <name> : "+r+"New Redstone Detector";
+			helptext[6]=c+"addSpawner <name> : "+r+"Create new spawner";
+			helptext[7]=c+"addStorage <name> : "+r+"Create new storage block";
+			helptext[8]=c+"addTimer <name> <delay> : "+r+"New Timer";
+			helptext[9]=c+"addTorch <name> <TorchBlock> : "+r+"New Torch to TorchBlock";
+			helptext[10]=c+"addTorchBlock <name> : "+r+"New TorchBlock";
+			helptext[11]=c+"create <dungeon> : "+r+"Create new dungeon";
+			helptext[12]=c+"delete <block> : "+r+"Deletes block";
+			helptext[13]=c+"deleteDungeon <dungeon> :"+r+"Deletes dungeon";
+			helptext[14]=c+"disable [dungeon] : "+r+"Disable dungeon";
+			helptext[15]=c+"edit <block> <key> <value> : "+r+"Edit a block";
+			helptext[16]=c+"enable [dungeon] : "+r+"Enable dungeon";
+			helptext[17]=c+"expand: "+r+"expand dungeon to WorldEdit selection";
+			helptext[18]=c+"insertMob <spawner> <mob> [count] : "+r+"Put in spawner";
+			helptext[19]=c+"link <from> <to> [TRIGGER|set|reset|on|off] : "+r+"Link blocks";
+			helptext[20]=c+"list: "+r+"List existing dungeons";
+			helptext[21]=c+"listMobs: "+r+"List available mobs";
+			helptext[22]=c+"m <tune> : "+r+"see playSound";
+			helptext[23]=c+"mobInfo: "+r+"Show info about mob";
+			helptext[24]=c+"playsound <tune> : "+r+"plays a written tune.";
+			helptext[25]=c+"ps <tune> : "+r+"see playSound";
+			helptext[26]=c+"saveMob <name> : "+r+"Save closest mob as <name>";
+			helptext[27]=c+"save : "+r+"Save current dungeon";
+			helptext[28]=c+"save: "+r+"Save the current dungeon";
+			helptext[29]=c+"select <dungeon> : "+r+"Select dungeon to edit";
+			helptext[30]=c+"setWorld: "+r+"adds/removes current world to/from plugin";
+			helptext[31]=c+"show [block] : "+r+"Details dungeon or block";
+			helptext[32]=c+"spawn: "+r+"Spawn mob";
+			helptext[33]=c+"unlink <block>: "+r+"remove links to and from a block";
+			helptext[34]=c+"unlink <from> <to>: "+r+"remove a specific link";
+			helptext[35]="";
+						
+			page = (page < 1 || page > 4) ? 1 : page;
+			int firsthelp = 9*(page-1);
+			for (int i = 0; i < 9; i++) {
+				say(helptext[firsthelp+i]);
+			}
+			
 			//TODO:
 			// Put these in a simple array, and use the number to pick a range of them
+			/*
 			switch (page)
 			{
 			case 1:
@@ -177,217 +223,91 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				break;
 			}
 			return false;
+			*/
 		}
 		
 		
 		if (last >= 2 && args[0].toLowerCase().equals("add")) {
+		if (!selectedDungeons.containsKey(player))
+			say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
+		else {
 			String addType = args[1].toLowerCase();
-			
-			if (addType.equals("chest")) {
-				if (!selectedDungeons.containsKey(player))
-					say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-				else {
-					String dungeonStr = selectedDungeons.get(player);
-					if (!dungeons.get(dungeonStr).tryAddChest(player, args[1]))
-						say(red + "Chest creation failed.");
-				}
-			}
-		}
-
-		// delete this and insert the other ones into add.
-		// TODO need to add an error message that captures them all and explains too.
-		// will have to do something else with the timer one.
-		/**
-		 * Add Chest
-		 * - attempts to create a new chest
-		 * --- /lc addchest <name>
-		 */
-		if (last >= 1 && (args[0].toLowerCase().equals("addchest") ||
-				args[0].toLowerCase().equals("achest")))
-		{
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add Chest
+			 * - attempts to create a new chest
+			 */
+			if (addType.equals("chest") || addType.equals("che")) {
 				if (!dungeons.get(dungeonStr).tryAddChest(player, args[1]))
-					say(red + "Chest creation failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("addchest"))
-			say(red + "Usage: /lc addChest <name>");
-		
-		/**
-		 * Add Detector
-		 * - attempts to create a trigger via looked-at coal_ore
-		 * --- /lc addDetector <name>
-		 */
-		if (last >=1 && 
-				(args[0].toLowerCase().equals("adddetector") ||
-						args[0].toLowerCase().equals("adddet") ||
-						args[0].toLowerCase().equals("adet"))) {
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+					say(red + "Chest creation failed.");	
+			/**
+			 * Add Detector
+			 * - attempts to create a trigger via looked-at coal_ore
+			 */
+			} else if (addType.equals("detector") || addType.equals("det")) {
 				if (!dungeons.get(dungeonStr).tryAddDetector(player, args[1]))
 					say(red + "Detector creation failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("adddetector"))
-			say(red + "Usage: /lc addDet <name>");
-		
-		/**
-		 * Add Door
-		 * - attempts to create a new door, 
-		 * -	a selection that disappears when hit by currently held item 
-		 * --- /lc adddoor <name>
-		 */
-		if (last >= 1 && (args[0].toLowerCase().equals("adddoor") ||
-				args[0].toLowerCase().equals("adoor")))
-		{
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add Door
+			 * - attempts to create a new door, 
+			 * -	a selection that disappears when hit by currently held item 
+			 */
+			} else if (addType.equals("door") || addType.equals("doo") || addType.equals("dor")) {
 				if (!dungeons.get(dungeonStr).tryAddDoor(player, args[1]))
 					say(red + "Door creation failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("adddoor"))
-			say(red + "Usage: /lc addDoor <name>");
-		
-		
-		/**
-		 * Add Music
-		 * - attempts to create a music block via looked-at diamond_ore
-		 * --- /lc addmusic <name>
-		 */
-		if (last >=1 && (args[0].toLowerCase().equals("addmusic") ||
-				args[0].toLowerCase().equals("amusic"))) {
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add Music
+			 * - attempts to create a music block via looked-at diamond_ore
+			 */
+			} else if (addType.equals("music") || addType.equals("mus")) {
 				if (!dungeons.get(dungeonStr).tryAddMusic(player, args[1]))
 					say(red + "Music block creation failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("addmusic"))
-			say(red + "Usage: /lc addMusic <name>");
-		
-		/**
-		 * Add Redstone Detector
-		 * - attempts to create a RS detector via looked-at redstone ore
-		 * --- /lc addRSDetector <name>
-		 */
-		if (last >=1 && (args[0].toLowerCase().equals("addrsdetector") || 
-				args[0].toLowerCase().equals("addrsdet") ||
-				args[0].toLowerCase().equals("arsdet"))) {
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add Redstone Detector
+			 * - attempts to create a RS detector via looked-at redstone ore
+			 */
+			} else if (addType.equals("rsdetector") || addType.equals("rsdet") || addType.equals("rs")) {
 				if (!dungeons.get(dungeonStr).tryAddRSDetector(player, args[1]))
 					say(red + "RS Detector creation failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("addrsdetector"))
-			say(red + "Usage: /lc addRSDet <name>");
-		
-		/**
-		 * Add Spawner
-		 * - attempts to create a spawner via looked-at gold_ore
-		 * --- /lc addspawner <name>
-		 */
-		if (last >= 1 && (args[0].toLowerCase().equals("addspawner") ||
-				args[0].toLowerCase().equals("aspawner")))
-		{
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add Spawner
+			 * - attempts to create a spawner via looked-at gold_ore
+			 */
+			} else if (addType.equals("spawner") || addType.equals("spawn") || addType.equals("spa")) {
 				if (!dungeons.get(dungeonStr).tryAddSpawner(player, args[1]))
 					say(red + "Spawner creation failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("addspawner"))
-			say(red + "Usage: /lc addSpawner <name>");
-
-		
-		/**
-		 * Add Storage
-		 * - attempts to create a storage block via looked-at emerald_ore
-		 * --- /lc addstorage <name>
-		 */
-		if (last >= 1 && (args[0].toLowerCase().equals("addstorage") ||
-				args[0].toLowerCase().equals("astorage")))
-		{
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add Storage
+			 * - attempts to create a storage block via looked-at emerald_ore
+			 */
+			} else if (addType.equals("storageblock") || addType.equals("storage") || addType.equals("sto")) {
 				if (!dungeons.get(dungeonStr).tryAddStorageBlock(player, args[1]))
 					say(red + "Storage block creation failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("addstorage"))
-			say(red + "Usage: /lc addStorage <name>");
-		
-		/**
-		 * Add Timer
-		 * - attempts to create a timer via looked-at IDC
-		 * --- /lc addTimer <name>
-		 */
-		if (last >=2 && (args[0].toLowerCase().equals("addtimer") ||
-				args[0].toLowerCase().equals("atimer"))) {
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add Timer
+			 * - attempts to create a timer via looked-at IDC
+			 */
+			} else if (addType.equals("timer") || addType.equals("time") || addType.equals("tim")) {
 				if (!dungeons.get(dungeonStr).tryAddTimer(player, args[1], args[2]))
 					say(red + "Timer creation failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("addsimer"))
-			say(red + "Usage: /lc addTimer <name> <delay>");
-		
-		/**
-		 * Add Torch
-		 * - attempts to create a torch
-		 * --- /lc addTorch <torchBlock>
-		 */
-		if (last >=1 && (args[0].toLowerCase().equals("addtorch") ||
-				args[0].toLowerCase().equals("atorch"))) {
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add Torch
+			 * - attempts to create a torch and add it to a torchblock
+			 */
+			} else if (addType.equals("torch") || addType.equals("tor")) {
 				if (!dungeons.get(dungeonStr).tryAddTorch(player, args[1]))
 					say(red + "Torch addition failed.");
-			}
-		}
-		else if (args[0].toLowerCase().equals("addtorch"))
-			say(red + "Usage: /lc addTorch <torchBlock>");
-		
-		/**
-		 * Add TorchBlock
-		 * - attempts to create a torch via looked-at iron_ore
-		 * --- /lc addDetector <name>
-		 */
-		if (last >=1 && (args[0].toLowerCase().equals("addtorchblock") ||
-				args[0].toLowerCase().equals("atorchblock"))) {
-			if (!selectedDungeons.containsKey(player))
-				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
-			else {
-				String dungeonStr = selectedDungeons.get(player);
+			/**
+			 * Add TorchBlock
+			 * - attempts to create a torch via looked-at iron_ore
+			 */
+			} else if (addType.equals("torchblock") || addType.equals("torblk")) {
 				if (!dungeons.get(dungeonStr).tryAddTorchBlock(player, args[1]))
 					say(red + "Torch block creation failed.");
 			}
-		}
-		else if (args[0].toLowerCase().equals("addtorchblock"))
-			say(red + "Usage: /lc addTorchBlock <name>");
-		
-		
+		}}
+
+	
 		/*
 		if(args[0].toLowerCase().equals("testsave"))
 		{
@@ -726,7 +646,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				if (!dungeons.get(dungeonStr).saveDungeon(dungeonStr))
 					say(red + "Saving Dungeon " + dungeonStr + " failed.");
 				else
-					say(red + "Saved Dungeon " + dungeonStr + " !");
+					say(ChatColor.GREEN + "Saved Dungeon " + dungeonStr + " !");
 			}
 		} //TODO - allow naming a dungeon to save
 		else if (args[0].toLowerCase().equals("save"))

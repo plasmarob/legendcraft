@@ -85,16 +85,16 @@ public class AutoDoor implements Receiver {
 		}
 	}
 	
-	public void setConfig(FileConfiguration doorConfig) {
-		doorConfig.set("keymaterial", keyMat.toString());
-		doorConfig.set("keydata", (int)keyDat);
-		doorConfig.set("world", world.getName());
+	public void setConfig(FileConfiguration adConfig) {
+		adConfig.set("keymaterial", keyMat.toString());
+		adConfig.set("keydata", (int)keyDat);
+		adConfig.set("world", world.getName());
 		
-		doorConfig.set("min", Arrays.asList(min.getX(),min.getY(),min.getZ()));
-		doorConfig.set("max", Arrays.asList(max.getX(),max.getY(),max.getZ()));
+		adConfig.set("min", Arrays.asList(min.getX(),min.getY(),min.getZ()));
+		adConfig.set("max", Arrays.asList(max.getX(),max.getY(),max.getZ()));
 		for (int i = 0; i < matList.size(); i++) {
-			doorConfig.set("m"+Integer.toString(i+1),matList.get(i).name());
-			doorConfig.set("d"+Integer.toString(i+1),Integer.valueOf(datList.get(i)));
+			adConfig.set("m"+Integer.toString(i+1),matList.get(i).name());
+			adConfig.set("d"+Integer.toString(i+1),Integer.valueOf(datList.get(i)));
 		}
 	}
 	
