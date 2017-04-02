@@ -26,7 +26,6 @@ public class DoorAnimator implements Runnable {
 	
 	//TODO: down distance, max open range, overlap delay?
 	
-	@SuppressWarnings("deprecation")
 	public DoorAnimator(Door door, Player player) {
 		this.door = door;
 		this.player = player;
