@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
-
+//TODO: we don't want to blow invisible armor stands
 public class GustJar {
 	
 	public static HashMap<Player, GustJar> instances = new HashMap<Player, GustJar>();

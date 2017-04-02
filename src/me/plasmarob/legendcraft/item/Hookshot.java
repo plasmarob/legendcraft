@@ -2,8 +2,6 @@ package me.plasmarob.legendcraft.item;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.server.v1_9_R1.SoundEffect;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -113,7 +111,7 @@ public class Hookshot {
 		return false;
 	}
 
-	SoundEffect e = new SoundEffect(null);
+	//SoundEffect e = new SoundEffect(null);
 	
 	private void sound(Location loc) {
 		/*

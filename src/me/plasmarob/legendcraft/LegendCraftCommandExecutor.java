@@ -74,6 +74,16 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			}
 		}
 		
+		//alias to /lca to /lc add 
+		if (commandLabel.equals("lce")) {
+			String[] argsOld = args.clone();
+			args = new String[argsOld.length+1];
+			args[0] = "edit";
+			for (int i=0; i < argsOld.length; i++) {
+				args[i+1] = argsOld[i];
+			}
+		}
+		
 		int last = args.length - 1;
 		
 		if (sender instanceof Player) {
@@ -130,16 +140,16 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			
 			String[] helptext = new String[36];
 			helptext[0]=ChatColor.GRAY+"Use /lc help [n] to get page n of help.";
-			helptext[1]=c+"addChest <name> : "+r+"New chest";
-			helptext[2]=c+"addDetector <name> : "+r+"New detector";
-			helptext[3]=c+"addDoor <name> : "+r+"New door";
-			helptext[4]=c+"addMusic <name> : "+r+"Music block from last played tune";
-			helptext[5]=c+"addRSDetector <name> : "+r+"New Redstone Detector";
-			helptext[6]=c+"addSpawner <name> : "+r+"Create new spawner";
-			helptext[7]=c+"addStorage <name> : "+r+"Create new storage block";
-			helptext[8]=c+"addTimer <name> <delay> : "+r+"New Timer";
-			helptext[9]=c+"addTorch <name> <TorchBlock> : "+r+"New Torch to TorchBlock";
-			helptext[10]=c+"addTorchBlock <name> : "+r+"New TorchBlock";
+			helptext[1]=c+"add Chest <name> : "+r+"New chest";
+			helptext[2]=c+"add Detector <name> : "+r+"New detector";
+			helptext[3]=c+"add Door <name> : "+r+"New door";
+			helptext[4]=c+"add Music <name> : "+r+"Music block from last played tune";
+			helptext[5]=c+"add RSDetector <name> : "+r+"New Redstone Detector";
+			helptext[6]=c+"add Spawner <name> : "+r+"Create new spawner";
+			helptext[7]=c+"add Storage <name> : "+r+"Create new storage block";
+			helptext[8]=c+"add Timer <name> <delay> : "+r+"New Timer";
+			helptext[9]=c+"add Torch <name> <TorchBlock> : "+r+"New Torch to TorchBlock";
+			helptext[10]=c+"add TorchBlock <name> : "+r+"New TorchBlock";
 			helptext[11]=c+"create <dungeon> : "+r+"Create new dungeon";
 			helptext[12]=c+"delete <block> : "+r+"Deletes block";
 			helptext[13]=c+"deleteDungeon <dungeon> :"+r+"Deletes dungeon";
@@ -171,59 +181,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			for (int i = 0; i < 9; i++) {
 				say(helptext[firsthelp+i]);
 			}
-			
-			//TODO:
-			// Put these in a simple array, and use the number to pick a range of them
-			/*
-			switch (page)
-			{
-			case 1:
-			default:
-				say(ChatColor.GRAY+"Use /lc help [n] to get page n of help.");
-				say(c+"addChest <name> : "+r+"New chest");
-				say(c+"addDetector <name> : "+r+"New detector");
-				say(c+"addDoor <name> : "+r+"New door");
-				say(c+"addMusic <name> : "+r+"Music block from last played tune");
-				say(c+"addRSDetector <name> : "+r+"New Redstone Detector");
-				say(c+"addSpawner <name> : "+r+"Create new spawner");
-				say(c+"addStorage <name> : "+r+"Create new storage block");
-				say(c+"addTimer <name> <delay> : "+r+"New Timer");
-				break;
-			case 2:	
-				say(c+"addTorch <name> <TorchBlock> : "+r+"New Torch");
-				say(c+"addTorchBlock <name> : "+r+"New TorchBlock");
-				say(c+"create <dungeon> : "+r+"Create new dungeon");
-				say(c+"delete <block> : "+r+"Deletes block");
-				say(c+"deleteDungeon <dungeon> :"+r+"Deletes dungeon");
-				say(c+"disable [dungeon] : "+r+"Disable dungeon");
-				say(c+"edit <block> <key> <value> : "+r+"Edit a block");
-				say(c+"enable [dungeon] : "+r+"Enable dungeon");
-				say(c+"expand: "+r+"expand dungeon to WorldEdit selection");
-				break;
-			case 3:	
-				say(c+"insertMob <spawner> <mob> [count] : "+r+"Put in spawner");
-				say(c+"link <from> <to> [TRIGGER|set|reset|on|off] : "+r+"Link blocks");
-				say(c+"list: "+r+"List existing dungeons");
-				say(c+"listMobs: "+r+"List available mobs");
-				say(c+"m <tune> : "+r+"see playSound");
-				say(c+"mobInfo: "+r+"Show info about mob");
-				say(c+"playsound <tune> : "+r+"plays a written tune.");
-				say(c+"ps <tune> : "+r+"see playSound");
-				say(c+"saveMob <name> : "+r+"Save closest mob as <name>");
-				say(c+"save : "+r+"Save current dungeon");
-				break;
-			case 4:	
-				say(c+"save: "+r+"Save the current dungeon");
-				say(c+"select <dungeon> : "+r+"Select dungeon to edit");
-				say(c+"setWorld: "+r+"adds/removes current world to/from plugin");
-				say(c+"show [block] : "+r+"Details dungeon or block");
-				say(c+"spawn: "+r+"Spawn mob");
-				say(c+"unlink <block>: "+r+"remove links to and from a block");
-				say(c+"unlink <from> <to>: "+r+"remove a specific link");
-				break;
-			}
-			return false;
-			*/
+			return true;
 		}
 		
 		
@@ -238,14 +196,14 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			 * - attempts to create a new chest
 			 */
 			if (addType.equals("chest") || addType.equals("che")) {
-				if (!dungeons.get(dungeonStr).tryAddChest(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddChest(player, args[2]))
 					say(red + "Chest creation failed.");	
 			/**
 			 * Add Detector
 			 * - attempts to create a trigger via looked-at coal_ore
 			 */
 			} else if (addType.equals("detector") || addType.equals("det")) {
-				if (!dungeons.get(dungeonStr).tryAddDetector(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddDetector(player, args[2]))
 					say(red + "Detector creation failed.");
 			/**
 			 * Add Door
@@ -253,59 +211,64 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			 * -	a selection that disappears when hit by currently held item 
 			 */
 			} else if (addType.equals("door") || addType.equals("doo") || addType.equals("dor")) {
-				if (!dungeons.get(dungeonStr).tryAddDoor(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddDoor(player, args[2]))
 					say(red + "Door creation failed.");
 			/**
 			 * Add Music
 			 * - attempts to create a music block via looked-at diamond_ore
 			 */
 			} else if (addType.equals("music") || addType.equals("mus")) {
-				if (!dungeons.get(dungeonStr).tryAddMusic(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddMusic(player, args[2]))
 					say(red + "Music block creation failed.");
 			/**
 			 * Add Redstone Detector
 			 * - attempts to create a RS detector via looked-at redstone ore
 			 */
 			} else if (addType.equals("rsdetector") || addType.equals("rsdet") || addType.equals("rs")) {
-				if (!dungeons.get(dungeonStr).tryAddRSDetector(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddRSDetector(player, args[2]))
 					say(red + "RS Detector creation failed.");
 			/**
 			 * Add Spawner
 			 * - attempts to create a spawner via looked-at gold_ore
 			 */
 			} else if (addType.equals("spawner") || addType.equals("spawn") || addType.equals("spa")) {
-				if (!dungeons.get(dungeonStr).tryAddSpawner(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddSpawner(player, args[2]))
 					say(red + "Spawner creation failed.");
 			/**
 			 * Add Storage
 			 * - attempts to create a storage block via looked-at emerald_ore
 			 */
 			} else if (addType.equals("storageblock") || addType.equals("storage") || addType.equals("sto")) {
-				if (!dungeons.get(dungeonStr).tryAddStorageBlock(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddStorageBlock(player, args[2]))
 					say(red + "Storage block creation failed.");
 			/**
 			 * Add Timer
 			 * - attempts to create a timer via looked-at IDC
 			 */
+				//TODO: catch the lack of args[3]
 			} else if (addType.equals("timer") || addType.equals("time") || addType.equals("tim")) {
-				if (!dungeons.get(dungeonStr).tryAddTimer(player, args[1], args[2]))
+				if (args.length < 4)
+					say(red + "Invalid arguments. Usage: /lc add timer <name> <delay>");
+				else if (!dungeons.get(dungeonStr).tryAddTimer(player, args[2], args[3]))
 					say(red + "Timer creation failed.");
 			/**
 			 * Add Torch
 			 * - attempts to create a torch and add it to a torchblock
 			 */
 			} else if (addType.equals("torch") || addType.equals("tor")) {
-				if (!dungeons.get(dungeonStr).tryAddTorch(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddTorch(player, args[2]))
 					say(red + "Torch addition failed.");
 			/**
 			 * Add TorchBlock
 			 * - attempts to create a torch via looked-at iron_ore
 			 */
 			} else if (addType.equals("torchblock") || addType.equals("torblk")) {
-				if (!dungeons.get(dungeonStr).tryAddTorchBlock(player, args[1]))
+				if (!dungeons.get(dungeonStr).tryAddTorchBlock(player, args[2]))
 					say(red + "Torch block creation failed.");
 			}
-		}}
+		}} else if (args[0] != null && args[0].toLowerCase().equals("add")) {
+			say(red+ "Invalid arguments. Please provide a name.");
+		}
 
 	
 		/*
@@ -572,6 +535,8 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			say(purp + mList);
 		}
 		
+		if(last >= 0 && args[0].toLowerCase().equals("compass")) 
+			Tools.playerCompassFace(player);
 		
 		/**
 		 * Mob Info
@@ -742,7 +707,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		        
 		        if (limit1 == 1)
 		        {
-		        	scale(player,min,max,anchor,scale);
+		        	Tools.scale(min,max,anchor,scale);
 		        }
 		        else
 		        {
@@ -819,7 +784,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		 * - shows information about a block
 		 * --- /lc show <name>
 		 */
-		if(args[0].toLowerCase().equals("show")) {
+		if(args[0].toLowerCase().equals("show") || args[0].toLowerCase().equals("info")) {
 			if (!selectedDungeons.containsKey(player))
 				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
 			else {
@@ -828,7 +793,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 					dungeons.get(dungeonStr).show(player, args[1]);
 				}
 				else {
-					dungeons.get(selectedDungeons.get(player)).listBlocks(player);
+					dungeons.get(selectedDungeons.get(player)).show(player);
 					say(ChatColor.GRAY + "/lc show <block> for a specific block.");
 				}
 			}
@@ -902,145 +867,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		return false;
 	}
 	
-	@SuppressWarnings("deprecation")
-	private void scale(Player player2, Vector min, Vector max, final Block anchor, final int scale) {
-		int offx = (scale-1)/2;
-		int offy = (scale-1)/2;
-		int offz = (scale-1)/2;
-		int offX = (scale-1)/2;
-		int offY = (scale-1)/2;
-		int offZ = (scale-1)/2;
-		
-		if (anchor.getX() == min.getX()) {
-			offx = 0;
-			offX = scale-1;
-		} else if (anchor.getX() == max.getX()) {
-			offx = scale-1;
-			offX = 0;
-		}
-		if (anchor.getY() == min.getY()) {
-			offy = 0;
-			offY = scale-1;
-		} else if (anchor.getY() == max.getY()) {
-			offy = scale-1;
-			offY = 0;
-		}
-		if (anchor.getZ() == min.getZ()) {
-			offz = 0;
-			offZ = scale-1;
-		} else if (anchor.getZ() == max.getZ()) {
-			offz = scale-1;
-			offZ = 0;
-		}
-		
-		anchor.setType(Material.AIR);	// don't want this getting in the way
-		
-		
-		int minX = (int)min.getX();
-		int minY = (int)min.getY();
-		int minZ = (int)min.getZ();
-		int maxX = (int)max.getX();
-		int maxY = (int)max.getY();
-		int maxZ = (int)max.getZ();
-		
-		//initialize all of it outside the loops for performance
-		Block current;
-		World world = anchor.getWorld();
-		int aX = anchor.getX();
-		int aY = anchor.getY();
-		int aZ = anchor.getZ();
-		int dx = 0;
-    	int dy = 0;
-    	int dz = 0;
-    	int xx,yy,zz;
-    	Material mat;
-    	byte dat;
-    	Block tmp;
-		for (int x = minX; x <= maxX; x++) {
-    	for (int y = minY; y <= maxY; y++) {
-		for (int z = minZ; z <= maxZ; z++) {
-        	if (x == aX && y == aY && z == aZ)
-        		continue;
-        	
-        	dx = x-aX;
-        	dy = y-aY;
-        	dz = z-aZ;
-        	current = anchor.getRelative(dx,dy,dz);
-        	mat = current.getType();
-        	dat = current.getData();
-        	
-        	if (mat == Material.AIR)
-        		continue;
-        	
-        	if (current.getX() == minX || current.getRelative(BlockFace.WEST).getType() == Material.AIR) {
-        		xx = aX+dx*scale-offx;
-        		for (yy = aY+dy*scale-offy; yy <= aY+dy*scale+offY; yy++) {
-    			for (zz = aZ+dz*scale-offz; zz <= aZ+dz*scale+offZ; zz++) {
-    				tmp = world.getBlockAt(xx, yy, zz);
-    				tmp.setType(mat);
-    				tmp.setData(dat);
-            	}
-            	}
-        	}
-        	if (current.getX() == maxX || current.getRelative(BlockFace.EAST).getType() == Material.AIR) {
-        		xx = aX+dx*scale+offX;
-        		for (yy = aY+dy*scale-offy; yy <= aY+dy*scale+offY; yy++) {
-    			for (zz = aZ+dz*scale-offz; zz <= aZ+dz*scale+offZ; zz++) {
-    				tmp = world.getBlockAt(xx, yy, zz);
-    				tmp.setType(mat);
-    				tmp.setData(dat);
-            	}
-            	}
-        	}
-        	
-        	if (current.getY() == minY || current.getRelative(BlockFace.DOWN).getType() == Material.AIR) {
-        		yy = aY+dy*scale-offy;
-        		for (xx = aX+dx*scale-offx; xx <= aX+dx*scale+offX; xx++) {
-    			for (zz = aZ+dz*scale-offz; zz <= aZ+dz*scale+offZ; zz++) {
-    				tmp = world.getBlockAt(xx, yy, zz);
-    				tmp.setType(mat);
-    				tmp.setData(dat);
-            	}
-            	}
-        	}
-        	if (current.getY() == maxY || current.getRelative(BlockFace.UP).getType() == Material.AIR) {
-        		yy = aY+dy*scale+offY;
-        		for (xx = aX+dx*scale-offx; xx <= aX+dx*scale+offX; xx++) {
-    			for (zz = aZ+dz*scale-offz; zz <= aZ+dz*scale+offZ; zz++) {
-    				tmp = world.getBlockAt(xx, yy, zz);
-    				tmp.setType(mat);
-    				tmp.setData(dat);
-            	}
-            	}
-        	}
-        	
-        	if (current.getZ() == minZ || current.getRelative(BlockFace.NORTH).getType() == Material.AIR) {
-        		zz = aZ+dz*scale-offz;
-        		for (xx = aX+dx*scale-offx; xx <= aX+dx*scale+offX; xx++) {
-    			for (yy = aY+dy*scale-offy; yy <= aY+dy*scale+offY; yy++) {
-    				tmp = world.getBlockAt(xx, yy, zz);
-    				tmp.setType(mat);
-    				tmp.setData(dat);
-            	}
-            	}
-        	}
-        	if (current.getZ() == maxZ || current.getRelative(BlockFace.SOUTH).getType() == Material.AIR) {
-        		zz = aZ+dz*scale+offZ;
-        		for (xx = aX+dx*scale-offx; xx <= aX+dx*scale+offX; xx++) {
-    			for (yy = aY+dy*scale-offy; yy <= aY+dy*scale+offY; yy++) {
-    				tmp = world.getBlockAt(xx, yy, zz);
-    				tmp.setType(mat);
-    				tmp.setData(dat);
-            	}
-            	}
-        	}
-		}
-    	}
-		}
-        
-        
-		anchor.setType(Material.BEDROCK);
-	}
+	
 
 	//method abbr.
 	void say(String s) {

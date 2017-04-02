@@ -73,8 +73,8 @@ public class LineConnectEffect extends Effect{
 			location = loc1;
 			
 			type = EffectType.REPEATING;
-			iterations = 300;
-			period = 1;
+			iterations = 100;
+			period = 3;
 			counter = 2;
 			speed = 2;
 			
@@ -111,10 +111,17 @@ public class LineConnectEffect extends Effect{
 
 		@Override
 		public void onRun() {	
+			/*
 			loc = location.clone().add(0.5,0.5,0.5);
 			for (int i = 0; i < times; i++) {
 				reddust.display(null, loc, Color.fromRGB(red.get(i), green.get(i), blue.get(i)), 32, 0f, 0f, 0f, 0, 1);
 				loc = loc.clone().add(xDist, yDist, zDist);
+			}
+			*/
+			loc = location.clone().add(0.5,0.5,0.5);
+			for (int i = 0; i < times; i++) {
+				reddust.display(null, loc, Color.fromRGB(red.get(i), green.get(i), blue.get(i)), 32, 0f, 0f, 0f, 0, 1);
+				loc.add(xDist, yDist, zDist);
 			}
 		}
 	}

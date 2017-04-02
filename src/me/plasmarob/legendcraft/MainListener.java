@@ -6,16 +6,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.legendcraft.blocks.ChestBlock;
 import me.plasmarob.legendcraft.blocks.Door;
+import me.plasmarob.legendcraft.blocks.KeyholeRenderer;
 import me.plasmarob.legendcraft.item.Bomb;
 import me.plasmarob.legendcraft.item.Boomerang;
 import me.plasmarob.legendcraft.item.FireRodBlast;
 import me.plasmarob.legendcraft.item.GustJar;
 import me.plasmarob.legendcraft.item.Hookshot;
 import me.plasmarob.legendcraft.item.IceRodBlast;
+import me.plasmarob.legendcraft.util.Tools;
 import net.minecraft.server.v1_9_R1.PacketPlayOutChat;
 import net.minecraft.server.v1_9_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_9_R1.PacketPlayOutNamedSoundEffect;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -25,11 +28,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.FishHook;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -43,7 +49,10 @@ import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 
 /**
  * Player Listener class
@@ -57,8 +66,8 @@ import org.bukkit.inventory.ItemStack;
 public class MainListener implements Listener {
 	
 	public LegendCraft plugin;
-	public MainListener(LegendCraft plugin) {
-		this.plugin = plugin;		
+	public MainListener() {
+		//this.plugin = plugin;		
 	}
 	
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -217,9 +226,15 @@ public class MainListener implements Listener {
 		}
 	}
 	
+	//TODO: rewrite all of these so that they are only one pair of action tests.
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		
+		//unless we use left hand, do nothing. that code would go here
+		if (event.getHand().equals(EquipmentSlot.OFF_HAND))
+			return;
+		
 		
 		Player p = event.getPlayer();
 		List<String> strings = LegendCraft.mainConfig.getStringList("worlds");
@@ -231,7 +246,7 @@ public class MainListener implements Listener {
 				event.getAction() == Action.RIGHT_CLICK_BLOCK))
 		{
 			new Boomerang(p);
-			p.getInventory().setItemInMainHand(null);
+			p.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 		} 
 		
 		// Bomb
@@ -243,7 +258,7 @@ public class MainListener implements Listener {
 				new Bomb(p);
 				int amount = p.getInventory().getItemInMainHand().getAmount();
 				if (amount == 1)
-					p.getInventory().setItemInMainHand(null);
+					p.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 				
 				else if (amount > 1)
 					p.getInventory().getItemInMainHand().setAmount(amount - 1);
@@ -311,8 +326,52 @@ public class MainListener implements Listener {
 		}
 		*/
 		
+		/*
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK && p.getGameMode() == GameMode.SURVIVAL) {
+			
+			//TODO: make a keyhole map view
+			ItemStack mapStack = new ItemStack(Material.MAP);
+			mapStack.setDurability((short)16);
+			
+			MapView mapView = Bukkit.getMap(mapStack.getDurability());
+			
+			Tools.say(mapView);
+			
+			//mapStack.getData().get
+			
+			//MapView mapView = new MapView();
+					
+			//MapRenderer renderer = mapView.getRenderers().get(0);
+			//remove any renderers
+			//for (MapRenderer mapRenderer : mapView.getRenderers()) {
+			//	mapView.removeRenderer(mapRenderer);
+	       // }
+			
+			
+			//mapView.addRenderer(new KeyholeRenderer());
+			
+			
+			//mapView.addRenderer(new MapRenderer(
+					//TODO make a custom map renderer
+			//		));
+			
+			
+			try {
+				ItemFrame frame = (ItemFrame) p.getWorld().spawn(
+						event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),
+						ItemFrame.class);
+				frame.setItem(mapStack);
+				frame.setFacingDirection(event.getBlockFace());
+			} catch (IllegalArgumentException iae) {
+				// do nothing, you just can't place an item frame here.
+				//(top or bottom)
+			}
+		}
+		*/
+		
+		
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			if (!p.isSneaking()) {
+			if (!p.isSneaking() && (p.getInventory().getItemInMainHand().getType() == Material.AIR || p.getInventory().getItemInMainHand().getType() == null) ) {
 				if (Dungeon.selectedDungeons.containsKey(p)) {
 					String dungeonStr = Dungeon.selectedDungeons.get(p);
 					Dungeon d = Dungeon.dungeons.get(dungeonStr);
@@ -326,38 +385,18 @@ public class MainListener implements Listener {
 		}
 		
 		
+		
 		//TODO: Unlock door with a key
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			//p.sendMessage("Right!");
-			ItemStack itemHeld = p.getInventory().getItemInMainHand();
-			Material heldItem = p.getInventory().getItemInMainHand().getType();
-			
-			byte heldData = p.getInventory().getItemInMainHand().getData().getData();
 			Block block = event.getClickedBlock();
-			
-			for (String s : Dungeon.dungeons.keySet())
-			{
-				if (Dungeon.dungeons.get(s).isEnabled())
-				{
+			for (String s : Dungeon.dungeons.keySet()) {
+				if (Dungeon.dungeons.get(s).isEnabled()) {
 					ConcurrentHashMap<String, Door> doors = Dungeon.dungeons.get(s).getDoors();
-					for (String dName : doors.keySet())
-					{
-						//p.sendMessage("is a door!");
-						Door d = doors.get(dName);
-						if (d.hasBlock(block) &&
-								d.isEnabled() && d.isOn())
-						{
-							//p.sendMessage("has block!");
-							if (d.getKeyMat() == heldItem &&
-									d.getKeyDat() == heldData)
-							{
-								d.trigger();
-								event.setCancelled(true);
-								if (itemHeld.getAmount() > 1)
-									itemHeld.setAmount(itemHeld.getAmount() - 1);
-								else
-									p.getInventory().setItemInMainHand(null);
-							}
+					Door d;
+					for (String dName : doors.keySet()) {
+						d = doors.get(dName);
+						if (d.hasBlock(block)) {
+							d.tryOpen(p, event.getBlockFace());
 							break;
 						}
 					}
@@ -366,6 +405,35 @@ public class MainListener implements Listener {
 		}
 		
 	}
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+		if (event.getRightClicked().getType().equals(EntityType.ITEM_FRAME)) {
+			//((ItemFrame)event.getRightClicked()).
+			ItemStack is = ((ItemFrame)event.getRightClicked()).getItem();
+			if (is.getType().equals(Material.INK_SACK) && is.getData().getData() == (byte)6) {
+				Material handItemType = event.getPlayer().getInventory().getItemInMainHand().getType();
+				if (handItemType.equals(Material.GOLD_NUGGET)) {
+					for (String s : Dungeon.dungeons.keySet()) {
+						if (Dungeon.dungeons.get(s).isEnabled()) {
+							ConcurrentHashMap<String, Door> doors = Dungeon.dungeons.get(s).getDoors();
+							Door d;
+							for (String dName : doors.keySet()) {
+								d = doors.get(dName);
+								if (d.hasFrame(is)) {
+									d.tryOpen(event.getPlayer(), ((ItemFrame)event.getRightClicked()).getFacing() );
+									return;
+								}
+							}
+						}
+					}
+				}
+				event.setCancelled(true);
+			}
+		}
+	}
+	
 	
 	@EventHandler
 	public void onPlayerItemPicked(PlayerPickupItemEvent event)

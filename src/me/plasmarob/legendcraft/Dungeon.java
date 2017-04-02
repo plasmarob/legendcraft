@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.plasmarob.legendcraft.blocks.AutoDoor;
+import me.plasmarob.legendcraft.blocks.Door;
 import me.plasmarob.legendcraft.blocks.ChestBlock;
 import me.plasmarob.legendcraft.blocks.Detector;
-import me.plasmarob.legendcraft.blocks.Door;
 import me.plasmarob.legendcraft.blocks.MobTemplate;
 import me.plasmarob.legendcraft.blocks.MusicBlock;
 import me.plasmarob.legendcraft.blocks.Receiver;
@@ -65,12 +64,11 @@ public class Dungeon {
 	private ConcurrentHashMap<String, StorageBlock> storages = new ConcurrentHashMap<String, StorageBlock>();
 	private ConcurrentHashMap<String, SpawnerBlock> spawners = new ConcurrentHashMap<String, SpawnerBlock>();
 	private ConcurrentHashMap<String, MusicBlock> musics = new ConcurrentHashMap<String, MusicBlock>();
-	private ConcurrentHashMap<String, Door> doors = new ConcurrentHashMap<String, Door>();
 	private ConcurrentHashMap<String, RedstoneDetector> rsDetectors = new ConcurrentHashMap<String, RedstoneDetector>();
 	private ConcurrentHashMap<String, TorchBlock> torchBlocks = new ConcurrentHashMap<String, TorchBlock>();
 	private ConcurrentHashMap<String, Timer> timerBlocks = new ConcurrentHashMap<String, Timer>();
 	private ConcurrentHashMap<String, ChestBlock> chestBlocks = new ConcurrentHashMap<String, ChestBlock>();
-	private ConcurrentHashMap<String, AutoDoor> autoDoors = new ConcurrentHashMap<String, AutoDoor>();
+	private ConcurrentHashMap<String, Door> autoDoors = new ConcurrentHashMap<String, Door>();
 	
 	private List<Player> players = new ArrayList<Player>();
 	
@@ -153,26 +151,6 @@ public class Dungeon {
 			}
 		}	
 		
-		//add doors
-		i = 0;
-		while (true) {
-			i++;
-			String name = config.getString("doors.d" + i + ".name");	// name
-			if (name == null)
-				break;
-			else {
-				File doorFile = new File(folder, name + ".yml");
-				FileConfiguration doorConfig = new YamlConfiguration();
-				try {
-					doorConfig.load(doorFile);
-				} catch (Exception e) {e.printStackTrace();}	
-				Door door = new Door(world, doorConfig, name);
-				door.setDefaultOnOff(config.getBoolean("doors.d" + i + ".default")); // default
-				door.setInverted(config.getBoolean("doors.d" + i + ".inverted")); // inverted
-				doors.put(name, door);
-			}
-		}	
-		
 		//add music
 		i = 0;
 		while (true) {
@@ -191,7 +169,6 @@ public class Dungeon {
 				musics.put(name, music);
 			}
 		}	
-		
 		
 		//add redstone detectors
 		i = 0;
@@ -255,6 +232,29 @@ public class Dungeon {
 				st.setDefaultOnOff(config.getBoolean("storages.s" + i + ".default"));
 				st.setInverted(config.getBoolean("storages.s" + i + ".inverted"));
 				storages.put(name, st);
+			}
+		}	
+		
+		//add doors
+		i = 0;
+		while (true)
+		{
+			i++;
+			String name = config.getString("doors.d" + i + ".name");
+
+			if (name == null)
+				break;
+			else {
+				File doorFile = new File(folder, name + ".yml");
+				FileConfiguration doorConfig = new YamlConfiguration();
+				try {
+					doorConfig.load(doorFile);
+				} catch (Exception e) {e.printStackTrace();}	
+				
+				Door door = new Door(world, doorConfig, name);
+				door.setDefaultOnOff(config.getBoolean("doors.d" + i + ".default"));
+				door.setInverted(config.getBoolean("doors.d" + i + ".inverted"));
+				autoDoors.put(name, door);
 			}
 		}	
 		
@@ -464,9 +464,9 @@ public class Dungeon {
 	//universal careful file saver for setConfig
 	public boolean saveObject(File folder, String name, Receiver obj) {
 		
-		if (!(obj instanceof Door) && 
-			!(obj instanceof SpawnerBlock) &&
-			!(obj instanceof StorageBlock)) 
+		if (!(obj instanceof SpawnerBlock) &&
+			!(obj instanceof StorageBlock) &&
+		    !(obj instanceof Door)) 
 			return false;
 		
 		// Do a trial run
@@ -475,13 +475,13 @@ public class Dungeon {
 			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + "-temp.yml"), objFile);
 			FileConfiguration objConfig = new YamlConfiguration();
 			
-			if (obj instanceof Door)
-				((Door)obj).setConfig(objConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
 			if (obj instanceof SpawnerBlock)
 				((SpawnerBlock)obj).setConfig(objConfig); // file w/ {mainBlock, min, max, mobList name&count}
 			if (obj instanceof StorageBlock)
 				((StorageBlock)obj).setConfig(objConfig);
-				objConfig.save(objFile);
+			if (obj instanceof Door)
+				((Door)obj).setConfig(objConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
+			objConfig.save(objFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 			objFile.delete();
@@ -498,13 +498,13 @@ public class Dungeon {
 			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + ".yml"), objFile);
 			FileConfiguration objConfig = new YamlConfiguration();
 			
-			if (obj instanceof Door)
-				((Door)obj).setConfig(objConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
 			if (obj instanceof SpawnerBlock)
 				((SpawnerBlock)obj).setConfig(objConfig); // file w/ {mainBlock, min, max, mobList name&count}
 			if (obj instanceof StorageBlock)
 				((StorageBlock)obj).setConfig(objConfig);
-				objConfig.save(objFile);
+			if (obj instanceof Door)
+				((Door)obj).setConfig(objConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
+			objConfig.save(objFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -576,19 +576,7 @@ public class Dungeon {
 			
 			i++;
 		}
-		
-		i = 1;
-		for (String name : doors.keySet())
-		{
-			Door door = doors.get(name);
-			config.set("doors.d" + i + ".name", name);	// name
-			config.set("doors.d" + i + ".default", door.isDefaultOnOff());	// default			
-			config.set("doors.d" + i + ".inverted", door.isInverted()); // inverted
-			
-			saveObject(folder, name, door);
-			i++;
-		}
-		
+				
 		i = 1;
 		for (String name : musics.keySet())
 		{
@@ -659,8 +647,17 @@ public class Dungeon {
 			config.set("storages.s" + i + ".name", name);	// name
 			config.set("storages.s" + i + ".default", sb.isDefaultOnOff());	// default			
 			config.set("storages.s" + i + ".inverted", sb.isInverted()); // inverted
-		
 			saveObject(folder, name, sb);
+			i++;
+		}
+		
+		i = 1;
+		for (String name : autoDoors.keySet()) {
+			Door dr = autoDoors.get(name);
+			config.set("doors.d" + i + ".name", name);	// name
+			config.set("doors.d" + i + ".default", dr.isDefaultOnOff());	// default			
+			config.set("doors.d" + i + ".inverted", dr.isInverted()); // inverted
+			saveObject(folder, name, dr);
 			i++;
 		}
 		
@@ -762,8 +759,8 @@ public class Dungeon {
 		for (String s : spawners.keySet()) {
 			spawners.get(s).setEnabled(bool);
 		}
-		for (String s : doors.keySet()) {
-			doors.get(s).setEnabled(bool);
+		for (String s : autoDoors.keySet()) {
+			autoDoors.get(s).setEnabled(bool);
 		}
 		for (String s : musics.keySet()) {
 			musics.get(s).setEnabled(bool);
@@ -1034,12 +1031,16 @@ public class Dungeon {
 	
 	
 	
-	
+	// AUTO DOOR
 	public boolean tryAddDoor(Player player, String name)
 	{
 		if (nameUsed(name)) {
-			player.sendMessage(ChatColor.RED + "A dungeon block with this name already exists.");
-			return false;
+			String newname = Tools.incrementEndInt(name);
+			while (nameUsed(newname)) // don't accidentally overwrite existing names
+				newname = Tools.incrementEndInt(newname);
+			//player.sendMessage(ChatColor.RED + "A dungeon block with this name already exists.");
+			autoDoors.put(newname, new Door(player, autoDoors.get(name), newname));
+			return true;
 		}
 		
 		Selection sel = LegendCraft.worldEditPlugin.getSelection(player);
@@ -1057,7 +1058,7 @@ public class Dungeon {
 				player.sendMessage(ChatColor.RED + "Selection is not within dungeon boundaries.");
 				return false;
 			} else {
-				doors.put(name, new Door(player, name));
+				autoDoors.put(name, new Door(player, name));
 				return true;
 			}
 	    }
@@ -1179,7 +1180,7 @@ public class Dungeon {
 				storages.containsKey(name) || 
 				spawners.containsKey(name) ||
 				musics.containsKey(name) ||
-				doors.containsKey(name) ||
+				autoDoors.containsKey(name) ||
 				rsDetectors.containsKey(name) ||
 				timerBlocks.containsKey(name) ||
 				torchBlocks.containsKey(name)
@@ -1211,8 +1212,8 @@ public class Dungeon {
 			return storages.get(r);		
 		else if (musics.containsKey(r))
 			return musics.get(r);		
-		else if (doors.containsKey(r))
-			return doors.get(r);	
+		else if (autoDoors.containsKey(r))
+			return autoDoors.get(r);	
 		else if (timerBlocks.containsKey(r))
 			return timerBlocks.get(r);
 		else if (torchBlocks.containsKey(r))
@@ -1235,7 +1236,7 @@ public class Dungeon {
 		return (detectors.containsKey(s) ||
 				storages.containsKey(s) ||
 				musics.containsKey(s) ||
-				doors.containsKey(s) ||
+				autoDoors.containsKey(s) ||
 				spawners.containsKey(s) ||
 				chestBlocks.containsKey(s) ||
 				torchBlocks.containsKey(s));
@@ -1318,8 +1319,8 @@ public class Dungeon {
 			StorageBlock st = storages.get(name);
 			st.show(player);
 			showLinksFrom(player, st);
-		} else if (doors.containsKey(name)) {
-			Door door = doors.get(name);
+		} else if (autoDoors.containsKey(name)) {
+			Door door = autoDoors.get(name);
 			door.show(player);
 			showLinksFrom(player, door);
 		} else if (torchBlocks.containsKey(name)) {
@@ -1340,6 +1341,15 @@ public class Dungeon {
 			showLinksFrom(player, chest);
 		}
 	}
+	
+	public void show(Player player) {
+		player.sendMessage(ChatColor.LIGHT_PURPLE + "Min: " + min.getBlockX() + " " + min.getBlockY() + " " + min.getBlockZ());
+		player.sendMessage(ChatColor.LIGHT_PURPLE + "Max: " + max.getBlockX() + " " + max.getBlockY() + " " + max.getBlockZ());
+		listBlocks(player);
+	}
+	
+	
+	
 
 	public void showLinksFrom(Player player, Receiver rec)
 	{
@@ -1482,8 +1492,8 @@ public class Dungeon {
 		} else if (musics.containsKey(name)) {
 			musics.remove(name);
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "Music Block " + name + " and its links deleted.");
-		} else if (doors.containsKey(name)) {
-			doors.remove(name);
+		} else if (autoDoors.containsKey(name)) {
+			autoDoors.remove(name);
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "Door " + name + " and its links deleted.");
 			if (file != null && file.exists()) {
 				file.delete();
@@ -1493,7 +1503,7 @@ public class Dungeon {
 		
 	}
 
-	public void listBlocks(Player player) {
+	private void listBlocks(Player player) {
 		if (detectors.size() > 0) {
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "Detectors:");
 			String names = "";
@@ -1534,10 +1544,10 @@ public class Dungeon {
 			}
 			player.sendMessage("  " + names);
 		}
-		if (doors.size() > 0) {
+		if (autoDoors.size() > 0) {
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "Doors:");
 			String names = "";
-			for (String name : doors.keySet()) {
+			for (String name : autoDoors.keySet()) {
 				names += name + " ";
 			}
 			player.sendMessage("  " + names);
@@ -1569,7 +1579,7 @@ public class Dungeon {
 	}
 
 	public ConcurrentHashMap<String, Door> getDoors() {
-		 return doors;
+		 return autoDoors;
 	}
 	
 	
@@ -1758,8 +1768,8 @@ public class Dungeon {
 		{
 			if (detectors.containsKey(name))
 				detectors.get(name).edit(player, key, value);
-			else if (doors.containsKey(name))
-				doors.get(name).edit(player, key, value);
+			else if (autoDoors.containsKey(name))
+				autoDoors.get(name).edit(player, key, value);
 			else if (musics.containsKey(name))
 				musics.get(name).edit(player, key, value);
 			else if (rsDetectors.containsKey(name))
@@ -1801,8 +1811,8 @@ public class Dungeon {
 			if (spawners.get(s).hasBlock(b))
 				return s;
 		}
-		for (String s : doors.keySet()) {
-			if (doors.get(s).hasBlock(b))
+		for (String s : autoDoors.keySet()) {
+			if (autoDoors.get(s).hasBlock(b))
 				return s;
 		}
 		for (String s : musics.keySet()) {

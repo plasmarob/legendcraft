@@ -30,7 +30,7 @@ public class LegendCraft extends JavaPlugin {
 	// Primary objects 
 	public static LegendCraft plugin;
 	public static ThreadManager manager;
-	public final MainListener listener = new MainListener(this); // Player Listener 
+	public final MainListener listener = new MainListener(); // Player Listener 
 	// Effects Library
     private static EffectManager effectManager; 
 	// YAML file config objects
@@ -93,7 +93,7 @@ public class LegendCraft extends JavaPlugin {
 		// Bring in WorldEdit
 		worldEditPlugin = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
 	    if(worldEditPlugin == null){
-	        Bukkit.getConsoleSender().sendMessage("Error starting LegendCraft! WorldEdit is null."); 
+	        Bukkit.getConsoleSender().sendMessage("Error starting LegendCraft! WorldEdit isn't found."); 
 	        Bukkit.getConsoleSender().sendMessage("Do not attempt to use LegendCraft in this state.");  
 	    }
 	    //change once set in config file
@@ -102,6 +102,7 @@ public class LegendCraft extends JavaPlugin {
 	    //----------------------
 	  	// Send off valid commands
 	    this.getCommand("lca").setExecutor(new LegendCraftCommandExecutor(this));
+	    this.getCommand("lce").setExecutor(new LegendCraftCommandExecutor(this));
 		this.getCommand("lc").setExecutor(new LegendCraftCommandExecutor(this));
 		this.getCommand("legendcraft").setExecutor(new LegendCraftCommandExecutor(this));
 	

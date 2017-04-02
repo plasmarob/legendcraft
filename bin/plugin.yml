@@ -1,5 +1,5 @@
 name: LegendCraft
-version: 0.11.0
+version: 0.11.2
 depend: [WorldEdit]
 softdepend: [Multiverse-Core]
 main: me.plasmarob.legendcraft.LegendCraft
@@ -9,5 +9,7 @@ commands:
     description: main command. Type /lc help for more.
   lca:
     description: /lc add. Type /lc help for more.
+  lce:
+    description: /lc edit. Type /lc help for more.
   legendCraft:
     description: main command. Type /lc help for more.

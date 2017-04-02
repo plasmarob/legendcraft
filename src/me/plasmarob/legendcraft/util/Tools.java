@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.plasmarob.legendcraft.Dungeon;
 import me.plasmarob.legendcraft.LegendCraft;
@@ -193,6 +195,26 @@ public class Tools {
 			faces.add(BlockFace.WEST);
 		}
 		return faces;
+	}
+	
+	public static BlockFace playerCompassFace(Player p) {
+		
+		float angle = p.getEyeLocation().getYaw();
+		if (angle > 180) {
+			angle -= 360;
+		} else if (angle < -180) {
+			angle += 360;
+		}
+		
+		say(angle);
+		if (angle >= -45 && angle < 45)
+			return BlockFace.SOUTH;
+		else if (angle < -135 || angle >= 135)
+			return BlockFace.NORTH;
+		else if (angle >= 45 && angle < 135)
+			return BlockFace.WEST;
+		else //if (angle < -45 && angle >= -135)
+			return BlockFace.EAST;
 	}
 	
 	private static List<Material> clearblocks;
@@ -391,6 +413,19 @@ public class Tools {
 				new Location(world, rec.getX(), rec.getY(), rec.getZ()), 
 				Color.fromRGB(0, 255, 0), Color.fromRGB(0, 0, 255)).start();
 	}
+	public static void showLine(World world, Block send, Block rec) {
+		new LineConnectEffect(LegendCraft.getEffectManager(), 
+				new Location(world, send.getX(), send.getY(), send.getZ()), 
+				new Location(world, rec.getX(), rec.getY(), rec.getZ()), 
+				Color.fromRGB(0, 255, 0), Color.fromRGB(0, 0, 255)).start();
+	}
+	public static void showLine(World world, Block send, Block rec, int r, int g, int b) {
+		new LineConnectEffect(LegendCraft.getEffectManager(), 
+				new Location(world, send.getX(), send.getY(), send.getZ()), 
+				new Location(world, rec.getX(), rec.getY(), rec.getZ()), 
+				Color.fromRGB(r, g, b), Color.fromRGB(r, g, b)).start();
+	}
+	
 	
 	public static void saveObject(Object o, File f) {
 		try {
@@ -416,4 +451,159 @@ public class Tools {
 			return null;
 		}
 	}
+	
+	
+	final static Pattern lastIntPattern = Pattern.compile("(.+_)([0-9]+)$");
+	public static String incrementEndInt(String input) {
+		Matcher matcher = lastIntPattern.matcher(input);
+		if (matcher.find()) {
+		    String someNumberStr = matcher.group(2);
+		    int lastNumberInt = Integer.parseInt(someNumberStr);
+		    return matcher.group(1) + (lastNumberInt+1);
+		} else
+			return input + "_" + 1;
+	}
+	
+	
+	
+	@SuppressWarnings("deprecation")
+	public static void scale(com.sk89q.worldedit.Vector min, com.sk89q.worldedit.Vector max, final Block anchor, final int scale) {
+		int offx = (scale-1)/2;
+		int offy = (scale-1)/2;
+		int offz = (scale-1)/2;
+		int offX = (scale-1)/2;
+		int offY = (scale-1)/2;
+		int offZ = (scale-1)/2;
+		
+		if (anchor.getX() == min.getX()) {
+			offx = 0;
+			offX = scale-1;
+		} else if (anchor.getX() == max.getX()) {
+			offx = scale-1;
+			offX = 0;
+		}
+		if (anchor.getY() == min.getY()) {
+			offy = 0;
+			offY = scale-1;
+		} else if (anchor.getY() == max.getY()) {
+			offy = scale-1;
+			offY = 0;
+		}
+		if (anchor.getZ() == min.getZ()) {
+			offz = 0;
+			offZ = scale-1;
+		} else if (anchor.getZ() == max.getZ()) {
+			offz = scale-1;
+			offZ = 0;
+		}
+		
+		anchor.setType(Material.AIR);	// don't want this getting in the way
+		
+		
+		int minX = (int)min.getX();
+		int minY = (int)min.getY();
+		int minZ = (int)min.getZ();
+		int maxX = (int)max.getX();
+		int maxY = (int)max.getY();
+		int maxZ = (int)max.getZ();
+		
+		//initialize all of it outside the loops for performance
+		Block current;
+		World world = anchor.getWorld();
+		int aX = anchor.getX();
+		int aY = anchor.getY();
+		int aZ = anchor.getZ();
+		int dx = 0;
+    	int dy = 0;
+    	int dz = 0;
+    	int xx,yy,zz;
+    	Material mat;
+    	byte dat;
+    	Block tmp;
+		for (int x = minX; x <= maxX; x++) {
+    	for (int y = minY; y <= maxY; y++) {
+		for (int z = minZ; z <= maxZ; z++) {
+        	if (x == aX && y == aY && z == aZ)
+        		continue;
+        	
+        	dx = x-aX;
+        	dy = y-aY;
+        	dz = z-aZ;
+        	current = anchor.getRelative(dx,dy,dz);
+        	mat = current.getType();
+        	dat = current.getData();
+        	
+        	if (mat == Material.AIR)
+        		continue;
+        	
+        	if (current.getX() == minX || current.getRelative(BlockFace.WEST).getType() == Material.AIR) {
+        		xx = aX+dx*scale-offx;
+        		for (yy = aY+dy*scale-offy; yy <= aY+dy*scale+offY; yy++) {
+    			for (zz = aZ+dz*scale-offz; zz <= aZ+dz*scale+offZ; zz++) {
+    				tmp = world.getBlockAt(xx, yy, zz);
+    				tmp.setType(mat);
+    				tmp.setData(dat);
+            	}
+            	}
+        	}
+        	if (current.getX() == maxX || current.getRelative(BlockFace.EAST).getType() == Material.AIR) {
+        		xx = aX+dx*scale+offX;
+        		for (yy = aY+dy*scale-offy; yy <= aY+dy*scale+offY; yy++) {
+    			for (zz = aZ+dz*scale-offz; zz <= aZ+dz*scale+offZ; zz++) {
+    				tmp = world.getBlockAt(xx, yy, zz);
+    				tmp.setType(mat);
+    				tmp.setData(dat);
+            	}
+            	}
+        	}
+        	
+        	if (current.getY() == minY || current.getRelative(BlockFace.DOWN).getType() == Material.AIR) {
+        		yy = aY+dy*scale-offy;
+        		for (xx = aX+dx*scale-offx; xx <= aX+dx*scale+offX; xx++) {
+    			for (zz = aZ+dz*scale-offz; zz <= aZ+dz*scale+offZ; zz++) {
+    				tmp = world.getBlockAt(xx, yy, zz);
+    				tmp.setType(mat);
+    				tmp.setData(dat);
+            	}
+            	}
+        	}
+        	if (current.getY() == maxY || current.getRelative(BlockFace.UP).getType() == Material.AIR) {
+        		yy = aY+dy*scale+offY;
+        		for (xx = aX+dx*scale-offx; xx <= aX+dx*scale+offX; xx++) {
+    			for (zz = aZ+dz*scale-offz; zz <= aZ+dz*scale+offZ; zz++) {
+    				tmp = world.getBlockAt(xx, yy, zz);
+    				tmp.setType(mat);
+    				tmp.setData(dat);
+            	}
+            	}
+        	}
+        	
+        	if (current.getZ() == minZ || current.getRelative(BlockFace.NORTH).getType() == Material.AIR) {
+        		zz = aZ+dz*scale-offz;
+        		for (xx = aX+dx*scale-offx; xx <= aX+dx*scale+offX; xx++) {
+    			for (yy = aY+dy*scale-offy; yy <= aY+dy*scale+offY; yy++) {
+    				tmp = world.getBlockAt(xx, yy, zz);
+    				tmp.setType(mat);
+    				tmp.setData(dat);
+            	}
+            	}
+        	}
+        	if (current.getZ() == maxZ || current.getRelative(BlockFace.SOUTH).getType() == Material.AIR) {
+        		zz = aZ+dz*scale+offZ;
+        		for (xx = aX+dx*scale-offx; xx <= aX+dx*scale+offX; xx++) {
+    			for (yy = aY+dy*scale-offy; yy <= aY+dy*scale+offY; yy++) {
+    				tmp = world.getBlockAt(xx, yy, zz);
+    				tmp.setType(mat);
+    				tmp.setData(dat);
+            	}
+            	}
+        	}
+		}
+    	}
+		}
+        
+        
+		anchor.setType(Material.BEDROCK);
+	}
+	
 }
