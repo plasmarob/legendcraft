@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -17,8 +17,8 @@ import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import me.plasmarob.legendcraft.LegendCraft;
-import net.minecraft.server.v1_9_R1.EntityLiving;
-import net.minecraft.server.v1_9_R1.NBTTagCompound;
+import net.minecraft.server.v1_12_R1.EntityLiving;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
 
 
 public class IceRodBlast {
@@ -78,7 +78,7 @@ public class IceRodBlast {
 			if (!victims.containsKey(e)) {
 				victims.put((LivingEntity)e, new FreezeBlock((LivingEntity)e));
 				//stun
-				net.minecraft.server.v1_9_R1.Entity nmsEntity = ((CraftEntity) e).getHandle();
+				net.minecraft.server.v1_12_R1.Entity nmsEntity = ((CraftEntity) e).getHandle();
 		        NBTTagCompound tag = new NBTTagCompound();
 		        nmsEntity.c(tag);
 		        tag.setBoolean("NoAI", true);
@@ -124,7 +124,7 @@ public class IceRodBlast {
 				victims.remove(e);
 				
 				//stun
-				net.minecraft.server.v1_9_R1.Entity nmsEntity = ((CraftEntity) e).getHandle();
+				net.minecraft.server.v1_12_R1.Entity nmsEntity = ((CraftEntity) e).getHandle();
 		        NBTTagCompound tag = new NBTTagCompound();
 		        nmsEntity.c(tag);
 		        tag.setBoolean("NoAI", false);

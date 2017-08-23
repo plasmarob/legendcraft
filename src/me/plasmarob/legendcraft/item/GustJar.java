@@ -71,7 +71,6 @@ public class GustJar {
 			instances.get(p).increment();
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static void remove(Player p) {
 		if (instances.containsKey(p))
 		{

@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
@@ -856,7 +857,8 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			if (health < 2 || health > 100)
 				say(red + "Health must be between 1 and 50.");
 			else {
-				player.setMaxHealth(health);
+				//player.setMaxHealth(health);
+				player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
 				player.setHealth(health);
 			}
 		}

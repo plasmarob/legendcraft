@@ -14,9 +14,9 @@ import me.plasmarob.legendcraft.item.GustJar;
 import me.plasmarob.legendcraft.item.Hookshot;
 import me.plasmarob.legendcraft.item.IceRodBlast;
 import me.plasmarob.legendcraft.util.Tools;
-import net.minecraft.server.v1_9_R1.PacketPlayOutChat;
-import net.minecraft.server.v1_9_R1.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_9_R1.PacketPlayOutNamedSoundEffect;
+import net.minecraft.server.v1_12_R1.PacketPlayOutChat;
+import net.minecraft.server.v1_12_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_12_R1.PacketPlayOutNamedSoundEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,7 +26,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
@@ -434,6 +434,7 @@ public class MainListener implements Listener {
 	}
 	
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerItemPicked(PlayerPickupItemEvent event)
 	{

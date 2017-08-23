@@ -7,13 +7,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.legendcraft.LegendCraft;
 import me.plasmarob.legendcraft.util.Tools;
-import net.minecraft.server.v1_9_R1.EntityLiving;
-import net.minecraft.server.v1_9_R1.NBTTagCompound;
+import net.minecraft.server.v1_12_R1.EntityLiving;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -274,7 +274,7 @@ public class Boomerang {
 	static void noAI(Entity bukkitEntity, int ai) {
 	    
 		//New code
-		net.minecraft.server.v1_9_R1.Entity nmsEntity = ((CraftEntity) bukkitEntity).getHandle();
+		net.minecraft.server.v1_12_R1.Entity nmsEntity = ((CraftEntity) bukkitEntity).getHandle();
 
         NBTTagCompound tag = new NBTTagCompound();
         
