@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.legendcraft.blocks.MobTemplate;
 import me.plasmarob.legendcraft.blocks.Tune;
+import me.plasmarob.legendcraft.database.Database;
+import me.plasmarob.legendcraft.database.DatabaseMethods;
 import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.Bukkit;
@@ -65,7 +68,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		
-		//alias to /lca to /lc add 
+		//alias /lca for /lc add 
 		if (commandLabel.equals("lca")) {
 			String[] argsOld = args.clone();
 			args = new String[argsOld.length+1];
@@ -75,7 +78,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			}
 		}
 		
-		//alias to /lca to /lc add 
+		//alias /lce to /lc edit 
 		if (commandLabel.equals("lce")) {
 			String[] argsOld = args.clone();
 			args = new String[argsOld.length+1];
@@ -99,13 +102,16 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			return false;
 		}
 		
-		List<String> strings = LegendCraft.mainConfig.getStringList("worlds");
-		if (!strings.contains(player.getWorld().getName()))
+		//List<String> strings = LegendCraft.mainConfig.getStringList("worlds");
+		//if (!strings.contains(player.getWorld().getName()))
+		//Tools.say(DatabaseMethods.containsWorld(player.getWorld().getUID()));
+		//Tools.say(plugin.getDatabase().containsWorld(player.getWorld().getUID()));
+		if (!DatabaseMethods.containsWorld(player.getWorld().getUID()))
 		{
-			if ( !(last >= 0 && args[0].toLowerCase().equals("setworld")) )
+			if ( !(last >= 0 && (args[0].toLowerCase().equals("addworld") || args[0].toLowerCase().equals("removeworld"))))
 			{
 				say(red + "You cannot perform that command in this world.");
-				say(red + "try using '/lc setworld' first.");
+				say(red + "try using '/lc addworld' first.");
 				return false;
 			}
 		}
@@ -303,7 +309,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		 * - Creates and selects* a new blank dungeon from selection.
 		 * --- /lc create <dungeon>
 		 */
-		if(last >= 1 && args[0].toLowerCase().equals("create"))
+		if(last >= 1 && (args[0].toLowerCase().equals("create") || args[0].toLowerCase().equals("cd")))
 		{
 			if (!dungeons.containsKey(args[1])) {
 				Selection sel = LegendCraft.worldEditPlugin.getSelection(player);
@@ -749,12 +755,32 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		
 		
 		/**
-		 * Set World
-		 * - sets active world
-		 * --- /lc setworld
+		 * Add & Remove World
+		 * - sets active worlds
+		 * --- /lc addworld
+		 * --- /lc removeworld
 		 */
-		if(last >= 0 && args[0].toLowerCase().equals("setworld")) {
+		if(last >= 0 && args[0].toLowerCase().equals("addworld")) {
 			
+			String worldName;
+			UUID worldUUID;
+			World world;
+			if (last >= 1) {
+				if (Bukkit.getWorld(args[1]) != null) {
+					world = Bukkit.getWorld(args[1]);
+				} else {
+					say("world not found with this name.");
+					return false;
+				}
+			} else {
+				world = player.getWorld();
+			}	
+			
+			DatabaseMethods.addWorld(world.getUID(), world.getName());
+			say("plugin enabled in world " + world.getName() + ".");
+			return true;
+			
+			/*
 			List<String> wStrings = LegendCraft.mainConfig.getStringList("worlds");
 			String wname;
 			if (last >= 1) {
@@ -777,8 +803,27 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				LegendCraft.mainConfig.set("worlds", wStrings);
 				say("plugin enabled in world " + wname + ".");
 			}
+			*/
 		}
-
+		if(last >= 0 && args[0].toLowerCase().equals("removeworld")) {
+			String worldName;
+			UUID worldUUID;
+			World world;
+			if (last >= 1) {
+				if (Bukkit.getWorld(args[1]) != null) {
+					world = Bukkit.getWorld(args[1]);
+				} else {
+					say("world not found with this name.");
+					return false;
+				}
+			} else {
+				world = player.getWorld();
+			}	
+			
+			DatabaseMethods.removeWorld(world.getUID());
+			say("plugin disabled in world " + world.getName() + ".");
+			return true;
+		}
 		
 		/**
 		 * Show

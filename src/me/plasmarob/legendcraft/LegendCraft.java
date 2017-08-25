@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import me.plasmarob.legendcraft.blocks.MobTemplate;
+import me.plasmarob.legendcraft.database.Database;
+import me.plasmarob.legendcraft.database.DatabaseMethods;
+import me.plasmarob.legendcraft.database.SQLite;
 import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.Bukkit;
@@ -41,6 +44,11 @@ public class LegendCraft extends JavaPlugin {
 	// Globals (bare minimum)
 	Location spawn;
 	
+	private Database db;
+	public Database getDatabase() {
+		return db;
+	}
+	
 	/**
 	 * onEnable()
 	 * * Loads the Plugin
@@ -65,6 +73,12 @@ public class LegendCraft extends JavaPlugin {
 		EffectLib lib = EffectLib.instance();
 		effectManager = new EffectManager(lib);
 				
+		//------
+		// Database Setup
+		this.db = new SQLite(this);
+        this.db.load();
+        DatabaseMethods.getInstance(this);
+		
 		//----------------------
 		// Setup the YAML 
 		

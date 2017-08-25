@@ -57,6 +57,7 @@ public class Dungeon {
 	private boolean enabled = false;
 	
 	private World world;
+	private int world_id;
 	private Vector min;
 	private Vector max;
 	
@@ -731,9 +732,10 @@ public class Dungeon {
 		return world;
 	}
 	
-	public double[] getCorners()
+	public int[] getCorners()
 	{
-		double[] corners = {min.getX(),min.getY(),min.getZ(),max.getX(),max.getY(),max.getZ()};
+		int[] corners = {(int) min.getX(),(int) min.getY(),(int) min.getZ(),
+						(int) max.getX(),(int) max.getY(),(int) max.getZ()};
 		return corners;
 	}
 	
@@ -1650,9 +1652,9 @@ public class Dungeon {
 			 	
 			FileConfiguration dungeonConfig = new YamlConfiguration();
 			dungeonConfig.set("world", dungeon.getWorld().getName());
-			double[] corners = dungeon.getCorners();
-			List<Double> min = new ArrayList<Double>();
-			List<Double> max = new ArrayList<Double>();
+			int[] corners = dungeon.getCorners();
+			List<Integer> min = new ArrayList<Integer>();
+			List<Integer> max = new ArrayList<Integer>();
 			min.add(corners[0]);
 			min.add(corners[1]);
 			min.add(corners[2]);
@@ -1701,9 +1703,9 @@ public class Dungeon {
 			 	
 			FileConfiguration dungeonConfig = new YamlConfiguration();
 			dungeonConfig.set("world", getWorld().getName());
-			double[] corners = getCorners();
-			List<Double> min = new ArrayList<Double>();
-			List<Double> max = new ArrayList<Double>();
+			int[] corners = getCorners();
+			List<Integer> min = new ArrayList<Integer>();
+			List<Integer> max = new ArrayList<Integer>();
 			min.add(corners[0]);
 			min.add(corners[1]);
 			min.add(corners[2]);
@@ -1713,6 +1715,7 @@ public class Dungeon {
 			dungeonConfig.set("min", min);
 			dungeonConfig.set("max", max);
 			
+			//where it all happens
 			setConfig(currentFolder, dungeonConfig);
 		
 			dungeonConfig.save(dungeonFile);
