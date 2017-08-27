@@ -77,8 +77,15 @@ public class LegendCraft extends JavaPlugin {
 		// Database Setup
 		this.db = new SQLite(this);
         this.db.load();
-        DatabaseMethods.getInstance(this);
+        DatabaseMethods.getInstance(this);	// init method singleton
 		
+        //------
+      	// Database load
+        loadData();
+        
+        
+        
+        
 		//----------------------
 		// Setup the YAML 
 		
@@ -144,12 +151,17 @@ public class LegendCraft extends JavaPlugin {
 	    } catch (IOException e) {e.printStackTrace();}
 	}
 	
+	//Load data from DB
+	public void loadData() {
+		Dungeon.loadDungeons();
+	}
+	
 	// Load YAMLs from file
 	public void loadYamls() {
 		//MUST load before dungeons, so mobs are in memory for spawners
 		MobTemplate.loadMobs();
 		//Load Dungeons, its blocks, and their data
-		Dungeon.loadDungeons();
+		//*** Dungeon.loadDungeons();
 	    try {	
 	        mainConfig.load(mainConfigFile);
 	    } catch (Exception e) {e.printStackTrace();}

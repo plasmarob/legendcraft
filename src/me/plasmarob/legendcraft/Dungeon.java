@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.legendcraft.blocks.Door;
@@ -22,6 +23,7 @@ import me.plasmarob.legendcraft.blocks.StorageBlock;
 import me.plasmarob.legendcraft.blocks.Timer;
 import me.plasmarob.legendcraft.blocks.TorchBlock;
 import me.plasmarob.legendcraft.blocks.Tune;
+import me.plasmarob.legendcraft.database.DatabaseMethods;
 import me.plasmarob.legendcraft.util.Tools;
 
 import org.apache.commons.io.FileUtils;
@@ -57,7 +59,8 @@ public class Dungeon {
 	private boolean enabled = false;
 	
 	private World world;
-	private int world_id;
+	private String name;
+	private int dungeon_id;
 	private Vector min;
 	private Vector max;
 	
@@ -73,14 +76,33 @@ public class Dungeon {
 	
 	private List<Player> players = new ArrayList<Player>();
 	
-	public Dungeon(World world, Vector min, Vector max)
+	public Dungeon(String name, World world, Vector min, Vector max)
 	{
+		this.name = name;
 		this.world = world;
 		this.min = min;
 		this.max = max;
+		
+		int[] corners = getCorners();
+		this.dungeon_id = DatabaseMethods.insertDungeon(world, name, corners);
+		dungeons.put(name, this);
 	}
 	
+	public Dungeon(Map<String,Object> data) {
+		this.dungeon_id = (int) data.get("id");
+		this.name = (String) data.get("name");
+		this.min = Tools.weVectorFromString((String) data.get("min"));
+		this.max = Tools.weVectorFromString((String) data.get("max"));
+		this.world = Bukkit.getWorld(UUID.fromString((String) data.get("uuid")));
+		dungeons.put(name, this);
+		
+		List<Map<String, Object>> detectorList = DatabaseMethods.getBlocks("PLAYER_DETECTOR");
+		for (Map<String,Object> m : detectorList) {
+			detectors.put((String)m.get("name"), new Detector(m, this));
+		}
+	}
 	
+	@Deprecated
 	public Dungeon(File folder, FileConfiguration config)
 	{	
 		this.world = Bukkit.getWorld(config.getString("world"));
@@ -795,7 +817,7 @@ public class Dungeon {
 					player.sendMessage(ChatColor.RED + "This block is not within dungeon boundaries.");
 					return false;
 				} else {
-					detectors.put(name, new Detector(player, next, name));
+					detectors.put(name, new Detector(player, next, name, this));
 					player.sendMessage(ChatColor.LIGHT_PURPLE + "Detector " + name + " created!");
 					return true;
 				}
@@ -1589,6 +1611,15 @@ public class Dungeon {
 	// -----------------------
 	public static void loadDungeons()
 	{
+		List<Map<String, Object>> rows = DatabaseMethods.getDungeons();
+		for (Map<String,Object> m : rows) {
+			new Dungeon(m);
+		}
+	}
+	public static void loadDungeonsX()
+	{
+		
+		
 		try {
 	    	File[] listOfFiles = dungeonFolder.listFiles();
 	    	//Bukkit.getConsoleSender().sendMessage("dfLen: " + Integer.toString(listOfFiles.length)); 
@@ -1676,6 +1707,7 @@ public class Dungeon {
 	// Save single dungeon
 	public boolean saveDungeon(String name)
 	{
+		
 		File currentFolder = new File(dungeonFolder, name); 
 		if (!currentFolder.exists()) {
 			try{
@@ -1688,6 +1720,9 @@ public class Dungeon {
 		if (canSave)
 			tryDungeonSave(currentFolder, name);
 		
+		
+		
+		
 		return true;
 	}
 	
@@ -1695,8 +1730,10 @@ public class Dungeon {
 	public boolean tryDungeonSave(File currentFolder, String name) {
 		return tryDungeonSave(currentFolder, name, false);
 	}
+	
 	public boolean tryDungeonSave(File currentFolder, String name, boolean deleteFile)
 	{
+		
 		File dungeonFile = new File(currentFolder, name + ".yml");
 		try {
 			LegendCraft.plugin.copyYamlsToFile(LegendCraft.plugin.getResource(name + ".yml"), dungeonFile);
@@ -1726,6 +1763,7 @@ public class Dungeon {
 		}	
 		if (deleteFile)
 			dungeonFile.delete();
+		
 		return true;
 	}
 	
@@ -1842,6 +1880,16 @@ public class Dungeon {
 				dungeons.get(s).chestBlocks.get(c).check(b);
 			}
 		}		
+	}
+
+
+	public int getDungeonId() {
+		return dungeon_id;
+	}
+
+
+	public void setDungeonId(int dungeon_id) {
+		this.dungeon_id = dungeon_id;
 	}
 
 

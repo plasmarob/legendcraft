@@ -37,26 +37,40 @@ public class SQLite extends Database{
             ");";
             //"); CREATE UNIQUE INDEX IF NOT EXISTS world_uuid ON world(uuid);";
     
+    
+    public String SQLiteCreateBlockTypeTable = "CREATE TABLE IF NOT EXISTS blockType (" + 
+    		"`id` INTEGER PRIMARY KEY," +
+            "`name` varchar(255) NOT NULL" +
+            ");";
+    
+    public String SQLitePopulateBlockTypeTable = "REPLACE INTO blockType VALUES (10,'PLAYER_DETECTOR');" +
+    		"REPLACE INTO blockType VALUES (20,'STORAGE');" +
+    		"REPLACE INTO blockType VALUES (30,'TIMER');" +
+    		"REPLACE INTO blockType VALUES (40,'SPAWNER');" +
+    		"REPLACE INTO blockType VALUES (50,'TORCH');" +
+    		"REPLACE INTO blockType VALUES (60,'MUSIC');" +
+    		"REPLACE INTO blockType VALUES (70,'REDSTONE_DETECTOR');" +
+    		"REPLACE INTO blockType VALUES (80,'CHEST');" +
+    		"REPLACE INTO blockType VALUES (90,'DOOR');";
+            
+    
     public String SQLiteCreateBlockTable = "CREATE TABLE IF NOT EXISTS block (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`dungeon_id` INTEGER NOT NULL," +
     		"`type_id` INTEGER NOT NULL," +
             "`name` varchar(255) NOT NULL," +
             "`location` TEXT," +
-            "`default` INTEGER," +
-            "`inverted` INTEGER," +
+            "`default` TEXT," +
+            "`inverted` TEXT," +
             "`min` TEXT," +
             "`max` TEXT," +
             "`times` INTEGER," +
+            "`blocks` TEXT," +
             "FOREIGN KEY(dungeon_id) REFERENCES dungeon(id)," +
             "FOREIGN KEY(type_id) REFERENCES blockType(id)," +
-            "CONSTRAINT block_name_unique UNIQUE (name)" +
+            "UNIQUE (name, dungeon_id)" +
             ");";
     
-    public String SQLiteCreateBlockTypeTable = "CREATE TABLE IF NOT EXISTS blockType (" + 
-    		"`id` INTEGER PRIMARY KEY," +
-            "`name` varchar(255) NOT NULL," +
-            ");";
     //TODO: add Replace Into
     
     public String SQLiteCreateChestTable = "CREATE TABLE IF NOT EXISTS chest (" + 
@@ -203,6 +217,12 @@ public class SQLite extends Database{
             //s.executeUpdate(SQLiteCreateTokensTable);
             s.executeUpdate(SQLiteCreateWorldTable);
             s.executeUpdate(SQLiteCreateDungeonTable);
+            
+            s.executeUpdate(SQLiteCreateBlockTypeTable);
+            s.executeUpdate(SQLiteCreateBlockTable);
+            s.executeUpdate(SQLitePopulateBlockTypeTable);
+            
+            
             s.close();
         } catch (SQLException e) {
             e.printStackTrace();

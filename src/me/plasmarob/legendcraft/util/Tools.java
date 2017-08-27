@@ -606,4 +606,20 @@ public class Tools {
 		anchor.setType(Material.BEDROCK);
 	}
 	
+	public static String locationAsString(int x, int y, int z) {
+		return Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z);
+	}	
+	public static com.sk89q.worldedit.Vector weVectorFromString(String string) {
+		String[] xyz = string.split(",");
+		return new com.sk89q.worldedit.Vector(Integer.parseInt(xyz[0]),Integer.parseInt(xyz[1]),Integer.parseInt(xyz[2]));
+	}	
+	public static String[] xyzFromString(String string) {
+		String[] xyz = string.split(",");
+		return xyz;
+	}	
+	public static Block blockFromString(String string, World world) {
+		String[] xyz = xyzFromString(string);
+		return world.getBlockAt(Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]), Integer.parseInt(xyz[2]));
+	}
+	
 }

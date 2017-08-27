@@ -3,7 +3,11 @@ package me.plasmarob.legendcraft.database;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import org.bukkit.World;
+
 import me.plasmarob.legendcraft.LegendCraft;
+import me.plasmarob.legendcraft.util.Tools;
 
 public class DatabaseMethods {
 	private static DatabaseMethods instance = null;
@@ -67,19 +71,61 @@ public class DatabaseMethods {
         return false;
         */
 	}
-	public static void insertDungeon(int world_id, String name, int[] corners) {	
-		db.updateQuery("REPLACE INTO dungeon (id,world_id,name,min,max) " +
-					"VALUES(NULL,'"+ Integer.toString(world_id) + "','" + name + "'," +
-				locationAsString(corners[0],corners[1],corners[2]) + "," +
-				locationAsString(corners[3],corners[4],corners[5]) + ",);");
-		return;
+	public static int insertDungeon(World world, String name, int[] corners) {	
+		int id = db.insertQuery("INSERT INTO dungeon (id,world_id,name,min,max) " +
+						"VALUES(NULL,'"+ 
+						Integer.toString(getWorldId(world.getUID())) + "','" + 
+						name + "'," +
+						"'" + Tools.locationAsString(corners[0],corners[1],corners[2]) + "'," +
+						"'" + Tools.locationAsString(corners[3],corners[4],corners[5]) + "');");
+		return id;
+	}
+	public static List<Map<String, Object>> getDungeons() {	
+		List<Map<String, Object>> results = db.readQuery("SELECT d.*,w.uuid FROM dungeon AS d JOIN world AS w ON w.id=d.world_id ");
+		return results;
+	}
+	public static List<Map<String, Object>> getBlocks(String type_name) {	
+		List<Map<String, Object>> results = db.readQuery("SELECT b.*,bt.id FROM block AS b JOIN blockType AS bt ON bt.id=b.type_id WHERE bt.name = '" + type_name + "'");
+		return results;
+	}
+	public static List<Map<String, Object>> getBlocksIdJoined(String table, String joinedTable) {	
+		List<Map<String, Object>> results = db.readQuery("SELECT x.*,y.* FROM `" + table + "` AS x JOIN '" + joinedTable + "' AS y ON y.block_id=x.id");
+		return results;
 	}
 	
-		
-	public static String locationAsString(int x, int y, int z) {
-		return Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z);
-	}	
-	
+	public static int getBlockType(String name) {	
+		List<Map<String, Object>> results = db.readQuery("SELECT id FROM blockType WHERE name = '" + name + "'");
+		return (int) results.get(0).get("id");
+	}
+	public static boolean containsBlock(String name) {	
+		List<Map<String, Object>> results = db.readQuery("SELECT name FROM world where name = '" + name + "'");
+		for (Map<String,Object> m : results) {
+			if (m.get("name").equals(name))
+				return true;
+		}
+		return false;		
+	}
+	public static void insertBlock(World world, String name, int[] corners) {	
+		/*
+		"`id` INTEGER PRIMARY KEY," +
+    		"`dungeon_id` INTEGER NOT NULL," +
+    		"`type_id` INTEGER NOT NULL," +
+            "`name` varchar(255) NOT NULL," +
+            "`location` TEXT," +
+            "`default` INTEGER," +
+            "`inverted` INTEGER," +
+            "`min` TEXT," +
+            "`max` TEXT," +
+            "`times` INTEGER," 
+		*/
+		db.updateQuery("INSERT INTO block (id, dungeon_id, type_id, name, min, max) " +
+						"VALUES(NULL,'"+ 
+						Integer.toString(getWorldId(world.getUID())) + "','" + 
+						name + "'," +
+						Tools.locationAsString(corners[0],corners[1],corners[2]) + "," +
+						Tools.locationAsString(corners[3],corners[4],corners[5]) + ",);");
+		return;
+	}
 	
 	
 	

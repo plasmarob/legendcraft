@@ -3,17 +3,21 @@ package me.plasmarob.legendcraft.blocks;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import java.util.StringJoiner;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+import me.plasmarob.legendcraft.Dungeon;
+import me.plasmarob.legendcraft.database.DatabaseInserter;
 import me.plasmarob.legendcraft.util.Tools;
 
 public class Detector implements Sender, Receiver {
 	
+	private Dungeon dungeon;
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
@@ -32,7 +36,9 @@ public class Detector implements Sender, Receiver {
 	private int timesRun = 0; //how many times triggered
 	private boolean isTriggering = false;
 	
-	public Detector(Player player, Block mainBlock, String name) {
+	public Detector(Player player, Block mainBlock, String name, Dungeon dungeon) {
+		
+		this.dungeon = dungeon;
 		this.mainBlock = mainBlock;
 		this.name = name;
 		blockList.add(mainBlock);
@@ -57,8 +63,45 @@ public class Detector implements Sender, Receiver {
 		}
 		if (blockList.size() >= 100)
 			player.sendMessage("Too many potential detector blocks found. Truncating to first 100 found.");
+		
+		write();
 	}
 	
+	public Detector(Map<String,Object> data, Dungeon dungeon) {
+		this.name = (String) data.get("name");
+		this.dungeon = dungeon;
+		mainBlock = Tools.blockFromString((String) data.get("location"), dungeon.getWorld());
+		defaultOnOff = Boolean.parseBoolean((String) data.get("default"));
+		inverted = Boolean.parseBoolean((String) data.get("inverted"));
+		maxTimes = (int) data.get("times");
+		
+		String blockString = (String) data.get("blocks");
+		String[] blocks = blockString.split(";");
+		for (String blk : blocks) {
+			blockList.add(Tools.blockFromString(blk, dungeon.getWorld()));
+		}
+	}
+	
+	private void write() {
+		// Insert into DB
+		StringJoiner blocks = new StringJoiner(";");
+		for (Block b : blockList) {
+			blocks.add(Tools.locationAsString(b.getX(), b.getY(), b.getZ()));
+		}
+		
+		new DatabaseInserter("block")
+				.dungeon_id(dungeon.getDungeonId())
+				.type_id("PLAYER_DETECTOR")
+				.name(name)
+				.location(mainBlock.getX(), mainBlock.getY(), mainBlock.getZ())
+				.add("default", defaultOnOff)
+				.add("inverted", inverted)
+				.add("times", maxTimes)
+				.add("blocks", blocks.toString())
+				.execute();
+	}
+	
+	@Deprecated
 	public Detector(List<Block> blocks, Block mainBlock, String name) {
 		blockList.addAll(blocks);	
 		this.mainBlock = mainBlock;
@@ -111,15 +154,18 @@ public class Detector implements Sender, Receiver {
 	}
 	public void setDefaultOnOff(boolean defaultOnOff) {
 		this.defaultOnOff = defaultOnOff;
+		write();
 	}
 	public boolean isInverted() {
 		return inverted;
 	}
 	public void setInverted(boolean inverted) {
 		this.inverted = inverted;
+		write();
 	}
 	public void setDelay(int delay) {
 		this.delay = delay;
+		write();
 	}
 	public double getDelay() {
 		return delay;
@@ -130,6 +176,7 @@ public class Detector implements Sender, Receiver {
 	}
 	public void setMaxTimes(int maxTimes) {
 		this.maxTimes = maxTimes;
+		write();
 	}
 	public int getTimesTriggered() {
 		return timesRun;
@@ -319,6 +366,8 @@ public class Detector implements Sender, Receiver {
 			maxTimes = count;
 			p.sendMessage(prp + "  Max set to " + count + " triggers.");
 		}		
+		
+		write();
 	}
 
 	@Override

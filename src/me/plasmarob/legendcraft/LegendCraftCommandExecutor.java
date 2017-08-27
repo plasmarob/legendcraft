@@ -316,7 +316,8 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				if (sel instanceof CuboidSelection) {
 			        Vector min = sel.getNativeMinimumPoint();
 			        Vector max = sel.getNativeMaximumPoint();
-			        dungeons.put(args[1], new Dungeon(sel.getWorld(), min, max));
+			        
+			        new Dungeon(args[1], sel.getWorld(), min, max);
 			        say("Dungeon created and selected!");
 			        selectedDungeons.put(player, args[1]);
 			    } else {
