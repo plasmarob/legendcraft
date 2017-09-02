@@ -1,6 +1,8 @@
 package me.plasmarob.legendcraft.blocks;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,10 +10,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+import me.plasmarob.legendcraft.Dungeon;
+import me.plasmarob.legendcraft.database.DatabaseInserter;
 import me.plasmarob.legendcraft.util.Tools;
 
 public class RedstoneDetector implements Sender, Receiver {
-	
+	private Dungeon dungeon;
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
@@ -28,15 +32,42 @@ public class RedstoneDetector implements Sender, Receiver {
 	HashMap<Receiver, String> receivers = new HashMap<Receiver, String>();
 	HashMap<Receiver, String> messageTypes = new HashMap<Receiver, String>();
 
-	public RedstoneDetector(Player player, Block mainBlock, String name) {
+	/*
+	public RedstoneDetector(Player player, Block mainBlock, String name, Dungeon dungeon) {
 		this.name = name;
 		this.mainBlock = mainBlock;
+	}
+	*/
+	
+	public RedstoneDetector(Block mainBlock, String name, Dungeon dungeon) {	
+		this.name = name;
+		this.mainBlock = mainBlock;
+		write();
 	}
 	
-	public RedstoneDetector(Block mainBlock, String name) {	
-		this.name = name;
-		this.mainBlock = mainBlock;
+	public RedstoneDetector(Map<String,Object> data, Dungeon dungeon) {
+		this.name = (String) data.get("name");
+		this.dungeon = dungeon;
+		mainBlock = Tools.blockFromString((String) data.get("location"), dungeon.getWorld());
+		defaultOnOff = Boolean.parseBoolean((String) data.get("default"));
+		inverted = Boolean.parseBoolean((String) data.get("inverted"));
+		maxTimes = (int) data.get("times");
 	}
+	
+	public void write() {
+		// Insert into DB
+		new DatabaseInserter("block")
+				.dungeon_id(dungeon.getDungeonId())
+				.type_id("REDSTONE_DETECTOR")
+				.name(name)
+				.location(mainBlock.getX(), mainBlock.getY(), mainBlock.getZ())
+				.add("default", defaultOnOff)
+				.add("inverted", inverted)
+				.add("times", maxTimes)
+				.execute();
+	}
+	
+	
 	
 	public Block getMainBlock() {
 		return mainBlock;
@@ -57,6 +88,8 @@ public class RedstoneDetector implements Sender, Receiver {
 			receivers.remove(target);
 		receivers.put(target, target.type());
 		messageTypes.put(target, linkType);
+		
+		// TODO: ADD DB TABLE THAT LINKS
 	}
 
 	public boolean isEnabled() {

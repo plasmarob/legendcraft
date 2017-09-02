@@ -76,6 +76,10 @@ public class SpawnerBlock implements Receiver, Sender{
 			i++;
 		}
 	}
+	
+	public void write() {
+		
+	}
 
 
 	public boolean isDefaultOnOff() {

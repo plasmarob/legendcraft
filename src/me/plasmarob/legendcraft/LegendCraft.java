@@ -68,11 +68,15 @@ public class LegendCraft extends JavaPlugin {
 		
 		// Register the main listener
 		Bukkit.getServer().getPluginManager().registerEvents(listener, this);
+		
+		
 				
 		// Create EffectManager for special effects library
 		EffectLib lib = EffectLib.instance();
 		effectManager = new EffectManager(lib);
 				
+		
+		
 		//------
 		// Database Setup
 		this.db = new SQLite(this);
@@ -126,7 +130,13 @@ public class LegendCraft extends JavaPlugin {
 	    this.getCommand("lce").setExecutor(new LegendCraftCommandExecutor(this));
 		this.getCommand("lc").setExecutor(new LegendCraftCommandExecutor(this));
 		this.getCommand("legendcraft").setExecutor(new LegendCraftCommandExecutor(this));
-	
+		
+		this.getCommand("lca").setTabCompleter(new LegendCraftTabCompleter());
+	    this.getCommand("lce").setTabCompleter(new LegendCraftTabCompleter());
+		this.getCommand("lc").setTabCompleter(new LegendCraftTabCompleter());
+		this.getCommand("legendcraft").setTabCompleter(new LegendCraftTabCompleter());
+		
+		
 		Bukkit.getConsoleSender().sendMessage("LegendCraft Loaded!");
 	}
 	

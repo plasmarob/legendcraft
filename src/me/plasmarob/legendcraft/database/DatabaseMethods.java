@@ -39,6 +39,14 @@ public class DatabaseMethods {
 		//db.updateQuery("DELETE FROM world WHERE uuid = '"+ uuid.toString() + "';");
 		return -1;
 	}
+	public static int getIdByName(String table, String name) {
+		List<Map<String, Object>> results = db.readQuery("SELECT id from '" + table + "' WHERE name = '"+ name + "';");
+		for (Map<String,Object> m : results) {
+				return (Integer) m.get("id");
+		}
+		//db.updateQuery("DELETE FROM world WHERE uuid = '"+ uuid.toString() + "';");
+		return -1;
+	}
 	public static boolean containsWorld(UUID uuid) {	
 		List<Map<String, Object>> results = db.readQuery("SELECT uuid FROM world where uuid = '" + uuid.toString() + "'");
 		for (Map<String,Object> m : results) {
@@ -88,8 +96,12 @@ public class DatabaseMethods {
 		List<Map<String, Object>> results = db.readQuery("SELECT b.*,bt.id FROM block AS b JOIN blockType AS bt ON bt.id=b.type_id WHERE bt.name = '" + type_name + "'");
 		return results;
 	}
-	public static List<Map<String, Object>> getBlocksIdJoined(String table, String joinedTable) {	
+	public static List<Map<String, Object>> getBlocksIdJoinedBROKEN(String table, String joinedTable) {	
 		List<Map<String, Object>> results = db.readQuery("SELECT x.*,y.* FROM `" + table + "` AS x JOIN '" + joinedTable + "' AS y ON y.block_id=x.id");
+		return results;
+	}
+	public static List<Map<String, Object>> getBlocksIdJoined(String joinedTable) {	
+		List<Map<String, Object>> results = db.readQuery("SELECT b.*,x.* FROM `block` AS b JOIN '" + joinedTable + "' AS x ON x.block_id=b.id");
 		return results;
 	}
 	

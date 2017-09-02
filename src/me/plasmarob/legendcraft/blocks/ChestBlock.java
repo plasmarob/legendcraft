@@ -1,5 +1,7 @@
 package me.plasmarob.legendcraft.blocks;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
@@ -19,10 +22,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.DirectionalContainer;
 import org.bukkit.util.Vector;
 
+import me.plasmarob.legendcraft.Dungeon;
+import me.plasmarob.legendcraft.database.DatabaseInserter;
+import me.plasmarob.legendcraft.database.DatabaseMethods;
+import me.plasmarob.legendcraft.database.InventoryToBase64;
 import me.plasmarob.legendcraft.util.Tools;
 
 public class ChestBlock implements Receiver {
-	
+	private Dungeon dungeon;
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
@@ -35,30 +42,97 @@ public class ChestBlock implements Receiver {
 	public static List<FallingBlock> fallers = new ArrayList<FallingBlock>();
 	BlockFace face;
 	
-	public ChestBlock(Player player, Block block, String name) {
+	public ChestBlock(Player player, Block block, String name, Dungeon dungeon) {
+		this.dungeon = dungeon;
 		this.block = block;
 		this.name = name;
 		Chest chest = (Chest) block.getState();
 		inv = chest.getInventory();
-		for (int i = 0; i < 27; i++)
-		{
+		
+		for (int i = 0; i < 27; i++) {
 			if (inv.getItem(i) != null)
 				items.put(i, inv.getItem(i).clone());
 		}
 		face = ((DirectionalContainer)chest.getData()).getFacing();
-		//inv.addItem(new ItemStack(Material.WOOD));
+		
+		write();
 	}
 	
-	@SuppressWarnings("unchecked")
-	public ChestBlock(List<Map<?, ?>> map, List<Integer> locs, Block mainBlock, String name) {
+	public ChestBlock(Map<String,Object> data, Dungeon dungeon) {
+		this.name = (String) data.get("name");
+		this.dungeon = dungeon;
+		block = Tools.blockFromString((String) data.get("location"), dungeon.getWorld());
+		defaultOnOff = Boolean.parseBoolean((String) data.get("default"));
+		inverted = Boolean.parseBoolean((String) data.get("inverted"));
+		face = BlockFace.valueOf((String) data.get("facing"));
+		byte[] invBytes = (byte[]) data.get("inventory");
+		String invString = new String(invBytes, StandardCharsets.UTF_8);
+		Inventory inventory = null;
+		try {
+			inventory = InventoryToBase64.fromBase64(invString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		block.setType(Material.CHEST);
+		Chest chest = (Chest) block.getState();
+		((DirectionalContainer)chest.getData()).setFacingDirection(face);
+		
+		Inventory chestInventory = chest.getInventory();
+		for (int i = 0; i < inventory.getSize(); i++) {
+			if (inventory.getItem(i) != null) {
+				chestInventory.setItem(i, inventory.getItem(i).clone());
+				items.put(i, inventory.getItem(i).clone());
+			}
+		}
+		
+		
+	}
+	
+	@Deprecated
+	public ChestBlock(List<Map<?, ?>> map, List<Integer> locs, Block mainBlock, String name, Dungeon dungeon) {
+		this.dungeon = dungeon;
 		this.block = mainBlock;
 		this.name = name;
 		for (int i = 0; i < map.size(); i++)
 		{
+			@SuppressWarnings("unchecked")
 			ItemStack is = ItemStack.deserialize((Map<String, Object>) map.get(i));
 			int n = locs.get(i);
 			items.put(n, is);
 		}
+		
+		//Base64Coder
+	}
+	
+	public void write() {
+		// Insert into DB
+		new DatabaseInserter("block")
+			.dungeon_id(dungeon.getDungeonId())
+			.type_id("CHEST")
+			.name(name)
+			.location(block.getX(), block.getY(), block.getZ())
+			.add("default", defaultOnOff)
+			.add("inverted", inverted)
+			.execute();
+		
+		// ensure we've got a copy of the right inventory
+		block.setType(Material.CHEST);
+		Chest chest = (Chest) block.getState();
+		inv = chest.getInventory();
+		for (Integer i :  items.keySet()) {
+			inv.setItem(i, items.get(i));
+		}
+	
+		face = ((DirectionalContainer)chest.getData()).getFacing();	
+		byte[] bytes = InventoryToBase64.toBase64(inv).getBytes(StandardCharsets.UTF_8);
+		new DatabaseInserter("chest")
+			.add("block_id", DatabaseMethods.getIdByName("block", name))
+			.add("facing", face.name())
+			.addBlobName("inventory")
+			.executeBlob(bytes);
 	}
 
 	@Override

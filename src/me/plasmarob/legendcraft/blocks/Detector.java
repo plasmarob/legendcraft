@@ -16,7 +16,6 @@ import me.plasmarob.legendcraft.database.DatabaseInserter;
 import me.plasmarob.legendcraft.util.Tools;
 
 public class Detector implements Sender, Receiver {
-	
 	private Dungeon dungeon;
 	private String name;
 	private boolean enabled = false;
@@ -82,7 +81,7 @@ public class Detector implements Sender, Receiver {
 		}
 	}
 	
-	private void write() {
+	public void write() {
 		// Insert into DB
 		StringJoiner blocks = new StringJoiner(";");
 		for (Block b : blockList) {

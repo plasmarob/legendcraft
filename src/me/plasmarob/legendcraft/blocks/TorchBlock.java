@@ -51,6 +51,10 @@ public class TorchBlock implements Sender,Receiver  {
 			torchList.add(b);
 		}
 	}
+	
+	public void write() {
+		
+	}
 
 	public List<Block> getTorches() {
 		return torchList;

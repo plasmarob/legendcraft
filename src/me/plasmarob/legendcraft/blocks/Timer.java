@@ -2,7 +2,9 @@ package me.plasmarob.legendcraft.blocks;
 
 import java.util.HashMap;
 
+import me.plasmarob.legendcraft.Dungeon;
 import me.plasmarob.legendcraft.LegendCraft;
+import me.plasmarob.legendcraft.database.DatabaseInserter;
 import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.ChatColor;
@@ -11,6 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public class Timer implements Sender, Receiver {
+	private Dungeon dungeon;
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
@@ -26,10 +29,26 @@ public class Timer implements Sender, Receiver {
 	private boolean isWaiting = false;
 	private double delay = -1; //delay (-1 immediate)
 	
-	public Timer(Block mainBlock, String name, double delay) {
+	public Timer(Block mainBlock, String name, double delay, Dungeon dungeon) {
+		this.dungeon = dungeon;
 		this.mainBlock = mainBlock;
 		this.name = name;
 		this.delay = delay;
+		
+		write();
+	}
+	
+	public void write() {
+		// Insert into DB
+		new DatabaseInserter("block")
+				.dungeon_id(dungeon.getDungeonId())
+				.type_id("TIMER")
+				.name(name)
+				.location(mainBlock.getX(), mainBlock.getY(), mainBlock.getZ())
+				.add("default", defaultOnOff)
+				.add("inverted", inverted)
+				.add("times", maxTimes)
+				.execute();
 	}
 	
 	public boolean isDefaultOnOff() {

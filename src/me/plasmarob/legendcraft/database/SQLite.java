@@ -36,13 +36,20 @@ public class SQLite extends Database{
             "CONSTRAINT name_unique UNIQUE (name)" +
             ");";
             //"); CREATE UNIQUE INDEX IF NOT EXISTS world_uuid ON world(uuid);";
-    
+    public String SQLiteCreateLinkTable = "CREATE TABLE IF NOT EXISTS link (" + 
+    		"`id` INTEGER PRIMARY KEY," +
+    		"`sender_id` INTEGER NOT NULL," +
+    		"`receiver_id` INTEGER NOT NULL," +
+    		"`trigger_type_id` INTEGER NOT NULL," +
+            "FOREIGN KEY(sender_id) REFERENCES block(id)," +
+            "FOREIGN KEY(receiver_id) REFERENCES block(id)," +
+            "FOREIGN KEY(trigger_type_id) REFERENCES triggerType(id)" +
+            ");";
     
     public String SQLiteCreateBlockTypeTable = "CREATE TABLE IF NOT EXISTS blockType (" + 
     		"`id` INTEGER PRIMARY KEY," +
             "`name` varchar(255) NOT NULL" +
             ");";
-    
     public String SQLitePopulateBlockTypeTable = "REPLACE INTO blockType VALUES (10,'PLAYER_DETECTOR');" +
     		"REPLACE INTO blockType VALUES (20,'STORAGE');" +
     		"REPLACE INTO blockType VALUES (30,'TIMER');" +
@@ -51,9 +58,7 @@ public class SQLite extends Database{
     		"REPLACE INTO blockType VALUES (60,'MUSIC');" +
     		"REPLACE INTO blockType VALUES (70,'REDSTONE_DETECTOR');" +
     		"REPLACE INTO blockType VALUES (80,'CHEST');" +
-    		"REPLACE INTO blockType VALUES (90,'DOOR');";
-            
-    
+    		"REPLACE INTO blockType VALUES (90,'DOOR');";   
     public String SQLiteCreateBlockTable = "CREATE TABLE IF NOT EXISTS block (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`dungeon_id` INTEGER NOT NULL," +
@@ -71,15 +76,36 @@ public class SQLite extends Database{
             "UNIQUE (name, dungeon_id)" +
             ");";
     
-    //TODO: add Replace Into
-    
+
     public String SQLiteCreateChestTable = "CREATE TABLE IF NOT EXISTS chest (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`block_id` INTEGER NOT NULL," +
     		"`facing` varchar(255) NOT NULL," +
             "`inventory` BLOB," +
-            "FOREIGN KEY(block_id) REFERENCES block(id)," +
+            "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
+    
+    public String SQLiteCreateStorageTable = "CREATE TABLE IF NOT EXISTS storage (" + 
+    		"`id` INTEGER PRIMARY KEY," +
+    		"`block_id` INTEGER NOT NULL," +
+    		"`frame_count` INTEGER NOT NULL," +
+    		"`mode` varchar(255) NOT NULL," +	// LOOP | BOUNCE | ONCE
+            "FOREIGN KEY(block_id) REFERENCES block(id)" +
+            ");";
+    
+    public String SQLiteCreateStorageFrameTable = "CREATE TABLE IF NOT EXISTS storageFrame (" + 
+    		"`id` INTEGER PRIMARY KEY," +
+    		"`storage_id` INTEGER NOT NULL," +
+    		"`frame_id` INTEGER NOT NULL," +
+    		"`ticks` INTEGER NOT NULL," +
+    		"`tiles_yn` TEXT NOT NULL," +
+            "`blockdata` TEXT," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3
+            "FOREIGN KEY(storage_id) REFERENCES storage(id)" +
+            ");"; 
+    //TODO: create StorageFrameMetadata Table after finding a way to serialize it into a blob
+    
+    
+    // --------------------------------------
     
     public String SQLiteCreateDoorTable = "CREATE TABLE IF NOT EXISTS door (" + 
     		"`id` INTEGER PRIMARY KEY," +
@@ -88,35 +114,15 @@ public class SQLite extends Database{
     		"`locked_yn` varchar(1)," +
     		"`barred` INTEGER," +
             "`blockdata` varchar(255) NOT NULL," + 	// material1,data1,mat2,dat2,m3,d3
-            "FOREIGN KEY(block_id) REFERENCES block(id)," +
+            "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
     
-    public String SQLiteCreateStorageTable = "CREATE TABLE IF NOT EXISTS storage (" + 
-    		"`id` INTEGER PRIMARY KEY," +
-    		"`block_id` INTEGER NOT NULL," +
-    		"`mode` varchar(255) NOT NULL," +	// LOOP | BOUNCE | STRAIGHT
-    		"`has_metadata_yn` varchar(1) NOT NULL," +
-            "`blockdata` varchar(255)," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3
-            "FOREIGN KEY(block_id) REFERENCES block(id)," +
-            ");";
-    
-    public String SQLiteCreateStorageFrameTable = "CREATE TABLE IF NOT EXISTS storageFrame (" + 
-    		"`id` INTEGER PRIMARY KEY," +
-    		"`storage_id` INTEGER NOT NULL," +
-    		"`frame` INTEGER NOT NULL," +
-    		"`ticks` INTEGER NOT NULL," +
-    		"`has_metadata_yn` varchar(1) NOT NULL," +
-            "`blockdata` varchar(255)," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3
-            "FOREIGN KEY(storage_id) REFERENCES storage(id)," +
-            ");"; 
-    
-    //TODO: create Storage Block Metadata Table after finding a way to serialize it into a blob
     
     public String SQLiteCreatePlayerDetectorTable = "CREATE TABLE IF NOT EXISTS playerDetector (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`block_id` INTEGER NOT NULL," +
             "`blockdata` varchar(255) NOT NULL," + 	// x1,y1,z1;x2,y2,z2;
-            "FOREIGN KEY(block_id) REFERENCES block(id)," +
+            "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
     
     public String SQLiteCreateTorchTable = "CREATE TABLE IF NOT EXISTS torch (" + 
@@ -126,22 +132,14 @@ public class SQLite extends Database{
     		"`type` varchar(1)," +
     		"`timeout` INTEGER NOT NULL," +
             "`blockdata` varchar(255) NOT NULL," + 	// x1,y1,z1;x2,y2,z2;
-            "FOREIGN KEY(block_id) REFERENCES block(id)," +
+            "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
     
-    public String SQLiteCreateLinkTable = "CREATE TABLE IF NOT EXISTS link (" + 
-    		"`id` INTEGER PRIMARY KEY," +
-    		"`sender_id` INTEGER NOT NULL," +
-    		"`receiver_id` INTEGER NOT NULL," +
-    		"`trigger_type_id` INTEGER NOT NULL," +
-            "FOREIGN KEY(sender_id) REFERENCES block(id)," +
-            "FOREIGN KEY(receiver_id) REFERENCES block(id)," +
-            "FOREIGN KEY(trigger_type_id) REFERENCES triggerType(id)," +
-            ");";
+    
     
     public String SQLiteCreateTriggerTypeTable = "CREATE TABLE IF NOT EXISTS triggerType (" + 
     		"`id` INTEGER PRIMARY KEY," +
-            "`name` varchar(255) NOT NULL," +
+            "`name` varchar(255) NOT NULL" +
             ");";
     //TODO: add Replace Into
     
@@ -160,11 +158,9 @@ public class SQLite extends Database{
     		"`spawner_id` INTEGER NOT NULL," +
     		"`amount` INTEGER NOT NULL," +
             "FOREIGN KEY(mob_id) REFERENCES mob(id)," +
-            "FOREIGN KEY(spawner_id) REFERENCES block(id)," +
+            "FOREIGN KEY(spawner_id) REFERENCES block(id)" +
             ");";
     
-    
-   
     
    //------------------------------------
    //For [much] later updates
@@ -182,7 +178,7 @@ public class SQLite extends Database{
     		"`dungeon_id` INTEGER NOT NULL," +
     		"`completed_yn` varchar(1)," +
             "FOREIGN KEY(player_id) REFERENCES player(id)," +
-            "FOREIGN KEY(dungeon_id) REFERENCES dungeon(id)," +
+            "FOREIGN KEY(dungeon_id) REFERENCES dungeon(id)" +
             ");";
     
     // SQL creation stuff, You can leave the blow stuff untouched.
@@ -217,10 +213,15 @@ public class SQLite extends Database{
             //s.executeUpdate(SQLiteCreateTokensTable);
             s.executeUpdate(SQLiteCreateWorldTable);
             s.executeUpdate(SQLiteCreateDungeonTable);
+            s.executeUpdate(SQLiteCreateLinkTable);
             
             s.executeUpdate(SQLiteCreateBlockTypeTable);
             s.executeUpdate(SQLiteCreateBlockTable);
             s.executeUpdate(SQLitePopulateBlockTypeTable);
+            
+            
+            s.executeUpdate(SQLiteCreateChestTable);
+            
             
             
             s.close();

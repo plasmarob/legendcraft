@@ -251,6 +251,41 @@ public abstract class Database {
     	return 0; 
 	}
 	
+	/**
+	 * Queries the Databases, for queries which modify data.
+	 *
+	 * @param query Query to run
+	 */
+	public int insertBLOBQuery(String query, byte[] blob) {
+		Connection conn = null;
+    	PreparedStatement ps = null;
+    	
+    	try {
+    		conn = getSQLConnection();
+            ps = conn.prepareStatement(query); 		
+            ps.setBytes(1, blob);
+            ps.executeUpdate();
+            ps.close();
+            
+            ps = conn.prepareStatement("select last_insert_rowid() as id;"); 
+            ResultSet rs = ps.executeQuery();
+            return Integer.parseInt(rs.getString("id"));
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+                return 0;
+            }
+        }
+    	return 0; 
+	}
+	
 	/*
 	public boolean containsWorld(UUID uuid) {
     	Connection conn = null;

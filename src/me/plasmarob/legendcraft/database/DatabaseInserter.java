@@ -63,11 +63,24 @@ public class DatabaseInserter {
 		return this;
 	}
 	
-	
+	public DatabaseInserter addBlobName(String s) {
+		columns.add("`"+s+"`");
+		values.add("?");
+		return this;
+	}
+
 	public int execute() {	
 		query.append("(" + columns + ") VALUES (" + values + ");");
 		//Tools.say(query.toString())
-		LegendCraft.plugin.getDatabase().updateQuery(query.toString());
+		int id = LegendCraft.plugin.getDatabase().insertQuery(query.toString());
+		return id;	
+	}
+	
+	public int executeBlob(byte[] blob) {	
+		
+		query.append("(" + columns + ") VALUES (" + values + ");");
+		//Tools.say(query.toString())
+		LegendCraft.plugin.getDatabase().insertBLOBQuery(query.toString(),blob);
 		return 0;	//TODO : return last rownum id
 	}
 }

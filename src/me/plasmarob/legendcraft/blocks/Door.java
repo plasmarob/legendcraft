@@ -270,6 +270,10 @@ public class Door implements Receiver {
         	unlock();
         }
 	}
+	
+	public void write() {
+		
+	}
 
 	/**
 	 * Save storage block to config

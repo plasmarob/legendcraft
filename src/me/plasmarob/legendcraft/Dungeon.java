@@ -100,6 +100,11 @@ public class Dungeon {
 		for (Map<String,Object> m : detectorList) {
 			detectors.put((String)m.get("name"), new Detector(m, this));
 		}
+		
+		List<Map<String, Object>> chestList = DatabaseMethods.getBlocksIdJoined("chest");
+		for (Map<String,Object> m : chestList) {
+			chestBlocks.put((String)m.get("name"), new ChestBlock(m, this));
+		}
 	}
 	
 	@Deprecated
@@ -132,7 +137,7 @@ public class Dungeon {
 				
 				Block mainBlock = world.getBlockAt(xyzMain.get(0), xyzMain.get(1), xyzMain.get(2));
 				// creation & insertion
-				ChestBlock newChe = new ChestBlock(map, locs, mainBlock, name);
+				ChestBlock newChe = new ChestBlock(map, locs, mainBlock, name, this);
 				newChe.setDefaultOnOff(config.getBoolean("chests.c" + i + ".default")); // default
 				newChe.setInverted(config.getBoolean("chests.c" + i + ".inverted")); // inverted
 				
@@ -206,7 +211,7 @@ public class Dungeon {
 				List<Integer> xyzMain = config.getIntegerList("redstones.r" + i + ".mainBlock");
 				Block mainBlock = world.getBlockAt(xyzMain.get(0), xyzMain.get(1), xyzMain.get(2));
 				// creationn & insertion
-				RedstoneDetector newRSDet = new RedstoneDetector(mainBlock, name);
+				RedstoneDetector newRSDet = new RedstoneDetector(mainBlock, name, this);
 				newRSDet.setDefaultOnOff(config.getBoolean("redstones.r" + i + ".default")); // default
 				newRSDet.setInverted(config.getBoolean("redstones.r" + i + ".inverted")); // inverted
 				newRSDet.setMaxTimes(config.getInt("redstones.r" + i + ".times")); // max_trig_times
@@ -295,7 +300,7 @@ public class Dungeon {
 				Block mainBlock = world.getBlockAt(xyzMain.get(0), xyzMain.get(1), xyzMain.get(2));
 				
 				// creation & insertion
-				Timer newTime = new Timer(mainBlock, name, delay);
+				Timer newTime = new Timer(mainBlock, name, delay, this);
 				newTime.setDefaultOnOff(config.getBoolean("timers.t" + i + ".default")); // default
 				newTime.setInverted(config.getBoolean("timers.t" + i + ".inverted")); // inverted
 				newTime.setMaxTimes(config.getInt("timers.t" + i + ".times")); // max_trig_times
@@ -863,7 +868,7 @@ public class Dungeon {
 					player.sendMessage(ChatColor.RED + "This block is not within dungeon boundaries.");
 					return false;
 				} else {
-					timerBlocks.put(name, new Timer(next, name, delay));
+					timerBlocks.put(name, new Timer(next, name, delay, this));
 					player.sendMessage(ChatColor.LIGHT_PURPLE + "Timer block " + name + " created!");
 					return true;
 				}
@@ -948,7 +953,7 @@ public class Dungeon {
 					player.sendMessage(ChatColor.RED + "This block is not within dungeon boundaries.");
 					return false;
 				} else {
-					rsDetectors.put(name, new RedstoneDetector(player, next, name));
+					rsDetectors.put(name, new RedstoneDetector(next, name, this));
 					player.sendMessage(ChatColor.LIGHT_PURPLE + "RS Detector " + name + " created!");
 					return true;
 				}
@@ -987,7 +992,7 @@ public class Dungeon {
 					player.sendMessage(ChatColor.RED + "This chest is not within dungeon boundaries.");
 					return false;
 				} else {
-					chestBlocks.put(name, new ChestBlock(player, next, name));
+					chestBlocks.put(name, new ChestBlock(player, next, name, this));
 					player.sendMessage(ChatColor.LIGHT_PURPLE + "Chest " + name + " created!");
 					return true;
 				}
@@ -1032,7 +1037,7 @@ public class Dungeon {
 						player.sendMessage(ChatColor.RED + "This block is not within dungeon boundaries.");
 						return false;
 					} else {
-						storages.put(name, new StorageBlock(player, next, name));
+						storages.put(name, new StorageBlock(player, next, name, this));
 						return true;
 					}
 					
@@ -1050,6 +1055,21 @@ public class Dungeon {
 		}
 		player.sendMessage(ChatColor.RED + "Storage Block not found. Enter this command while facing " + 
 							Material.EMERALD_ORE.toString());
+		return false;
+	}
+	
+	public boolean tryAddToStorageBlock(Player player, String block) {
+		if (storages.containsKey(block)) {
+			storages.get(block).addFrame();
+			return true;
+		}
+		return false;
+	}
+	public boolean tryAddToStorageBlock(Player player, String block, String frame) {
+		if (storages.containsKey(block)) {
+			storages.get(block).addFrame(Integer.parseInt(frame));
+			return true;
+		}
 		return false;
 	}
 	
@@ -1891,6 +1911,8 @@ public class Dungeon {
 	public void setDungeonId(int dungeon_id) {
 		this.dungeon_id = dungeon_id;
 	}
+
+	
 
 
 

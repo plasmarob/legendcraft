@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.plasmarob.legendcraft.Dungeon;
 import me.plasmarob.legendcraft.LegendCraft;
+import me.plasmarob.legendcraft.database.DatabaseInserter;
+import me.plasmarob.legendcraft.database.DatabaseMethods;
 import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.ChatColor;
@@ -20,6 +23,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 public class StorageBlock implements Receiver {
 	
 	private String name;
+	private Dungeon dungeon;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
 	private boolean isOn = true;
@@ -32,13 +36,20 @@ public class StorageBlock implements Receiver {
 	Vector min;
     Vector max;
     
+    //-------
+    int frames = 1;
+    String mode = "ONCE";
+    
+    
+    
     /**
      * Creates StorageBlock - called by player command
      * @param player
      * @param block
      */
 	@SuppressWarnings("deprecation")
-	public StorageBlock(Player player, Block block, String name) {
+	public StorageBlock(Player player, Block block, String name, Dungeon dungeon) {
+		this.dungeon = dungeon;
 		this.mainBlock = block;
 		this.name = name;
 		Selection sel = LegendCraft.worldEditPlugin.getSelection(player);
@@ -56,6 +67,45 @@ public class StorageBlock implements Receiver {
             }
         }
 		Tools.saySuccess(player, "Storage block created!");
+		
+		write();
+	}
+	
+	public void write() {
+		// Insert into DB
+		int b_id = new DatabaseInserter("block")
+			.dungeon_id(dungeon.getDungeonId())
+			.type_id("STORAGE")
+			.name(name)
+			.location(mainBlock.getX(), mainBlock.getY(), mainBlock.getZ())
+			.add("default", defaultOnOff)
+			.add("inverted", inverted)
+			.execute();
+		
+		int s_id = new DatabaseInserter("storage")
+			.add("block_id", b_id)
+			.add("frame_count", frames)
+			.add("mode", mode)
+			.execute();
+		
+		// Needs to be its own method
+		/*
+		new DatabaseInserter("storageFrame")
+			.add("storage_id", s_id)
+			.add("frame_id", 1)
+			.location(mainBlock.getX(), mainBlock.getY(), mainBlock.getZ())
+			.add("default", defaultOnOff)
+			.add("inverted", inverted)	
+			*/
+	}
+	
+	public void addFrame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addFrame(int frame) {
+		// TODO Auto-generated method stub
 	}
 	
 	/**
@@ -63,6 +113,7 @@ public class StorageBlock implements Receiver {
 	 * @param world
 	 * @param storageConfig
 	 */
+	@Deprecated
 	public StorageBlock(World world, FileConfiguration storageConfig, String name) {
 		
 		this.name = name;
@@ -86,6 +137,8 @@ public class StorageBlock implements Receiver {
 			i++;
 		}
 	}
+	
+	
 
 	/**
 	 * Save storage block to config
@@ -112,12 +165,9 @@ public class StorageBlock implements Receiver {
 		
 		Block tmpB;
 		int i = 0;
-		for (int x = min.getBlockX(); x <= max.getBlockX(); x++)
-        {
-        	for (int y = min.getBlockY(); y <= max.getBlockY(); y++)
-            {
-        		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++)
-                {
+		for (int x = min.getBlockX(); x <= max.getBlockX(); x++)  {
+        	for (int y = min.getBlockY(); y <= max.getBlockY(); y++)  {
+        		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
         			tmpB = mainBlock.getWorld().getBlockAt(x, y, z);
         			tmpB.setType(matList.get(i));
         			tmpB.setData(datList.get(i));
@@ -254,4 +304,41 @@ public class StorageBlock implements Receiver {
         }
 		return false;
 	}
+
+	
 }
+
+
+class StorageFrame {
+	
+	List<Material> matList = new ArrayList<Material>();
+	List<Byte> datList = new ArrayList<Byte>();
+	World world;
+	int ticks = 20;
+	Vector min,max;
+	
+	@SuppressWarnings("deprecation")
+	StorageFrame (Vector min, Vector max, World world, int ticks) {
+		Block tmpB;
+		
+		for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+        	for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+        		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        			tmpB = world.getBlockAt(x, y, z);
+        			matList.add(tmpB.getType());
+        			datList.add(tmpB.getData());
+                }
+            }
+        }
+		
+		this.min = min;
+		this.max = max;
+		this.world = world;
+		this.ticks = ticks;
+	}
+}
+
+
+
+
+

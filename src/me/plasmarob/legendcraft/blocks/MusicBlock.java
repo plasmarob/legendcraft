@@ -41,6 +41,10 @@ public class MusicBlock implements Receiver {
 		this.name = name;
 		this.block = mainBlock;
 	}
+	
+	public void write() {
+		
+	}
 
 	public boolean isDefaultOnOff() {
 		return defaultOnOff;

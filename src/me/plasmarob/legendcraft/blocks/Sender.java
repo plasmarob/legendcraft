@@ -32,4 +32,6 @@ public interface Sender {
 	public int getX();
 	public int getY();
 	public int getZ();
+	
+	void write();
 }
