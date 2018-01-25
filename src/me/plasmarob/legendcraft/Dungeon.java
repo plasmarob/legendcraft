@@ -50,7 +50,10 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 public class Dungeon {
 
 	// Global static data ///////////////////////
-	public static File dungeonFolder = null;
+	private static File dungeonFolder = null;
+	public static File getDungeonFolder() { return dungeonFolder; }
+	public static void setDungeonFolder(File folder) { dungeonFolder=folder; }
+	
 	public static ConcurrentHashMap<String, Dungeon> dungeons = new ConcurrentHashMap<String, Dungeon>();
 	public static ConcurrentHashMap<String, FileConfiguration> dungeonConfigs = new ConcurrentHashMap<String, FileConfiguration>();
 	public static ConcurrentHashMap<Player, String> selectedDungeons = new ConcurrentHashMap<Player, String>();

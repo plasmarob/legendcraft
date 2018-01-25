@@ -110,7 +110,8 @@ public class NBTReflectionUtil {
         }
     }
 
-    private static Object getnewBlockPosition(int x, int y, int z) {
+    @SuppressWarnings("unchecked")
+	private static Object getnewBlockPosition(int x, int y, int z) {
         String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
         try {
             @SuppressWarnings("rawtypes")
@@ -224,7 +225,8 @@ public class NBTReflectionUtil {
         return null;
     }
 
-    public static Object getTileEntityNBTTagCompound(BlockState tile) {
+    @SuppressWarnings("unchecked")
+	public static Object getTileEntityNBTTagCompound(BlockState tile) {
         java.lang.reflect.Method method;
         try {
             Object pos = getnewBlockPosition(tile.getX(), tile.getY(), tile.getZ());
@@ -243,7 +245,8 @@ public class NBTReflectionUtil {
         return null;
     }
 
-    public static void setTileEntityNBTTagCompound(BlockState tile, Object comp) {
+    @SuppressWarnings("unchecked")
+	public static void setTileEntityNBTTagCompound(BlockState tile, Object comp) {
         java.lang.reflect.Method method;
         try {
             Object pos = getnewBlockPosition(tile.getX(), tile.getY(), tile.getZ());

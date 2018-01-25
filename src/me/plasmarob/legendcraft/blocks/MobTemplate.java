@@ -29,7 +29,9 @@ import org.bukkit.potion.PotionEffectType;
 public class MobTemplate {
 
 	//Global storage
-	public static File mobsFolder;
+	private static File mobsFolder;
+	public static File getMobFolder() { return mobsFolder; }
+	public static void setMobFolder(File folder) { mobsFolder=folder; }
 	public static ConcurrentHashMap<String, MobTemplate> mobs = new ConcurrentHashMap<String, MobTemplate>();
 	public static ConcurrentHashMap<String, FileConfiguration> mobConfigs = new ConcurrentHashMap<String, FileConfiguration>();
 		

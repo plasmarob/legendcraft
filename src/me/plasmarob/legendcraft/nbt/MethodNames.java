@@ -19,12 +19,12 @@ public class MethodNames {
     }
 
     protected static String getEntitynbtgetterMethodName(){
-        MinecraftVersion v = MinecraftVersion.getVersion();
+        //MinecraftVersion v = MinecraftVersion.getVersion();
         return "b";
     }
 
     protected static String getEntitynbtsetterMethodName(){
-        MinecraftVersion v = MinecraftVersion.getVersion();
+        //MinecraftVersion v = MinecraftVersion.getVersion();
         return "a";
     }
     

@@ -181,7 +181,7 @@ public class SQLite extends Database{
             "FOREIGN KEY(dungeon_id) REFERENCES dungeon(id)" +
             ");";
     
-    // SQL creation stuff, You can leave the blow stuff untouched.
+    // SQL creation stuff, You can leave the below stuff untouched.
     public Connection getSQLConnection() {
         File dataFolder = new File(plugin.getDataFolder(), dbname+".db");
         if (!dataFolder.exists()){
@@ -189,6 +189,7 @@ public class SQLite extends Database{
                 dataFolder.createNewFile();
             } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, "File write error: "+dbname+".db");
+                e.printStackTrace();
             }
         }
         try {
@@ -209,7 +210,7 @@ public class SQLite extends Database{
     public void load() {
         connection = getSQLConnection();
         try {
-            Statement s = connection.createStatement();
+            Statement s = connection.createStatement(); //TODO: NullPointer
             //s.executeUpdate(SQLiteCreateTokensTable);
             s.executeUpdate(SQLiteCreateWorldTable);
             s.executeUpdate(SQLiteCreateDungeonTable);

@@ -34,10 +34,6 @@ public class LegendCraftTabCompleter implements TabCompleter {
 				}
 			}
 			
-			
-			
-			
-			
 			List<String> autoCompleteList = new ArrayList<String>();
 			
 			if (Dungeon.selectedDungeons.containsKey(p)) {

@@ -149,23 +149,19 @@ public class Tools {
 		return closestEntity;
 	}
 	
-	public static void createMainFolder (File folder, String success)
+	public static void createFolder (File folder, String success)
 	{
 	    if (!folder.exists()) {
 		    Bukkit.getConsoleSender().sendMessage("creating directory: " + folder.toString());
-			boolean result = false;
 			try{
 				folder.mkdir();
-			    result = true;
 			} catch(SecurityException se) { }
-			if(result)  
-				 Bukkit.getConsoleSender().sendMessage(success);  
 		}	
 	}
 	
 	public static File findFile(String dungeonName, String fileName)
 	{
-		File[] listOfFiles = Dungeon.dungeonFolder.listFiles();
+		File[] listOfFiles = Dungeon.getDungeonFolder().listFiles();
 		for (int i = 0; i < listOfFiles.length; i++) {
     		if (!listOfFiles[i].isDirectory() || !listOfFiles[i].getName().equals(dungeonName)) 
     			continue;

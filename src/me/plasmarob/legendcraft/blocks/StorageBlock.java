@@ -7,13 +7,14 @@ import java.util.List;
 import me.plasmarob.legendcraft.Dungeon;
 import me.plasmarob.legendcraft.LegendCraft;
 import me.plasmarob.legendcraft.database.DatabaseInserter;
-import me.plasmarob.legendcraft.database.DatabaseMethods;
 import me.plasmarob.legendcraft.util.Tools;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -39,8 +40,6 @@ public class StorageBlock implements Receiver {
     //-------
     int frames = 1;
     String mode = "ONCE";
-    
-    
     
     /**
      * Creates StorageBlock - called by player command
@@ -69,6 +68,8 @@ public class StorageBlock implements Receiver {
 		Tools.saySuccess(player, "Storage block created!");
 		
 		write();
+		
+		
 	}
 	
 	public void write() {
@@ -95,8 +96,8 @@ public class StorageBlock implements Receiver {
 			.add("frame_id", 1)
 			.location(mainBlock.getX(), mainBlock.getY(), mainBlock.getZ())
 			.add("default", defaultOnOff)
-			.add("inverted", inverted)	
-			*/
+			.add("inverted", inverted)
+		*/
 	}
 	
 	public void addFrame() {

@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import me.plasmarob.legendcraft.blocks.MobTemplate;
 import me.plasmarob.legendcraft.database.Database;
@@ -36,113 +38,76 @@ public class LegendCraft extends JavaPlugin {
 	public final MainListener listener = new MainListener(); // Player Listener 
 	// Effects Library
     private static EffectManager effectManager; 
+    public static EffectManager getEffectManager() { return effectManager; }
 	// YAML file config objects
 	File mainConfigFile;
 	public static FileConfiguration mainConfig;
-	// WorldEdit 
+	// WorldEdit dependency
 	public static WorldEditPlugin worldEditPlugin = null;	
 	// Globals (bare minimum)
+	@Deprecated
 	Location spawn;
-	
+	// Database
 	private Database db;
-	public Database getDatabase() {
-		return db;
-	}
+	public Database getDatabase() { return db; }
 	
 	/**
 	 * onEnable()
-	 * * Loads the Plugin
 	 * * sets up objects, thread, effects manager, listener, and YAML
 	 * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
 	 */
 	@Override
 	public void onEnable()
 	{
+		// Create files & DB
+		firstRun();
+		
 		//----------------------
 		// Primary object setups
 		plugin = this;
-		
-		// Create the thread that updates every tick
-		manager = new ThreadManager();
-		getServer().getScheduler().scheduleSyncRepeatingTask(this, manager, 0, 1);	
-		
+		manager = new ThreadManager(); // Create the thread that updates every tick
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, manager, 0, 1);
 		// Register the main listener
 		Bukkit.getServer().getPluginManager().registerEvents(listener, this);
-		
-		
-				
 		// Create EffectManager for special effects library
-		EffectLib lib = EffectLib.instance();
-		effectManager = new EffectManager(lib);
-				
-		
-		
-		//------
+		effectManager = new EffectManager(EffectLib.instance());
+		// Create the YAML Config in memory
+		mainConfig = new YamlConfiguration(); 
+		//---------------
 		// Database Setup
 		this.db = new SQLite(this);
         this.db.load();
         DatabaseMethods.getInstance(this);	// init method singleton
-		
-        //------
-      	// Database load
-        loadData();
+        Dungeon.loadDungeons(); // 
         
-        
-        
-        
-		//----------------------
-		// Setup the YAML 
-		
-		// Create files in memory
-		try {
-	        firstRun();	// Create files on disk if necessary
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-		// Create the YAML Config in memory
-		mainConfig = new YamlConfiguration();
-		
-		
-		//create dungeon directory if needed.
-	    Dungeon.dungeonFolder = new File(getDataFolder(), "dungeons");
-	    
-	    Tools.createMainFolder(Dungeon.dungeonFolder, "dungeon dir created");
-	    //create mobs directory if needed.
-	    MobTemplate.mobsFolder = new File(getDataFolder(), "mobs");
-	    Tools.createMainFolder(MobTemplate.mobsFolder, "mobs dir created");
-		
 		loadYamls();	// Load the config from the files
-		Bukkit.getConsoleSender().sendMessage("All dungeon ymls loaded!");  
+		getLogger().info("All dungeon ymls loaded!");  
 		
-		//----------------------
+		//-------------------
 		// Bring in WorldEdit
 		worldEditPlugin = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
 	    if(worldEditPlugin == null){
-	        Bukkit.getConsoleSender().sendMessage("Error starting LegendCraft! WorldEdit isn't found."); 
-	        Bukkit.getConsoleSender().sendMessage("Do not attempt to use LegendCraft in this state.");  
+	        getLogger().severe("Error starting LegendCraft! WorldEdit isn't found."); 
+	        //TODO: TEST & DELETEME Bukkit.getConsoleSender().sendMessage("Do not attempt to use LegendCraft in this state.");  
+	        Bukkit.getPluginManager().disablePlugin(this);
 	    }
 	    //change once set in config file
 	    spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
 	    
-	    //----------------------
+	    //------------------------
 	  	// Send off valid commands
-	    this.getCommand("lca").setExecutor(new LegendCraftCommandExecutor(this));
-	    this.getCommand("lce").setExecutor(new LegendCraftCommandExecutor(this));
-		this.getCommand("lc").setExecutor(new LegendCraftCommandExecutor(this));
-		this.getCommand("legendcraft").setExecutor(new LegendCraftCommandExecutor(this));
+	    ArrayList<String> commands = new ArrayList<String>(Arrays.asList("lca","lce","lc","legendcraft"));
+	    for (String cmd : commands) {
+	    	this.getCommand(cmd).setExecutor(new LegendCraftCommandExecutor(this));
+	    	this.getCommand(cmd).setTabCompleter(new LegendCraftTabCompleter());
+	    }
 		
-		this.getCommand("lca").setTabCompleter(new LegendCraftTabCompleter());
-	    this.getCommand("lce").setTabCompleter(new LegendCraftTabCompleter());
-		this.getCommand("lc").setTabCompleter(new LegendCraftTabCompleter());
-		this.getCommand("legendcraft").setTabCompleter(new LegendCraftTabCompleter());
-		
-		
-		Bukkit.getConsoleSender().sendMessage("LegendCraft Loaded!");
+	    // Success
+		getLogger().info("Loaded!");
 	}
 	
 	/**
 	 * onDisable()
-	 * * Unloads the Plugin
 	 * * puts it all to YAML
 	 */
 	@Override
@@ -153,22 +118,44 @@ public class LegendCraft extends JavaPlugin {
 		MobTemplate.saveMobs();
 		saveYamls();
 	}
-
-	// Save YAMLs to file
-	public void saveYamls() {
-	    try {
-	        mainConfig.save(mainConfigFile);
-	    } catch (IOException e) {e.printStackTrace();}
+	
+	/**
+	 * firstRun()
+	 * Create files if they don't exist
+	 */
+	private void firstRun() {
+		if(!getDataFolder().exists())
+			getDataFolder().mkdir();	
+		mainConfigFile = new File(getDataFolder(), "config.yml");
+	    if(!mainConfigFile.exists())
+	    	copyYamlsToFile(getResource("config.yml"), mainConfigFile);
+	    
+	    File dungeonFolder = new File(getDataFolder(), "dungeons");
+	    if(!dungeonFolder.exists()) {
+	    	try{ 
+		    	dungeonFolder.mkdir(); 
+		    	getLogger().info("dungeons folder created.");
+		    } catch(Exception e) { e.printStackTrace(); }
+	    }
+	    Dungeon.setDungeonFolder(dungeonFolder);
+	    
+	    File mobsFolder = new File(getDataFolder(), "mobs");
+	    if(!mobsFolder.exists()) {
+	    	try{ 
+	    		mobsFolder.mkdir(); 		    	
+		    	getLogger().info("mobs folder created.");
+		    } catch(Exception e) { e.printStackTrace(); }
+	    }
+	    MobTemplate.setMobFolder(mobsFolder);
 	}
 	
-	//Load data from DB
-	public void loadData() {
-		Dungeon.loadDungeons();
-	}
+	//------------------------------------------------
+    // YAML methods
 	
 	// Load YAMLs from file
 	public void loadYamls() {
 		//MUST load before dungeons, so mobs are in memory for spawners
+		//TODO: they will be in the DB soon
 		MobTemplate.loadMobs();
 		//Load Dungeons, its blocks, and their data
 		//*** Dungeon.loadDungeons();
@@ -176,37 +163,28 @@ public class LegendCraft extends JavaPlugin {
 	        mainConfig.load(mainConfigFile);
 	    } catch (Exception e) {e.printStackTrace();}
 	}
-	
+
+	// Save YAMLs to file
+	public void saveYamls() {
+	    try {
+	        mainConfig.save(mainConfigFile);
+	    } catch (IOException e) {e.printStackTrace();}
+	}
+		
 	// Copy to file
 	public void copyYamlsToFile(InputStream in, File file) {
 	    try {
 	        OutputStream out = new FileOutputStream(file);
-	        byte[] buf = new byte[1024];
-	        int len;
-	        if (in != null)
+	        if (in != null) {
+	        	int len;
+	        	byte[] buf = new byte[1024];
 		        while((len=in.read(buf))>0){
 		            out.write(buf,0,len);
 		        }
+		        in.close();
+	        }
 	        out.close();
-	        if (in != null)
-	        	in.close();
 	    } catch (Exception e) {e.printStackTrace();}
-	}
-	
-	/**
-	 * firstRun()
-	 * Create the files if they don't exist
-	 */
-	private void firstRun() throws Exception {
-		mainConfigFile = new File(getDataFolder(), "config.yml");
-	    if(!mainConfigFile.exists()){
-	    	mainConfigFile.getParentFile().mkdirs();
-	    	copyYamlsToFile(getResource("config.yml"), mainConfigFile);
-	    }
-	}
-
-	public static EffectManager getEffectManager() {
-		return effectManager;
 	}
 }
 
