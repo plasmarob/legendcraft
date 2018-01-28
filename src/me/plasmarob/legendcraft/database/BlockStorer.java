@@ -12,7 +12,28 @@ import net.minecraft.server.v1_12_R1.TileEntity;
 public class BlockStorer {
 	
 	public static void takeBlocks(Block[] blocks) {
+		
+		/* TODO:
+		 * 
+		 * Write a JSONifier for block metadata
+		 * 
+		 * - Banner
+		 * - Beacon
+		 * - Bed
+		 * - BrewingStand
+		 * - Chest
+		 * - CommandBlock
+		 * - Comparator
+		 * -* Container
+		 * 
+		 */
+		
 		for (Block b : blocks) {
+			
+			BlockState state = b.getState();
+			if (state instanceof Sign ) {
+				((Sign)state).setLine(2,"d");
+			}
 			
 			if(b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN) {
 			       final Sign s = (Sign) b.getState();

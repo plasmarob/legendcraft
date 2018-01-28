@@ -54,7 +54,8 @@ public class Dungeon {
 	public static File getDungeonFolder() { return dungeonFolder; }
 	public static void setDungeonFolder(File folder) { dungeonFolder=folder; }
 	
-	public static ConcurrentHashMap<String, Dungeon> dungeons = new ConcurrentHashMap<String, Dungeon>();
+	private static ConcurrentHashMap<String, Dungeon> dungeons = new ConcurrentHashMap<String, Dungeon>();
+	public static ConcurrentHashMap<String, Dungeon> getDungeons() { return dungeons; };
 	public static ConcurrentHashMap<String, FileConfiguration> dungeonConfigs = new ConcurrentHashMap<String, FileConfiguration>();
 	public static ConcurrentHashMap<Player, String> selectedDungeons = new ConcurrentHashMap<Player, String>();
 	///////////////////////

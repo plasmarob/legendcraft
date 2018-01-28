@@ -22,8 +22,8 @@ public class ThreadManager implements Runnable {
 	
 	public void update()
 	{
-		for (String s : Dungeon.dungeons.keySet())
-			Dungeon.dungeons.get(s).updateIfEnabled();
+		for (String s : Dungeon.getDungeons().keySet())
+			Dungeon.getDungeons().get(s).updateIfEnabled();
 		
 		Tune.progressAll();
 		

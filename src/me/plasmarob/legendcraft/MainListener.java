@@ -178,8 +178,8 @@ public class MainListener implements Listener {
 		int prev = event.getOldCurrent();
 		int next = event.getNewCurrent();
 		if (prev == 0 && next > 0) {
-			for (String dungeonStr : Dungeon.dungeons.keySet()) {
-				Dungeon.dungeons.get(dungeonStr).testForRedstone(event.getBlock());
+			for (String dungeonStr : Dungeon.getDungeons().keySet()) {
+				Dungeon.getDungeons().get(dungeonStr).testForRedstone(event.getBlock());
 			}
 		}
 	}
@@ -374,10 +374,10 @@ public class MainListener implements Listener {
 			if (!p.isSneaking() && (p.getInventory().getItemInMainHand().getType() == Material.AIR || p.getInventory().getItemInMainHand().getType() == null) ) {
 				if (Dungeon.selectedDungeons.containsKey(p)) {
 					String dungeonStr = Dungeon.selectedDungeons.get(p);
-					Dungeon d = Dungeon.dungeons.get(dungeonStr);
+					Dungeon d = Dungeon.getDungeons().get(dungeonStr);
 					if (!d.isEnabled() && d.getBlock(event.getClickedBlock()) != null) {
 						String block = d.getBlock(event.getClickedBlock());
-						Dungeon.dungeons.get(dungeonStr).show(p, block);
+						Dungeon.getDungeons().get(dungeonStr).show(p, block);
 						event.setCancelled(true);
 					}
 				}
@@ -389,9 +389,9 @@ public class MainListener implements Listener {
 		//TODO: Unlock door with a key
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block block = event.getClickedBlock();
-			for (String s : Dungeon.dungeons.keySet()) {
-				if (Dungeon.dungeons.get(s).isEnabled()) {
-					ConcurrentHashMap<String, Door> doors = Dungeon.dungeons.get(s).getDoors();
+			for (String s : Dungeon.getDungeons().keySet()) {
+				if (Dungeon.getDungeons().get(s).isEnabled()) {
+					ConcurrentHashMap<String, Door> doors = Dungeon.getDungeons().get(s).getDoors();
 					Door d;
 					for (String dName : doors.keySet()) {
 						d = doors.get(dName);
@@ -414,9 +414,9 @@ public class MainListener implements Listener {
 			if (is.getType().equals(Material.INK_SACK) && is.getData().getData() == (byte)6) {
 				Material handItemType = event.getPlayer().getInventory().getItemInMainHand().getType();
 				if (handItemType.equals(Material.GOLD_NUGGET)) {
-					for (String s : Dungeon.dungeons.keySet()) {
-						if (Dungeon.dungeons.get(s).isEnabled()) {
-							ConcurrentHashMap<String, Door> doors = Dungeon.dungeons.get(s).getDoors();
+					for (String s : Dungeon.getDungeons().keySet()) {
+						if (Dungeon.getDungeons().get(s).isEnabled()) {
+							ConcurrentHashMap<String, Door> doors = Dungeon.getDungeons().get(s).getDoors();
 							Door d;
 							for (String dName : doors.keySet()) {
 								d = doors.get(dName);

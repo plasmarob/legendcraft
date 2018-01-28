@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,11 +14,8 @@ import me.plasmarob.legendcraft.database.DatabaseMethods;
 import me.plasmarob.legendcraft.database.SQLite;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -109,10 +105,6 @@ public class LegendCraft extends JavaPlugin {
 	    // Success
 		getLogger().info("Loaded!");
 	}
-	
-	
-	
-	
 	
 	/**
 	 * onDisable()

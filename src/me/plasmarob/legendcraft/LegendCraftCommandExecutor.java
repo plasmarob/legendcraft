@@ -56,7 +56,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 	
 	LegendCraft plugin;
 	public static ConcurrentHashMap<String, MobTemplate> mobs = MobTemplate.mobs;
-	public static ConcurrentHashMap<String, Dungeon> dungeons = Dungeon.dungeons;
+	public static ConcurrentHashMap<String, Dungeon> dungeons = Dungeon.getDungeons();
 	public static ConcurrentHashMap<Player, String> selectedDungeons = Dungeon.selectedDungeons;
 	String red = "" + ChatColor.RED;
 	String purp = "" + ChatColor.LIGHT_PURPLE;
@@ -162,7 +162,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			ht.add(c+"disable [dungeon] : "+r+"Disable dungeon");
 			ht.add(c+"edit <block> <key> <value> : "+r+"Edit a block");
 			ht.add(c+"enable [dungeon] : "+r+"Enable dungeon");
-			ht.add(c+"expand: "+r+"expand dungeon to WorldEdit selection");
+			ht.add(c+"expand : "+r+"expand dungeon to WorldEdit selection");
 			ht.add(c+"insertMob <spawner> <mob> [count] : "+r+"Put in spawner");
 			ht.add(c+"link <from> <to> [TRIGGER|set|reset|on|off] : "+r+"Link blocks");
 			ht.add(c+"list: "+r+"List existing dungeons");
@@ -171,11 +171,10 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			ht.add(c+"mobInfo: "+r+"Show info about mob");
 			ht.add(c+"playsound <tune> : "+r+"plays a written tune.");
 			ht.add(c+"ps <tune> : "+r+"see playSound");
-			ht.add(c+"saveMob <name> : "+r+"Save closest mob as <name>");
+			ht.add(c+"savemob <name> : "+r+"Save closest mob as <name>");
 			ht.add(c+"save : "+r+"Save current dungeon");
-			ht.add(c+"save: "+r+"Save the current dungeon");
 			ht.add(c+"select <dungeon> : "+r+"Select dungeon to edit");
-			ht.add(c+"setWorld: "+r+"adds/removes current world to/from plugin");
+			ht.add(c+"setworld : "+r+"adds/remove current world to/from plugin");
 			ht.add(c+"show [block] : "+r+"Details dungeon or block");
 			ht.add(c+"spawn: "+r+"Spawn mob");
 			ht.add(c+"unlink <block>: "+r+"remove links to and from a block");

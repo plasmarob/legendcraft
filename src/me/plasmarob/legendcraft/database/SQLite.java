@@ -20,14 +20,16 @@ public class SQLite extends Database{
         dbname = plugin.getConfig().getString("SQLite.Filename", "legendcraft"); // Database filename
     }
     
-    public String SQLiteCreateWorldTable = "CREATE TABLE IF NOT EXISTS world (" + 
+    public String SQLiteCreateWorldTable = 
+    		"CREATE TABLE IF NOT EXISTS world (" + 
     		"`id` INTEGER PRIMARY KEY," +
             "`uuid` varchar(255) NOT NULL," + 
             "`name` varchar(255) NOT NULL," +
             "CONSTRAINT uuid_unique UNIQUE (uuid)" +
             ");";
     
-    public String SQLiteCreateDungeonTable = "CREATE TABLE IF NOT EXISTS dungeon (" + 
+    public String SQLiteCreateDungeonTable = 
+    		"CREATE TABLE IF NOT EXISTS dungeon (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`world_id` INTEGER NOT NULL," +
             "`name` varchar(255) NOT NULL," +
@@ -36,7 +38,8 @@ public class SQLite extends Database{
             "CONSTRAINT name_unique UNIQUE (name)" +
             ");";
             //"); CREATE UNIQUE INDEX IF NOT EXISTS world_uuid ON world(uuid);";
-    public String SQLiteCreateLinkTable = "CREATE TABLE IF NOT EXISTS link (" + 
+    public String SQLiteCreateLinkTable = 
+    		"CREATE TABLE IF NOT EXISTS link (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`sender_id` INTEGER NOT NULL," +
     		"`receiver_id` INTEGER NOT NULL," +
@@ -46,11 +49,13 @@ public class SQLite extends Database{
             "FOREIGN KEY(trigger_type_id) REFERENCES triggerType(id)" +
             ");";
     
-    public String SQLiteCreateBlockTypeTable = "CREATE TABLE IF NOT EXISTS blockType (" + 
+    public String SQLiteCreateBlockTypeTable = 
+    		"CREATE TABLE IF NOT EXISTS blockType (" + 
     		"`id` INTEGER PRIMARY KEY," +
             "`name` varchar(255) NOT NULL" +
             ");";
-    public String SQLitePopulateBlockTypeTable = "REPLACE INTO blockType VALUES (10,'PLAYER_DETECTOR');" +
+    public String SQLitePopulateBlockTypeTable = 
+    		"REPLACE INTO blockType VALUES (10,'PLAYER_DETECTOR');" +
     		"REPLACE INTO blockType VALUES (20,'STORAGE');" +
     		"REPLACE INTO blockType VALUES (30,'TIMER');" +
     		"REPLACE INTO blockType VALUES (40,'SPAWNER');" +
@@ -59,7 +64,8 @@ public class SQLite extends Database{
     		"REPLACE INTO blockType VALUES (70,'REDSTONE_DETECTOR');" +
     		"REPLACE INTO blockType VALUES (80,'CHEST');" +
     		"REPLACE INTO blockType VALUES (90,'DOOR');";   
-    public String SQLiteCreateBlockTable = "CREATE TABLE IF NOT EXISTS block (" + 
+    public String SQLiteCreateBlockTable = 
+    		"CREATE TABLE IF NOT EXISTS block (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`dungeon_id` INTEGER NOT NULL," +
     		"`type_id` INTEGER NOT NULL," +
@@ -77,7 +83,8 @@ public class SQLite extends Database{
             ");";
     
 
-    public String SQLiteCreateChestTable = "CREATE TABLE IF NOT EXISTS chest (" + 
+    public String SQLiteCreateChestTable = 
+    		"CREATE TABLE IF NOT EXISTS chest (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`block_id` INTEGER NOT NULL," +
     		"`facing` varchar(255) NOT NULL," +
@@ -85,7 +92,8 @@ public class SQLite extends Database{
             "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
     
-    public String SQLiteCreateStorageTable = "CREATE TABLE IF NOT EXISTS storage (" + 
+    public String SQLiteCreateStorageTable = 
+    		"CREATE TABLE IF NOT EXISTS storage (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`block_id` INTEGER NOT NULL," +
     		"`frame_count` INTEGER NOT NULL," +
@@ -93,7 +101,8 @@ public class SQLite extends Database{
             "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
     
-    public String SQLiteCreateStorageFrameTable = "CREATE TABLE IF NOT EXISTS storageFrame (" + 
+    public String SQLiteCreateStorageFrameTable = 
+    		"CREATE TABLE IF NOT EXISTS storageFrame (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`storage_id` INTEGER NOT NULL," +
     		"`frame_id` INTEGER NOT NULL," +
@@ -107,7 +116,8 @@ public class SQLite extends Database{
     
     // --------------------------------------
     
-    public String SQLiteCreateDoorTable = "CREATE TABLE IF NOT EXISTS door (" + 
+    public String SQLiteCreateDoorTable = 
+    		"CREATE TABLE IF NOT EXISTS door (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`block_id` INTEGER NOT NULL," +
     		"`facing` varchar(255) NOT NULL," +
@@ -118,14 +128,16 @@ public class SQLite extends Database{
             ");";
     
     
-    public String SQLiteCreatePlayerDetectorTable = "CREATE TABLE IF NOT EXISTS playerDetector (" + 
+    public String SQLiteCreatePlayerDetectorTable = 
+    		"CREATE TABLE IF NOT EXISTS playerDetector (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`block_id` INTEGER NOT NULL," +
             "`blockdata` varchar(255) NOT NULL," + 	// x1,y1,z1;x2,y2,z2;
             "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
     
-    public String SQLiteCreateTorchTable = "CREATE TABLE IF NOT EXISTS torch (" + 
+    public String SQLiteCreateTorchTable = 
+    		"CREATE TABLE IF NOT EXISTS torch (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`block_id` INTEGER NOT NULL," +
     		"`lit_yn` varchar(1)," +
@@ -137,13 +149,15 @@ public class SQLite extends Database{
     
     
     
-    public String SQLiteCreateTriggerTypeTable = "CREATE TABLE IF NOT EXISTS triggerType (" + 
+    public String SQLiteCreateTriggerTypeTable = 
+    		"CREATE TABLE IF NOT EXISTS triggerType (" + 
     		"`id` INTEGER PRIMARY KEY," +
             "`name` varchar(255) NOT NULL" +
             ");";
     //TODO: add Replace Into
     
-    public String SQLiteCreateMobTable = "CREATE TABLE IF NOT EXISTS mob (" + 
+    public String SQLiteCreateMobTable = 
+    		"CREATE TABLE IF NOT EXISTS mob (" + 
     		"`id` INTEGER PRIMARY KEY," +
             "`name` varchar(255) NOT NULL," +
             "`entity_type` varchar(255) NOT NULL," +
@@ -152,7 +166,8 @@ public class SQLite extends Database{
             "CONSTRAINT mob_name_unique UNIQUE (name)" +
             ");";
     
-    public String SQLiteCreateMobSpawnTable = "CREATE TABLE IF NOT EXISTS mobSpawn (" + 
+    public String SQLiteCreateMobSpawnTable = 
+    		"CREATE TABLE IF NOT EXISTS mobSpawn (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`mob_id` INTEGER NOT NULL," +
     		"`spawner_id` INTEGER NOT NULL," +
@@ -165,14 +180,16 @@ public class SQLite extends Database{
    //------------------------------------
    //For [much] later updates
     
-    public String SQLiteCreatePlayerTable = "CREATE TABLE IF NOT EXISTS player (" + 
+    public String SQLiteCreatePlayerTable = 
+    		"CREATE TABLE IF NOT EXISTS player (" + 
     		"`id` INTEGER PRIMARY KEY," +
             "`uuid` varchar(255) NOT NULL," + 
             "`name` varchar(255) NOT NULL," +
             "CONSTRAINT uuid_unique UNIQUE (uuid)" +
             ");";
     
-    public String SQLiteCreatePlayerDungeonTable = "CREATE TABLE IF NOT EXISTS playerDungeon (" + 
+    public String SQLiteCreatePlayerDungeonTable = 
+    		"CREATE TABLE IF NOT EXISTS playerDungeon (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`player_id` INTEGER NOT NULL," +
     		"`dungeon_id` INTEGER NOT NULL," +
@@ -210,7 +227,7 @@ public class SQLite extends Database{
     public void load() {
         connection = getSQLConnection();
         try {
-            Statement s = connection.createStatement(); //TODO: NullPointer
+            Statement s = connection.createStatement();
             //s.executeUpdate(SQLiteCreateTokensTable);
             s.executeUpdate(SQLiteCreateWorldTable);
             s.executeUpdate(SQLiteCreateDungeonTable);
