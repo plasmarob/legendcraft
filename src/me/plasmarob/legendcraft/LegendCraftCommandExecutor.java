@@ -1,6 +1,7 @@
 package me.plasmarob.legendcraft;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 	public static ConcurrentHashMap<Player, String> selectedDungeons = Dungeon.selectedDungeons;
 	String red = "" + ChatColor.RED;
 	String purp = "" + ChatColor.LIGHT_PURPLE;
+	String b = "" + ChatColor.DARK_BLUE;
 	Player player;
 	
 	public LegendCraftCommandExecutor(LegendCraft plugin)  {
@@ -127,13 +129,8 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			int page = 1;
 			if (args.length >= 2)
 			{
-				try {
-					page = Integer.parseInt(args[1]);
-				} catch (Exception e) {
-					page = 1;
-				}
-				if (page > 4)
-					page = 4;
+				try { page = Integer.parseInt(args[1]); } catch (Exception e) { page = 1; }
+				if (page > 4) page = 4;
 			}
 			
 			String title = ChatColor.GREEN + "---------";
@@ -145,50 +142,107 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			String c = ChatColor.DARK_GREEN + "/lc ";
 			String r = ChatColor.RESET + "";
 			
-			String[] helptext = new String[36];
-			helptext[0]=ChatColor.GRAY+"Use /lc help [n] to get page n of help.";
-			helptext[1]=c+"add Chest <name> : "+r+"New chest";
-			helptext[2]=c+"add Detector <name> : "+r+"New detector";
-			helptext[3]=c+"add Door <name> : "+r+"New door";
-			helptext[4]=c+"add Music <name> : "+r+"Music block from last played tune";
-			helptext[5]=c+"add RSDetector <name> : "+r+"New Redstone Detector";
-			helptext[6]=c+"add Spawner <name> : "+r+"Create new spawner";
-			helptext[7]=c+"add Storage <name> : "+r+"Create new storage block";
-			helptext[8]=c+"add Timer <name> <delay> : "+r+"New Timer";
-			helptext[9]=c+"add Torch <name> <TorchBlock> : "+r+"New Torch to TorchBlock";
-			helptext[10]=c+"add TorchBlock <name> : "+r+"New TorchBlock";
-			helptext[11]=c+"create <dungeon> : "+r+"Create new dungeon";
-			helptext[12]=c+"delete <block> : "+r+"Deletes block";
-			helptext[13]=c+"deleteDungeon <dungeon> :"+r+"Deletes dungeon";
-			helptext[14]=c+"disable [dungeon] : "+r+"Disable dungeon";
-			helptext[15]=c+"edit <block> <key> <value> : "+r+"Edit a block";
-			helptext[16]=c+"enable [dungeon] : "+r+"Enable dungeon";
-			helptext[17]=c+"expand: "+r+"expand dungeon to WorldEdit selection";
-			helptext[18]=c+"insertMob <spawner> <mob> [count] : "+r+"Put in spawner";
-			helptext[19]=c+"link <from> <to> [TRIGGER|set|reset|on|off] : "+r+"Link blocks";
-			helptext[20]=c+"list: "+r+"List existing dungeons";
-			helptext[21]=c+"listMobs: "+r+"List available mobs";
-			helptext[22]=c+"m <tune> : "+r+"see playSound";
-			helptext[23]=c+"mobInfo: "+r+"Show info about mob";
-			helptext[24]=c+"playsound <tune> : "+r+"plays a written tune.";
-			helptext[25]=c+"ps <tune> : "+r+"see playSound";
-			helptext[26]=c+"saveMob <name> : "+r+"Save closest mob as <name>";
-			helptext[27]=c+"save : "+r+"Save current dungeon";
-			helptext[28]=c+"save: "+r+"Save the current dungeon";
-			helptext[29]=c+"select <dungeon> : "+r+"Select dungeon to edit";
-			helptext[30]=c+"setWorld: "+r+"adds/removes current world to/from plugin";
-			helptext[31]=c+"show [block] : "+r+"Details dungeon or block";
-			helptext[32]=c+"spawn: "+r+"Spawn mob";
-			helptext[33]=c+"unlink <block>: "+r+"remove links to and from a block";
-			helptext[34]=c+"unlink <from> <to>: "+r+"remove a specific link";
-			helptext[35]="";
+			
+			List<String> ht = new ArrayList<String>();
+
+			ht.add(ChatColor.GRAY+"Use /lc ? to get a tutorial.");
+			ht.add(c+"add Chest <name> : "+r+"New chest");
+			ht.add(c+"add Detector <name> : "+r+"New detector");
+			ht.add(c+"add Door <name> : "+r+"New door");
+			ht.add(c+"add Music <name> : "+r+"Music block from last played tune");
+			ht.add(c+"add RSDetector <name> : "+r+"New Redstone Detector");
+			ht.add(c+"add Spawner <name> : "+r+"New spawner");
+			ht.add(c+"add Storage <name> : "+r+"New storage block");
+			ht.add(c+"add Timer <name> <delay> : "+r+"New Timer");
+			ht.add(c+"add Torch <name> <TorchBlock> : "+r+"New Torch to TorchBlock");
+			ht.add(c+"add TorchBlock <name> : "+r+"New TorchBlock");
+			ht.add(c+"create <dungeon> : "+r+"New dungeon");
+			ht.add(c+"delete <block> : "+r+"Deletes block");
+			ht.add(c+"deleteDungeon <dungeon> :"+r+"Deletes dungeon");
+			ht.add(c+"disable [dungeon] : "+r+"Disable dungeon");
+			ht.add(c+"edit <block> <key> <value> : "+r+"Edit a block");
+			ht.add(c+"enable [dungeon] : "+r+"Enable dungeon");
+			ht.add(c+"expand: "+r+"expand dungeon to WorldEdit selection");
+			ht.add(c+"insertMob <spawner> <mob> [count] : "+r+"Put in spawner");
+			ht.add(c+"link <from> <to> [TRIGGER|set|reset|on|off] : "+r+"Link blocks");
+			ht.add(c+"list: "+r+"List existing dungeons");
+			ht.add(c+"listMobs: "+r+"List available mobs");
+			ht.add(c+"m <tune> : "+r+"see playSound");
+			ht.add(c+"mobInfo: "+r+"Show info about mob");
+			ht.add(c+"playsound <tune> : "+r+"plays a written tune.");
+			ht.add(c+"ps <tune> : "+r+"see playSound");
+			ht.add(c+"saveMob <name> : "+r+"Save closest mob as <name>");
+			ht.add(c+"save : "+r+"Save current dungeon");
+			ht.add(c+"save: "+r+"Save the current dungeon");
+			ht.add(c+"select <dungeon> : "+r+"Select dungeon to edit");
+			ht.add(c+"setWorld: "+r+"adds/removes current world to/from plugin");
+			ht.add(c+"show [block] : "+r+"Details dungeon or block");
+			ht.add(c+"spawn: "+r+"Spawn mob");
+			ht.add(c+"unlink <block>: "+r+"remove links to and from a block");
+			ht.add(c+"unlink <from> <to>: "+r+"remove a specific link");
 						
 			page = (page < 1 || page > 4) ? 1 : page;
 			int firsthelp = 9*(page-1);
-			for (int i = 0; i < 9; i++) {
-				say(helptext[firsthelp+i]);
+			for (int i = 0; i < 9 && i < ht.size(); i++) {
+				say(ht.get(firsthelp+i));
 			}
 			return true;
+		}
+		
+		if (last_index >= 1 && args[0].equals("?")) {
+			int tutpage=1;
+			final int SIZE=4;
+			if (args.length >= 2)
+			{
+				try { tutpage = Integer.parseInt(args[1]); } catch (Exception e) { tutpage = 1; }
+				tutpage = (tutpage < 1 || tutpage > SIZE) ? 1 : tutpage;
+			}
+			
+			String title = ChatColor.GREEN + "-------";
+			title += ChatColor.RESET + " LegendCraft Tutorial ("+tutpage+"/"+SIZE+") ";
+			title += ChatColor.GREEN + "----------------------------------------";
+			title = title.substring(0,54);
+			say(title);
+			
+			//TODO: finish tutorial
+			/*
+			 * detector
+			 * lc enable/disable
+			 */
+			switch (tutpage) {
+			case 2:
+				say(b + "Getting Started:");
+				say(b + "dis/enable the plugin for worlds:");
+				say(b + "  /lc addworld");
+				say(b + "  /lc removeworld");
+				say(b + "Use WorldEdit wand to select a big 3D area.");
+				say(b + "When ready, create the dunegeon:");
+				say(b + "  /lc create <name>");
+			    break;
+			case 3:
+				say(b + "See & Choose:");
+				say(b + "To see existing dungeons:");
+				say(b + "  /lc list");
+				say(b + "To select a dungeon to edit:");
+				say(b + "  /lc select <dungeon>");
+				say(b + "To see info about a dungeon:");
+				say(b + "  /lc info");
+			    break;    
+			    
+			case 1:
+		    default:
+		    	say(b + "Welcome to LegendCraft!");
+		    	say(b + "LegendCraft lets you create dungeons.");
+		    	say(b + "Make your server into a Zelda map!");
+		    	say(b + "Make challenges for friends!");
+		    	say(b + "Set traps and build puzzles!");
+		    	say(b + "Create spawners and bosses!");
+		    	say(b + "Use \"/lc ? 2\" to go to learn how.");
+		    	break;
+			}
+			
+
+			
 		}
 		
 		
@@ -288,7 +342,20 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 					say(red + "Torch block creation failed.");
 			}
 		}} else if (args[0] != null && args[0].toLowerCase().equals("add")) {
-			say(red+ "Invalid arguments. Please provide a name.");
+			
+			String c = ChatColor.DARK_GRAY + "/lc ";
+			String r = ChatColor.RESET + "";
+			say(red+ "No block specified. Examples:");
+			say(c+"add Chest <name> : "+r+"New chest");
+			say(c+"add Detector <name> : "+r+"New detector");
+			say(c+"add Door <name> : "+r+"New door");
+			say(c+"add Music <name> : "+r+"Music block from last played tune");
+			say(c+"add RSDetector <name> : "+r+"New Redstone Detector");
+			say(c+"add Spawner <name> : "+r+"New spawner");
+			say(c+"add Storage <name> : "+r+"New storage block");
+			say(c+"add Timer <name> <delay> : "+r+"New Timer");
+			say(c+"add Torch <name> <TorchBlock> : "+r+"New Torch to TorchBlock");
+			say(c+"add TorchBlock <name> : "+r+"New TorchBlock");
 		}
 
 	

@@ -7,17 +7,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import me.plasmarob.legendcraft.blocks.MobTemplate;
 import me.plasmarob.legendcraft.database.Database;
 import me.plasmarob.legendcraft.database.DatabaseMethods;
 import me.plasmarob.legendcraft.database.SQLite;
-import me.plasmarob.legendcraft.util.Tools;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -36,6 +38,7 @@ public class LegendCraft extends JavaPlugin {
 	public static LegendCraft plugin;
 	public static ThreadManager manager;
 	public final MainListener listener = new MainListener(); // Player Listener 
+	public final LegendCraftTabCompleter tabCompleter = new LegendCraftTabCompleter();
 	// Effects Library
     private static EffectManager effectManager; 
     public static EffectManager getEffectManager() { return effectManager; }
@@ -96,15 +99,20 @@ public class LegendCraft extends JavaPlugin {
 	    
 	    //------------------------
 	  	// Send off valid commands
-	    ArrayList<String> commands = new ArrayList<String>(Arrays.asList("lca","lce","lc","legendcraft"));
+	    //TODO: implement Tab Completion
+	    List<String> commands = Arrays.asList("lca","lce","lc","legendcraft");
 	    for (String cmd : commands) {
 	    	this.getCommand(cmd).setExecutor(new LegendCraftCommandExecutor(this));
-	    	this.getCommand(cmd).setTabCompleter(new LegendCraftTabCompleter());
+	    	this.getCommand(cmd).setTabCompleter(tabCompleter);
 	    }
 		
 	    // Success
 		getLogger().info("Loaded!");
 	}
+	
+	
+	
+	
 	
 	/**
 	 * onDisable()
