@@ -77,6 +77,7 @@ public class SQLite extends Database{
             "`max` TEXT," +
             "`times` INTEGER," +
             "`blocks` TEXT," +
+            "`data` TEXT DEFAULT NULL," +
             "FOREIGN KEY(dungeon_id) REFERENCES dungeon(id)," +
             "FOREIGN KEY(type_id) REFERENCES blockType(id)," +
             "UNIQUE (name, dungeon_id)" +

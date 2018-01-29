@@ -832,7 +832,7 @@ public class Dungeon {
 				}
 			} else if (!Tools.canSeeThrough(next.getType())) {
 				player.sendMessage(ChatColor.RED + "Coal not found. Enter this command while facing " + 
-									Material.COAL_ORE.toString());
+								   Material.COAL_ORE.toString());
 				return false;
 			}
 		}

@@ -17,6 +17,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.json.simple.JSONObject;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -67,12 +68,17 @@ public class StorageBlock implements Receiver {
         }
 		Tools.saySuccess(player, "Storage block created!");
 		
-		write();
+		dbInsert();
 		
 		
 	}
 	
-	public void write() {
+	public void dbInsert() {
+		
+		JSONObject blocks = new JSONObject();
+		//blocks.put
+		
+		
 		// Insert into DB
 		int b_id = new DatabaseInserter("block")
 			.dungeon_id(dungeon.getDungeonId())
@@ -82,6 +88,20 @@ public class StorageBlock implements Receiver {
 			.add("default", defaultOnOff)
 			.add("inverted", inverted)
 			.execute();
+		
+		
+		/*
+		new DatabaseInserter("block")
+		.dungeon_id(dungeon.getDungeonId())
+		.type_id("PLAYER_DETECTOR")
+		.name(name)
+		.location(mainBlock.getX(), mainBlock.getY(), mainBlock.getZ())
+		.add("default", defaultOnOff)
+		.add("inverted", inverted)
+		.add("times", maxTimes)
+		.add("blocks", blocks.toString())
+		.execute();
+		*/
 		
 		int s_id = new DatabaseInserter("storage")
 			.add("block_id", b_id)

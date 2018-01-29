@@ -271,7 +271,7 @@ public class Door implements Receiver {
         }
 	}
 	
-	public void write() {
+	public void dbInsert() {
 		
 	}
 

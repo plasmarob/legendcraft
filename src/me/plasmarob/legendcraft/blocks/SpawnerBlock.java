@@ -77,7 +77,7 @@ public class SpawnerBlock implements Receiver, Sender{
 		}
 	}
 	
-	public void write() {
+	public void dbInsert() {
 		
 	}
 

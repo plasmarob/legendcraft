@@ -42,7 +42,7 @@ public class MusicBlock implements Receiver {
 		this.block = mainBlock;
 	}
 	
-	public void write() {
+	public void dbInsert() {
 		
 	}
 

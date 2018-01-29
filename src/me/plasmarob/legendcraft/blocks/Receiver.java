@@ -37,5 +37,5 @@ public interface Receiver {
 	public void edit(Player p, String key, String value);
 	public boolean hasBlock(Block b);
 	
-	public void write();
+	public void dbInsert();
 }

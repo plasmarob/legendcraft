@@ -344,7 +344,9 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			
 			String c = ChatColor.DARK_GRAY + "/lc ";
 			String r = ChatColor.RESET + "";
-			say(red+ "No block specified. Examples:");
+			say(red+ "No block specified.");
+			/*
+			 * DELETEME - autocomplete is fine
 			say(c+"add Chest <name> : "+r+"New chest");
 			say(c+"add Detector <name> : "+r+"New detector");
 			say(c+"add Door <name> : "+r+"New door");
@@ -355,6 +357,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			say(c+"add Timer <name> <delay> : "+r+"New Timer");
 			say(c+"add Torch <name> <TorchBlock> : "+r+"New Torch to TorchBlock");
 			say(c+"add TorchBlock <name> : "+r+"New TorchBlock");
+			*/
 		}
 
 	

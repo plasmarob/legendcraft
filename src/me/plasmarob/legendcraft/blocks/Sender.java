@@ -33,5 +33,5 @@ public interface Sender {
 	public int getY();
 	public int getZ();
 	
-	void write();
+	void dbInsert();
 }

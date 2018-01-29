@@ -52,7 +52,7 @@ public class TorchBlock implements Sender,Receiver  {
 		}
 	}
 	
-	public void write() {
+	public void dbInsert() {
 		
 	}
 

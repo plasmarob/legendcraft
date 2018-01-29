@@ -35,10 +35,10 @@ public class Timer implements Sender, Receiver {
 		this.name = name;
 		this.delay = delay;
 		
-		write();
+		dbInsert();
 	}
 	
-	public void write() {
+	public void dbInsert() {
 		// Insert into DB
 		new DatabaseInserter("block")
 				.dungeon_id(dungeon.getDungeonId())

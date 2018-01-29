@@ -42,7 +42,7 @@ public class RedstoneDetector implements Sender, Receiver {
 	public RedstoneDetector(Block mainBlock, String name, Dungeon dungeon) {	
 		this.name = name;
 		this.mainBlock = mainBlock;
-		write();
+		dbInsert();
 	}
 	
 	public RedstoneDetector(Map<String,Object> data, Dungeon dungeon) {
@@ -54,7 +54,7 @@ public class RedstoneDetector implements Sender, Receiver {
 		maxTimes = (int) data.get("times");
 	}
 	
-	public void write() {
+	public void dbInsert() {
 		// Insert into DB
 		new DatabaseInserter("block")
 				.dungeon_id(dungeon.getDungeonId())

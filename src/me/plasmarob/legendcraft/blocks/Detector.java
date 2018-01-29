@@ -63,7 +63,7 @@ public class Detector implements Sender, Receiver {
 		if (blockList.size() >= 100)
 			player.sendMessage("Too many potential detector blocks found. Truncating to first 100 found.");
 		
-		write();
+		dbInsert();
 	}
 	
 	public Detector(Map<String,Object> data, Dungeon dungeon) {
@@ -81,7 +81,7 @@ public class Detector implements Sender, Receiver {
 		}
 	}
 	
-	public void write() {
+	public void dbInsert() {
 		// Insert into DB
 		StringJoiner blocks = new StringJoiner(";");
 		for (Block b : blockList) {
@@ -153,18 +153,18 @@ public class Detector implements Sender, Receiver {
 	}
 	public void setDefaultOnOff(boolean defaultOnOff) {
 		this.defaultOnOff = defaultOnOff;
-		write();
+		dbInsert();
 	}
 	public boolean isInverted() {
 		return inverted;
 	}
 	public void setInverted(boolean inverted) {
 		this.inverted = inverted;
-		write();
+		dbInsert();
 	}
 	public void setDelay(int delay) {
 		this.delay = delay;
-		write();
+		dbInsert();
 	}
 	public double getDelay() {
 		return delay;
@@ -175,7 +175,7 @@ public class Detector implements Sender, Receiver {
 	}
 	public void setMaxTimes(int maxTimes) {
 		this.maxTimes = maxTimes;
-		write();
+		dbInsert();
 	}
 	public int getTimesTriggered() {
 		return timesRun;
@@ -366,7 +366,7 @@ public class Detector implements Sender, Receiver {
 			p.sendMessage(prp + "  Max set to " + count + " triggers.");
 		}		
 		
-		write();
+		dbInsert();
 	}
 
 	@Override

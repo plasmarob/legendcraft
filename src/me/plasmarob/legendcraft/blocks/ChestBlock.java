@@ -54,7 +54,7 @@ public class ChestBlock implements Receiver {
 		}
 		face = ((DirectionalContainer)chest.getData()).getFacing();
 		
-		write();
+		dbInsert();
 	}
 	
 	public ChestBlock(Map<String,Object> data, Dungeon dungeon) {
@@ -106,7 +106,7 @@ public class ChestBlock implements Receiver {
 		//Base64Coder
 	}
 	
-	public void write() {
+	public void dbInsert() {
 		// Insert into DB
 		new DatabaseInserter("block")
 			.dungeon_id(dungeon.getDungeonId())
