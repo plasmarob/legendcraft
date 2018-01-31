@@ -30,7 +30,7 @@ public class LegendCraftTabCompleter implements TabCompleter {
 			
 			// core commands
 			if (args.length==1) {
-				final String[] COMMANDS = { "add","edit","info","create","delete","deleteDungeon", "disable", 
+				final String[] COMMANDS = { "addworld", "removeworld", "add","edit","info","create","delete","deleteDungeon", "disable", 
 						                  "enable", "disable",  "expand", "insertMob", "link", "list", "listMobs", "mobinfo", 
 						                  "playsound", "save", "saveMob", "select", "setWorld", "show", "spawn", "unlink" };
 				autoCompleteList = new ArrayList<String>(COMMANDS.length);

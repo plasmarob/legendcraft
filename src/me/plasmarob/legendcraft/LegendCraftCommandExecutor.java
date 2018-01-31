@@ -22,6 +22,7 @@ import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -108,27 +109,22 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		//if (!strings.contains(player.getWorld().getName()))
 		//Tools.say(DatabaseMethods.containsWorld(player.getWorld().getUID()));
 		//Tools.say(plugin.getDatabase().containsWorld(player.getWorld().getUID()));
-		if (!DatabaseMethods.containsWorld(player.getWorld().getUID()))
-		{
-			if ( !(last_index >= 0 && (args[0].toLowerCase().equals("addworld") || args[0].toLowerCase().equals("removeworld"))))
-			{
+		if (!DatabaseMethods.containsWorld(player.getWorld().getUID())) {
+			if ( !(last_index >= 0 && (args[0].toLowerCase().equals("addworld") || args[0].toLowerCase().equals("removeworld")))) {
 				say(red + "You cannot perform that command in this world.");
 				say(red + "try using '/lc addworld' first.");
 				return false;
 			}
 		}
 		
-		
 		/**
 		 * HELP
 		 * - Lists available commands
 		 * --- /lc list
 		 */
-		if (args == null || args.length == 0 || (args.length >= 1 && args[0].toLowerCase().equals("help")))
-		{
+		if (args == null || args.length == 0 || (args.length >= 1 && args[0].toLowerCase().equals("help"))) {
 			int page = 1;
-			if (args.length >= 2)
-			{
+			if (args.length >= 2) {
 				try { page = Integer.parseInt(args[1]); } catch (Exception e) { page = 1; }
 				if (page > 4) page = 4;
 			}
@@ -141,7 +137,6 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			
 			String c = ChatColor.DARK_GREEN + "/lc ";
 			String r = ChatColor.RESET + "";
-			
 			
 			List<String> ht = new ArrayList<String>();
 
@@ -191,8 +186,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		if (last_index >= 1 && args[0].equals("?")) {
 			int tutpage=1;
 			final int SIZE=4;
-			if (args.length >= 2)
-			{
+			if (args.length >= 2) {
 				try { tutpage = Integer.parseInt(args[1]); } catch (Exception e) { tutpage = 1; }
 				tutpage = (tutpage < 1 || tutpage > SIZE) ? 1 : tutpage;
 			}
@@ -226,8 +220,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				say(b + "  /lc select <dungeon>");
 				say(b + "To see info about a dungeon:");
 				say(b + "  /lc info");
-			    break;    
-			    
+			    break;     
 			case 1:
 		    default:
 		    	say(b + "Welcome to LegendCraft!");
@@ -239,11 +232,11 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		    	say(b + "Use \"/lc ? 2\" to go to learn how.");
 		    	break;
 			}
-			
-
-			
 		}
 		
+		if (last_index >= 0 && args[0].toLowerCase().equals("test")) {
+			player.sendMessage("hi");
+		}
 		
 		if (last_index >= 2 && args[0].toLowerCase().equals("add")) {
 		if (!selectedDungeons.containsKey(player))
@@ -299,11 +292,12 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			 * - attempts to create a storage block via looked-at emerald_ore
 			 */
 			} else if (addType.equals("storageblock") || addType.equals("storage") || addType.equals("sto")) {
-				if (!dungeons.get(dungeonStr).tryAddStorageBlock(player, args[2]))
+				if (!dungeons.get(dungeonStr).tryAddStorage(player, args[2]))
 					say(red + "Storage block creation failed.");
 			} else if (addType.equals("storageframe") || addType.equals("frame") || addType.equals("sf")) {
 				if (last_index < 2)
 					say(red + "Invalid arguments. Usage: /lc add storageframe <storage_name> [replace_frame#]");
+				/*
 				else if (last_index == 2) {
 					if (!dungeons.get(dungeonStr).tryAddToStorageBlock(player, args[2]))
 						say(red + "Storage frame addition failed.");
@@ -312,9 +306,9 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 					if (!dungeons.get(dungeonStr).tryAddToStorageBlock(player, args[2], args[3]))
 						say(red + "Storage frame addition failed.");
 				}
+				*/
 				else
 					say(red + "Invalid arguments. Usage: /lc add storageframe <storage_name> [replace_frame#]");
-				
 			/**
 			 * Add Timer
 			 * - attempts to create a timer via looked-at IDC
@@ -360,7 +354,6 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			*/
 		}
 
-	
 		/*
 		if(args[0].toLowerCase().equals("testsave"))
 		{
@@ -384,16 +377,12 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		}
 		*/    
 		        		
-		
-
-		
 		/**
 		 * Create Dungeon
 		 * - Creates and selects* a new blank dungeon from selection.
 		 * --- /lc create <dungeon>
 		 */
-		if(last_index >= 1 && (args[0].toLowerCase().equals("create") || args[0].toLowerCase().equals("cd")))
-		{
+		if(last_index >= 1 && (args[0].toLowerCase().equals("create") || args[0].toLowerCase().equals("cd"))) {
 			if (!dungeons.containsKey(args[1])) {
 				Selection sel = LegendCraft.worldEditPlugin.getSelection(player);
 				if (sel instanceof CuboidSelection) {
@@ -413,13 +402,11 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		else if (args[0].toLowerCase().equals("create"))
 			say(red + "Usage: /lc create <dungeon>");
 		
-		
 		/**
 		 * Delete Block
 		 * - deletes a trigger/spawner/storage from a dungeon
 		 */
-		if (last_index >= 1 && args[0].toLowerCase().equals("delete"))
-		{
+		if (last_index >= 1 && args[0].toLowerCase().equals("delete")) {
 			if (!selectedDungeons.containsKey(player))
 				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
 			else {
@@ -434,10 +421,8 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		 * Delete Dungeon
 		 * - Deletes named dungeon.
 		 */
-		if (last_index >= 1 && args[0].toLowerCase().equals("deletedungeon"))
-		{	
-			if (dungeons.containsKey(args[1]))
-			{
+		if (last_index >= 1 && args[0].toLowerCase().equals("deletedungeon")) {	
+			if (dungeons.containsKey(args[1])) {
 				Dungeon deletee = dungeons.get(args[1]);
 				
 				if (deletee.isEnabled()) {
@@ -452,8 +437,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				boolean attempt = deletee.tryDeleteDungeon(player, args[1], Dungeon.findDungeonDir(args[1]));
 				if (attempt) {
 					dungeons.remove(args[1]);
-				}
-				else
+				} else
 					say("Error deleting dungeon. If this persists, remove yml file while server is not running.");
 			}
 			else
@@ -473,15 +457,13 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 			if (dungeons.containsKey(args[1])) {
 				dungeons.get(args[1]).setEnabled(true);
 				say(purp + "Dungeon " + args[1] + " enabled.");
-			}
-			else
+			} else
 				say(red + "Dungeon with this name not found.");
 		} else if (last_index >= 1 && args[0].toLowerCase().equals("disable")) {
 			if (dungeons.containsKey(args[1])) {
 				dungeons.get(args[1]).setEnabled(false);
 				say(purp + "Dungeon " + args[1] + " disabled.");
-			}
-			else
+			} else
 				say(red + "Dungeon with this name not found.");
 		}
 		else if (args[0].toLowerCase().equals("enable")) {
@@ -525,8 +507,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		 * - Expands dungeon selected.
 		 * --- /lc expand
 		 */
-		if(args[0].toLowerCase().equals("expand"))
-		{
+		if(args[0].toLowerCase().equals("expand")) {
 			if (!selectedDungeons.containsKey(player))
 				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
 			else {
@@ -578,8 +559,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		 * - attempts to link blocks, where A triggers B
 		 * --- /lc link <block_from> <block_to> [TRIGGER|set|reset|on|off]
 		 */
-		if (last_index >= 2 && args[0].toLowerCase().equals("link"))
-		{
+		if (last_index >= 2 && args[0].toLowerCase().equals("link")) {
 			String type = "trigger";
 			if (last_index >= 3 && 
 					(args[3].toLowerCase().equals("set") || 
@@ -640,8 +620,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		if (last_index >= 0 && args[0].toLowerCase().equals("mobinfo"))
 		{
 			LivingEntity closestEntity = Tools.getClosestMob(player);
-			if (closestEntity != null)
-			{
+			if (closestEntity != null) {
 				say(purp + closestEntity.getType().toString());
 				//TODO: custom name =   say(closestEntity.getName());
 				//  ( this would need to be read&written in the YAML )
@@ -663,8 +642,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 						say(purp + " " + item.getType().toString().toLowerCase() + ":");
 						Map<Enchantment, Integer> helmEnch = item.getEnchantments(); 
 						for (Enchantment e : helmEnch.keySet())
-							say(purp + 
-									"   " + Tools.standardEnchantName(e.getName()) + ": " + helmEnch.get(e).toString()); 
+							say(purp + "   " + Tools.standardEnchantName(e.getName()) + ": " + helmEnch.get(e).toString()); 
 					}
 				}
 			}
@@ -685,7 +663,6 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		else if (args[0].toLowerCase().equals("ps"))
 			say(red + "Usage: /lc ps <tune>");
 		
-
 		/**
 		 * Save
 		 * - Saves the dungeon to a file
@@ -722,10 +699,9 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				if (closestEntity != null) {
 					mobs.put(args[1], new MobTemplate(closestEntity,args[1]));
 					say(purp + "Saved " + closestEntity.getType().toString().toLowerCase() + " " + args[1] + ".");
-				}
-				else
+				} else
 					say(red + "No mob found.");		
-			}else{
+			} else {
 		        say(red + "Mob with this name already exists.");
 		    }
 		}
@@ -759,24 +735,20 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 					return false;
 				}
 		        
-		        if (scale < 2)
-		        {
+		        if (scale < 2) {
 		        	say(red + "Invalid scale!");
 					return false;
 		        }
 		        
-		        if (scale*(maxX-minX+1) > 750)
-		        {
+		        if (scale*(maxX-minX+1) > 750) {
 		        	say(red + "X scale must be less than 750.");
 					return false;
 		        }
-		        if (scale*(maxY-minY+1) > 750)
-		        {
+		        if (scale*(maxY-minY+1) > 750) {
 		        	say(red + "Y scale must be less than 750.");
 					return false;
 		        }
-		        if (scale*(maxZ-minZ+1) > 750)
-		        {
+		        if (scale*(maxZ-minZ+1) > 750) {
 		        	say(red + "Z scale must be less than 750.");
 					return false;
 		        }
@@ -796,23 +768,17 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 		        }	
 		        }
 		        
-		        if (limit1 == 1)
-		        {
+		        if (limit1 == 1) {
 		        	Tools.scale(min,max,anchor,scale);
-		        }
-		        else
-		        {
+		        } else {
 		        	say(red + "Have exactly 1 bedrock as an anchor!");
 		        }
-		        
 		    } else {
 		        say(red + "Invalid Selection!");
 		    }
 		}
 		else if (args[0].toLowerCase().equals("scale"))
 			say(red + "Usage: /lc scale <factor>");
-		
-		
 		
 		/**
 		 * Select

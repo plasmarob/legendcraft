@@ -75,6 +75,8 @@ public class StorageBlock implements Receiver {
 	
 	public void dbInsert() {
 		
+		
+		
 		JSONObject blocks = new JSONObject();
 		//blocks.put
 		
@@ -103,11 +105,13 @@ public class StorageBlock implements Receiver {
 		.execute();
 		*/
 		
+		/* DELETED
 		int s_id = new DatabaseInserter("storage")
 			.add("block_id", b_id)
 			.add("frame_count", frames)
 			.add("mode", mode)
 			.execute();
+		*/
 		
 		// Needs to be its own method
 		/*

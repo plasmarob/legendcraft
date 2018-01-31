@@ -19,6 +19,7 @@ import me.plasmarob.legendcraft.blocks.Receiver;
 import me.plasmarob.legendcraft.blocks.RedstoneDetector;
 import me.plasmarob.legendcraft.blocks.Sender;
 import me.plasmarob.legendcraft.blocks.SpawnerBlock;
+import me.plasmarob.legendcraft.blocks.Storage;
 import me.plasmarob.legendcraft.blocks.StorageBlock;
 import me.plasmarob.legendcraft.blocks.Timer;
 import me.plasmarob.legendcraft.blocks.TorchBlock;
@@ -69,7 +70,8 @@ public class Dungeon {
 	private Vector max;
 	
 	public ConcurrentHashMap<String, Detector> detectors = new ConcurrentHashMap<String, Detector>();
-	private ConcurrentHashMap<String, StorageBlock> storages = new ConcurrentHashMap<String, StorageBlock>();
+	//private ConcurrentHashMap<String, StorageBlock> storages = new ConcurrentHashMap<String, StorageBlock>();
+	private ConcurrentHashMap<String, Storage> storages = new ConcurrentHashMap<String, Storage>();
 	private ConcurrentHashMap<String, SpawnerBlock> spawners = new ConcurrentHashMap<String, SpawnerBlock>();
 	private ConcurrentHashMap<String, MusicBlock> musics = new ConcurrentHashMap<String, MusicBlock>();
 	private ConcurrentHashMap<String, RedstoneDetector> rsDetectors = new ConcurrentHashMap<String, RedstoneDetector>();
@@ -103,6 +105,11 @@ public class Dungeon {
 		List<Map<String, Object>> detectorList = DatabaseMethods.getBlocks("PLAYER_DETECTOR");
 		for (Map<String,Object> m : detectorList) {
 			detectors.put((String)m.get("name"), new Detector(m, this));
+		}
+		
+		List<Map<String, Object>> storageList = DatabaseMethods.getBlocks("STORAGE");
+		for (Map<String,Object> m : storageList) {
+			storages.put((String)m.get("name"), new Storage(m, this));
 		}
 		
 		List<Map<String, Object>> chestList = DatabaseMethods.getBlocksIdJoined("chest");
@@ -263,7 +270,7 @@ public class Dungeon {
 				StorageBlock st = new StorageBlock(world, storageConfig, name);
 				st.setDefaultOnOff(config.getBoolean("storages.s" + i + ".default"));
 				st.setInverted(config.getBoolean("storages.s" + i + ".inverted"));
-				storages.put(name, st);
+				//storages.put(name, st);
 			}
 		}	
 		
@@ -673,6 +680,7 @@ public class Dungeon {
 			i++;
 		}
 		
+		/*
 		i = 1;
 		for (String name : storages.keySet()) {
 			StorageBlock sb = storages.get(name);
@@ -682,6 +690,7 @@ public class Dungeon {
 			saveObject(folder, name, sb);
 			i++;
 		}
+		*/
 		
 		i = 1;
 		for (String name : autoDoors.keySet()) {
@@ -1013,7 +1022,7 @@ public class Dungeon {
 	
 	
 	
-	public boolean tryAddStorageBlock(Player player, String name)
+	public boolean tryAddStorage(Player player, String name)
 	{
 		if (nameUsed(name)) {
 			player.sendMessage(ChatColor.RED + "A dungeon block with this name already exists.");
@@ -1029,9 +1038,23 @@ public class Dungeon {
 			
 			Selection sel = LegendCraft.worldEditPlugin.getSelection(player);
 		    if (sel instanceof CuboidSelection && 
-		    		sel.getHeight()*sel.getLength()*sel.getWidth() < 2000 ) 
+		    		sel.getHeight()*sel.getLength()*sel.getWidth() < 3000 ) 
 		    {
-				if (next.getType() == Material.EMERALD_ORE)
+		    	if (next.getX() < min.getX() || next.getX() > max.getX() || 
+						next.getY() < min.getY() || next.getY() > max.getY() || 
+						next.getZ() < min.getZ() || next.getZ() > max.getZ() ||
+						next.getWorld() != world) 
+				{
+					player.sendMessage(ChatColor.RED + "Selection is not within dungeon boundaries.");
+					return false;
+				} else {
+					storages.put(name, new Storage(player, next, name, this));
+					return true;
+				}
+		    	
+		    	/*
+		    	
+		    	if (next.getType() == Material.EMERALD_ORE)
 				{
 					if (next.getX() < min.getX() || next.getX() > max.getX() || 
 						next.getY() < min.getY() || next.getY() > max.getY() || 
@@ -1046,9 +1069,12 @@ public class Dungeon {
 					}
 					
 				}
+				*/
 		    }
+		    else if (sel instanceof CuboidSelection)
+		    	player.sendMessage(ChatColor.RED + "Too many blocks");
 		    else
-		    	player.sendMessage(ChatColor.RED + "Invalid WorldEdit selection.");
+		    	player.sendMessage(ChatColor.RED + "Invalid WorldEdit selection.  Must be cuboid.");
 		    
 		    if (!Tools.canSeeThrough(next.getType()))
 			{
@@ -1062,6 +1088,9 @@ public class Dungeon {
 		return false;
 	}
 	
+	/*
+	 * DELETED SOON
+	 * 
 	public boolean tryAddToStorageBlock(Player player, String block) {
 		if (storages.containsKey(block)) {
 			storages.get(block).addFrame();
@@ -1076,7 +1105,7 @@ public class Dungeon {
 		}
 		return false;
 	}
-	
+	*/
 	
 	
 	// AUTO DOOR
@@ -1364,7 +1393,8 @@ public class Dungeon {
 			sp.show(player);
 			showLinksFrom(player, sp);
 		} else if (storages.containsKey(name)) {
-			StorageBlock st = storages.get(name);
+			//StorageBlock st = storages.get(name);
+			Storage st = storages.get(name);
 			st.show(player);
 			showLinksFrom(player, st);
 		} else if (autoDoors.containsKey(name)) {

@@ -93,27 +93,18 @@ public class SQLite extends Database{
             "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
     
-    public String SQLiteCreateStorageTable = 
-    		"CREATE TABLE IF NOT EXISTS storage (" + 
-    		"`id` INTEGER PRIMARY KEY," +
-    		"`block_id` INTEGER NOT NULL," +
-    		"`frame_count` INTEGER NOT NULL," +
-    		"`mode` varchar(255) NOT NULL," +	// LOOP | BOUNCE | ONCE
-            "FOREIGN KEY(block_id) REFERENCES block(id)" +
-            ");";
     
     public String SQLiteCreateStorageFrameTable = 
     		"CREATE TABLE IF NOT EXISTS storageFrame (" + 
     		"`id` INTEGER PRIMARY KEY," +
     		"`storage_id` INTEGER NOT NULL," +
     		"`frame_id` INTEGER NOT NULL," +
-    		"`ticks` INTEGER NOT NULL," +
-    		"`tiles_yn` TEXT NOT NULL," +
-            "`blockdata` TEXT," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3
+    		"`time` INTEGER NOT NULL," +
+            "`blocks` TEXT," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3
+            "`data` TEXT," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3
             "FOREIGN KEY(storage_id) REFERENCES storage(id)" +
             ");"; 
     //TODO: create StorageFrameMetadata Table after finding a way to serialize it into a blob
-    
     
     // --------------------------------------
     
@@ -238,10 +229,9 @@ public class SQLite extends Database{
             s.executeUpdate(SQLiteCreateBlockTable);
             s.executeUpdate(SQLitePopulateBlockTypeTable);
             
-            
             s.executeUpdate(SQLiteCreateChestTable);
             
-            
+            s.executeUpdate(SQLiteCreateStorageFrameTable);
             
             s.close();
         } catch (SQLException e) {
