@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -31,6 +31,8 @@ public class Storage implements Receiver {
 	private boolean inverted = false;
 	
 	private int block_id;
+	
+	private int currentFrameIndex=0;
 	
 	//List<Material> matList = new ArrayList<Material>();
 	//List<Byte> datList = new ArrayList<Byte>();
@@ -62,7 +64,7 @@ public class Storage implements Receiver {
         }
         
         frames.add(new Frame(bsList,1,20));
-        
+        currentFrameIndex = 0;
         // get a middleish block
         mainBlock = player.getWorld().getBlockAt(max.getBlockX() - (int)Math.floor(sel.getWidth()/2), 
         		                                 max.getBlockY() - (int)Math.floor(sel.getHeight()/2),
@@ -71,49 +73,35 @@ public class Storage implements Receiver {
         Tools.saySuccess(player, "Storage created!");
 	}
 	
-	public Storage(Map<String,Object> data, Dungeon dungeon) {
-		this.block_id = (Integer) data.get("id");
-		this.name = (String) data.get("name");
+	public Storage(Map<String,Object> block, List<Map<String,Object>> frames, Dungeon dungeon) {
+		this.block_id = (Integer) block.get("id");
+		this.name = (String) block.get("name");
 		this.dungeon = dungeon;
-		this.mainBlock = Tools.blockFromString((String) data.get("location"), dungeon.getWorld());
-		this.defaultOnOff = Boolean.parseBoolean((String) data.get("default"));
-		this.inverted = Boolean.parseBoolean((String) data.get("inverted"));
-		this.min = Tools.weVectorFromString((String) data.get("min"));
-		this.max = Tools.weVectorFromString((String) data.get("max"));
-		String datajson = (String) data.get("data");
-		
+		this.mainBlock = Tools.blockFromString((String) block.get("location"), dungeon.getWorld());
+		this.defaultOnOff = Boolean.parseBoolean((String) block.get("default"));
+		this.inverted = Boolean.parseBoolean((String) block.get("inverted"));
+		this.min = Tools.weVectorFromString((String) block.get("min"));
+		this.max = Tools.weVectorFromString((String) block.get("max"));
+		String datajson = (String) block.get("data");
+		// DECODE
 		JSONParser parser = new JSONParser(); 
 		try {
 			JSONObject json = (JSONObject) parser.parse(datajson);
 			this.mode = (String) json.get("mode");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (ParseException e) { e.printStackTrace(); }
+		
+		//TODO get storage frames into a storage, parsing their data (or add constructor using map)
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void dbInsert() {
-		// Insert into DB
 		String minstr = Tools.locationAsString((int)min.getX(), (int)min.getY(), (int)min.getZ());
 		String maxstr = Tools.locationAsString((int)max.getX(), (int)max.getY(), (int)max.getZ());
 		
 		JSONObject data = new JSONObject();
 		data.put("mode", mode);
 		String datastr = data.toJSONString();
-		
-		
-		/* HOW TO DECODE
-		 * 
-		JSONParser parser = new JSONParser(); 
-		try {
-			JSONObject json = (JSONObject) parser.parse("");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        */
 		
 		block_id = new DatabaseInserter("block")
 						.dungeon_id(dungeon.getDungeonId())
@@ -129,7 +117,7 @@ public class Storage implements Receiver {
 		
 		Frame f = frames.get(0);
 		new DatabaseInserter("storageFrame")
-				.add("storage_id", block_id)
+				.add("block_id", block_id)
 				.add("frame_id", 1)
 				.add("time", 20)
 				.add("blocks", f.getBlockTypes())
@@ -152,13 +140,11 @@ public class Storage implements Receiver {
         	for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
         		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
         			bsList.add(dungeon.getWorld().getBlockAt(x, y, z).getState());	
-                }
-            }
-        }
+        }}}
         //DB insert
         Frame f = new Frame(bsList);
 		new DatabaseInserter("storageFrame")
-				.add("storage_id", block_id)
+				.add("block_id", block_id)
 				.add("frame_id", 1)
 				.add("time", 20)
 				.add("blocks", f.getBlockTypes())
@@ -168,26 +154,49 @@ public class Storage implements Receiver {
         f.setId(frames.size());
 	}
 	
-	
-	//@SuppressWarnings("deprecation")
 	@Override
-	public void trigger() 
-	{
+	public void trigger()  {
 		if (!enabled || !isOn)
 			return;
+		// kick off an animation sequence
+		if(mode.equals("ONCE")) {
+			currentFrameIndex = -1; //start before 0 to kick off index 0
+			LegendCraft.plugin.getServer().getScheduler()
+			   .scheduleSyncDelayedTask(LegendCraft.plugin, new FrameThread(this), frames.get(0).getTime());
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void next() {
+		// stop after end
+		if (mode.equals("ONCE")) {
+			if (currentFrameIndex >= frames.size()) {
+				return;
+			}
+			currentFrameIndex++;
+		}
+		List<BlockState> blocks = frames.get(currentFrameIndex).getBlocks();
 		
-		Block tmpB;
+		int minx = min.getBlockX();
+		int miny = min.getBlockY();
+		int minz = min.getBlockZ();
+		int maxx = max.getBlockX();
+		int maxy = max.getBlockY();
+		int maxz = max.getBlockZ();
+        World w = dungeon.getWorld();
+
 		int i = 0;
-		for (int x = min.getBlockX(); x <= max.getBlockX(); x++)  {
-        	for (int y = min.getBlockY(); y <= max.getBlockY(); y++)  {
-        		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-        			tmpB = mainBlock.getWorld().getBlockAt(x, y, z);
-        			//tmpB.setType(matList.get(i));
-        			//tmpB.setData(datList.get(i));
+		for (int x = minx; x <= maxx; x++)  {
+        	for (int y = miny; y <= maxy; y++)  {
+        		for (int z = minz; z <= maxz; z++) {
+        			w.getBlockAt(x, y, z).setTypeIdAndData(blocks.get(i).getTypeId(), blocks.get(i).getData().getData(), false);
         			i++;
-                }
-            }
-        }
+        }}}
+            
+		if (mode.equals("ONCE") && currentFrameIndex < frames.size()-1) {
+			LegendCraft.plugin.getServer().getScheduler()
+			   .scheduleSyncDelayedTask(LegendCraft.plugin, new FrameThread(this), frames.get(currentFrameIndex+1).getTime());
+		}
 	}
 
 	@Override
@@ -279,16 +288,19 @@ public class Storage implements Receiver {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	private class Frame {
-		
+	
+	@SuppressWarnings("unused")
+	private class Frame {	
 		private List<BlockState> blocks;
+		private List<BlockState> getBlocks() { return blocks; }
+		private void setBlocks(List<BlockState> blocks) { this.blocks = blocks; }
 		
 		private int ticks = 20;
 		public int getTime() { return ticks; }
 		public void setTime(int t) { ticks=t; }
 		
 		private int id = -1;
+		
 		public int getId() { return id; }
 		public void setId(int id) { this.id=id; }
 		
@@ -318,8 +330,17 @@ public class Storage implements Receiver {
         public String getDataJSON() {
 			return "";
 		}
-		
-		
 	}
-
+	
+	/**
+	 * Animation delay thread, calls for next frame
+	 */
+	class FrameThread implements Runnable {	
+		Storage storage;
+		FrameThread(Storage storage) { this.storage = storage; }
+		public void update() { storage.next(); }
+		public void run() {
+		    try { update(); } catch (Exception e) { e.printStackTrace(); }
+		}	
+	}
 }

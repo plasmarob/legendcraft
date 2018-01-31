@@ -75,8 +75,6 @@ public class StorageBlock implements Receiver {
 	
 	public void dbInsert() {
 		
-		
-		
 		JSONObject blocks = new JSONObject();
 		//blocks.put
 		

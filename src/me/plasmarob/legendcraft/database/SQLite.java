@@ -97,7 +97,7 @@ public class SQLite extends Database{
     public String SQLiteCreateStorageFrameTable = 
     		"CREATE TABLE IF NOT EXISTS storageFrame (" + 
     		"`id` INTEGER PRIMARY KEY," +
-    		"`storage_id` INTEGER NOT NULL," +
+    		"`block_id` INTEGER NOT NULL," +
     		"`frame_id` INTEGER NOT NULL," +
     		"`time` INTEGER NOT NULL," +
             "`blocks` TEXT," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3

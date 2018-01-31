@@ -96,12 +96,18 @@ public class DatabaseMethods {
 		List<Map<String, Object>> results = db.readQuery("SELECT b.*,bt.id FROM block AS b JOIN blockType AS bt ON bt.id=b.type_id WHERE bt.name = '" + type_name + "'");
 		return results;
 	}
+	public static List<Map<String, Object>> getStorageFrames(int block_id) {	
+		List<Map<String, Object>> results = db.readQuery("SELECT sf.* FROM storageFrame AS sf WHERE sf.block_id = '" + block_id + "'");
+		return results;
+	}
+	/*
 	public static List<Map<String, Object>> getBlocksIdJoinedBROKEN(String table, String joinedTable) {	
 		List<Map<String, Object>> results = db.readQuery("SELECT x.*,y.* FROM `" + table + "` AS x JOIN '" + joinedTable + "' AS y ON y.block_id=x.id");
 		return results;
 	}
+	*/
 	public static List<Map<String, Object>> getBlocksIdJoined(String joinedTable) {	
-		List<Map<String, Object>> results = db.readQuery("SELECT b.*,x.* FROM `block` AS b JOIN '" + joinedTable + "' AS x ON x.block_id=b.id");
+		List<Map<String, Object>> results = db.readQuery("SELECT block.*,"+joinedTable+".* FROM `block` JOIN '" + joinedTable + "' ON "+joinedTable+".block_id=block.id");
 		return results;
 	}
 	

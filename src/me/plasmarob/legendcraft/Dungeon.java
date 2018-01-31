@@ -109,7 +109,8 @@ public class Dungeon {
 		
 		List<Map<String, Object>> storageList = DatabaseMethods.getBlocks("STORAGE");
 		for (Map<String,Object> m : storageList) {
-			storages.put((String)m.get("name"), new Storage(m, this));
+			List<Map<String, Object>> frameList = DatabaseMethods.getStorageFrames((Integer)m.get("id"));
+			storages.put((String)m.get("name"), new Storage(m, frameList, this));
 		}
 		
 		List<Map<String, Object>> chestList = DatabaseMethods.getBlocksIdJoined("chest");
@@ -1670,10 +1671,9 @@ public class Dungeon {
 			new Dungeon(m);
 		}
 	}
+	
 	public static void loadDungeonsX()
 	{
-		
-		
 		try {
 	    	File[] listOfFiles = dungeonFolder.listFiles();
 	    	//Bukkit.getConsoleSender().sendMessage("dfLen: " + Integer.toString(listOfFiles.length)); 
