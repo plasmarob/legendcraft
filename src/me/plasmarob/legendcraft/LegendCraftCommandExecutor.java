@@ -296,19 +296,35 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 					say(red + "Storage block creation failed.");
 			} else if (addType.equals("storageframe") || addType.equals("frame") || addType.equals("sf")) {
 				if (last_index < 2)
-					say(red + "Invalid arguments. Usage: /lc add storageframe <storage_name> [replace_frame#]");
-				/*
+					say(red + "Invalid arguments. Usage: /lc add storageframe <storage_name> [ticks] [before_frame]");
 				else if (last_index == 2) {
-					if (!dungeons.get(dungeonStr).tryAddToStorageBlock(player, args[2]))
+					if (!dungeons.get(dungeonStr).tryAddStorageFrame(player, args[2]))
 						say(red + "Storage frame addition failed.");
 				}
 				else if (last_index == 3) {
-					if (!dungeons.get(dungeonStr).tryAddToStorageBlock(player, args[2], args[3]))
+					int ticks = -1;
+					try { 
+						ticks = Integer.parseInt(args[3]); 
+				    } catch (Exception e) { 
+				    	say(red + args[3] +" is not a valid number of ticks.");
+				    }
+					if (!dungeons.get(dungeonStr).tryAddStorageFrame(player, args[2], ticks))
 						say(red + "Storage frame addition failed.");
 				}
-				*/
+				else if (last_index == 4) {
+					int ticks = -1;
+					int beforeFrame = -1;
+					try { 
+						ticks = Integer.parseInt(args[3]); 
+						beforeFrame = Integer.parseInt(args[4]); 
+				    } catch (Exception e) { 
+				    	say(red + "Storage frame addition failed.");
+				    }
+					if (!dungeons.get(dungeonStr).tryAddStorageFrame(player, args[2], ticks, beforeFrame))
+						say(red + "Storage frame addition failed.");
+				}
 				else
-					say(red + "Invalid arguments. Usage: /lc add storageframe <storage_name> [replace_frame#]");
+					say(red + "Invalid arguments. Usage: /lc add storageframe <storage_name> [ticks] [before_frame]");
 			/**
 			 * Add Timer
 			 * - attempts to create a timer via looked-at IDC

@@ -60,7 +60,7 @@ public class ChestBlock implements Receiver {
 	public ChestBlock(Map<String,Object> data, Dungeon dungeon) {
 		this.name = (String) data.get("name");
 		this.dungeon = dungeon;
-		block = Tools.blockFromString((String) data.get("location"), dungeon.getWorld());
+		block = Tools.blockFromXYZ((String) data.get("location"), dungeon.getWorld());
 		defaultOnOff = Boolean.parseBoolean((String) data.get("default"));
 		inverted = Boolean.parseBoolean((String) data.get("inverted"));
 		face = BlockFace.valueOf((String) data.get("facing"));

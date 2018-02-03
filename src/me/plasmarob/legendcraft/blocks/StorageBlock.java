@@ -78,7 +78,6 @@ public class StorageBlock implements Receiver {
 		JSONObject blocks = new JSONObject();
 		//blocks.put
 		
-		
 		// Insert into DB
 		int b_id = new DatabaseInserter("block")
 			.dungeon_id(dungeon.getDungeonId())
@@ -88,7 +87,6 @@ public class StorageBlock implements Receiver {
 			.add("default", defaultOnOff)
 			.add("inverted", inverted)
 			.execute();
-		
 		
 		/*
 		new DatabaseInserter("block")

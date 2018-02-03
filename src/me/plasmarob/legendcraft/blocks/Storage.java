@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -19,6 +22,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 import me.plasmarob.legendcraft.Dungeon;
 import me.plasmarob.legendcraft.LegendCraft;
 import me.plasmarob.legendcraft.database.DatabaseInserter;
+import me.plasmarob.legendcraft.database.DatabaseMethods;
 import me.plasmarob.legendcraft.util.Tools;
 
 public class Storage implements Receiver {
@@ -73,11 +77,13 @@ public class Storage implements Receiver {
         Tools.saySuccess(player, "Storage created!");
 	}
 	
-	public Storage(Map<String,Object> block, List<Map<String,Object>> frames, Dungeon dungeon) {
+	@SuppressWarnings("deprecation")
+	public Storage(Map<String,Object> block, List<Map<String,Object>> frameList, Dungeon dungeon) {
+		Tools.say("HOW MANY FRAMES: "+frameList.size());
 		this.block_id = (Integer) block.get("id");
 		this.name = (String) block.get("name");
 		this.dungeon = dungeon;
-		this.mainBlock = Tools.blockFromString((String) block.get("location"), dungeon.getWorld());
+		this.mainBlock = Tools.blockFromXYZ((String) block.get("location"), dungeon.getWorld());
 		this.defaultOnOff = Boolean.parseBoolean((String) block.get("default"));
 		this.inverted = Boolean.parseBoolean((String) block.get("inverted"));
 		this.min = Tools.weVectorFromString((String) block.get("min"));
@@ -90,7 +96,26 @@ public class Storage implements Receiver {
 			this.mode = (String) json.get("mode");
 		} catch (ParseException e) { e.printStackTrace(); }
 		
-		//TODO get storage frames into a storage, parsing their data (or add constructor using map)
+		
+		for (Map<String,Object> dbf : frameList) {
+			List<BlockState> blocks = new ArrayList<BlockState>();
+			String blockdata = (String) dbf.get("blocks");
+			String[] blockA = blockdata.split(";"); // stored in xyz order, must be parsed front to back
+			for (int i = 0; i < blockA.length; i++) {
+				String[] blockInfo = blockA[i].split(":");
+				BlockState bs = Tools.blockFromXYZ(blockInfo[2], dungeon.getWorld()).getState();
+				bs.setType(Material.getMaterial(blockInfo[0]));
+				bs.getData().setData((byte)Integer.parseInt(blockInfo[1]));
+				blocks.add(bs);
+			}
+			
+			int id = (Integer) dbf.get("frame_id");
+			int time = (Integer) dbf.get("time");
+			Frame f = new Frame(blocks,id,time);
+			String json = (String) dbf.get("data");
+			f.setDataByJSON(json);
+			frames.add(f);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -128,12 +153,19 @@ public class Storage implements Receiver {
 	}
 	
 	public void addFrame() {
-		addFrame(20,-1);
+		addFrame(20);
 	}
 	public void addFrame(int time) {
 		addFrame(time,-1);
 	}
-    public void addFrame(int ticks, int after) {
+    public void addFrame(int ticks, int at_frame) {
+    	if (ticks < 1) ticks = 1;
+    	if (ticks > 600) ticks = 600; // 30 sec
+    	
+    	if (at_frame < 1 || at_frame > frames.size()) {
+    		at_frame = frames.size() + 1;
+    	}
+    	
     	//Grab and create new frame
     	List<BlockState> bsList = new ArrayList<BlockState>();
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
@@ -143,10 +175,11 @@ public class Storage implements Receiver {
         }}}
         //DB insert
         Frame f = new Frame(bsList);
+        DatabaseMethods.pushStorageFrames(block_id, at_frame); // slide any higher ids
 		new DatabaseInserter("storageFrame")
 				.add("block_id", block_id)
-				.add("frame_id", 1)
-				.add("time", 20)
+				.add("frame_id", at_frame)
+				.add("time", ticks)
 				.add("blocks", f.getBlockTypes())
 				.add("data", f.getDataJSON())
 				.execute();
@@ -156,25 +189,25 @@ public class Storage implements Receiver {
 	
 	@Override
 	public void trigger()  {
+		Bukkit.getConsoleSender().sendMessage("TRIGGER");
 		if (!enabled || !isOn)
 			return;
 		// kick off an animation sequence
 		if(mode.equals("ONCE")) {
-			currentFrameIndex = -1; //start before 0 to kick off index 0
-			LegendCraft.plugin.getServer().getScheduler()
-			   .scheduleSyncDelayedTask(LegendCraft.plugin, new FrameThread(this), frames.get(0).getTime());
+			currentFrameIndex = 0; //start before 0 to kick off index 0
+			animate();
+			//LegendCraft.plugin.getServer().getScheduler()
+			//   .scheduleSyncDelayedTask(LegendCraft.plugin, new FrameThread(this), frames.get(0).getTime());
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void next() {
+	private void animate() {
+		Bukkit.getConsoleSender().sendMessage("ANIMATE "+currentFrameIndex+" of "+frames.size()+" >"+mode);
 		// stop after end
-		if (mode.equals("ONCE")) {
-			if (currentFrameIndex >= frames.size()) {
-				return;
-			}
-			currentFrameIndex++;
-		}
+		if (mode.equals("ONCE")) 
+			if (currentFrameIndex >= frames.size()) return;	
+		
 		List<BlockState> blocks = frames.get(currentFrameIndex).getBlocks();
 		
 		int minx = min.getBlockX();
@@ -185,96 +218,105 @@ public class Storage implements Receiver {
 		int maxz = max.getBlockZ();
         World w = dungeon.getWorld();
 
+        Tools.say("Animate Loop:");
 		int i = 0;
 		for (int x = minx; x <= maxx; x++)  {
         	for (int y = miny; y <= maxy; y++)  {
         		for (int z = minz; z <= maxz; z++) {
         			w.getBlockAt(x, y, z).setTypeIdAndData(blocks.get(i).getTypeId(), blocks.get(i).getData().getData(), false);
+        			Tools.say(x+","+y+","+z+":"+blocks.get(i).getTypeId()+":"+blocks.get(i).getData().getData());
         			i++;
         }}}
             
+		currentFrameIndex++;
+		
 		if (mode.equals("ONCE") && currentFrameIndex < frames.size()-1) {
 			LegendCraft.plugin.getServer().getScheduler()
-			   .scheduleSyncDelayedTask(LegendCraft.plugin, new FrameThread(this), frames.get(currentFrameIndex+1).getTime());
+			   .scheduleSyncDelayedTask(LegendCraft.plugin, new FrameThread(this), frames.get(currentFrameIndex).getTime());
 		}
+		
+		
 	}
 
 	@Override
 	public void set() {
-		// TODO Auto-generated method stub
-		
+		trigger();
 	}
-
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-		
 	}
-
 	@Override
 	public void on() {
-		// TODO Auto-generated method stub
-		
+		if (enabled)
+			isOn = true;
 	}
-
 	@Override
 	public void off() {
-		// TODO Auto-generated method stub
-		
+		if (enabled)
+			isOn = false;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return enabled;
 	}
 
 	@Override
 	public void setEnabled(boolean bool) {
-		// TODO Auto-generated method stub
-		
+		enabled = bool;
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
+		if (isOn && enabled)
+			trigger();
 	}
 
 	@Override
 	public String type() {
-		// TODO Auto-generated method stub
-		return null;
+		return "storage";
 	}
 
 	@Override
 	public String name() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 	@Override
 	public int getX() {
-		// TODO Auto-generated method stub
-		return 0;
+		return mainBlock.getX();
 	}
-
 	@Override
 	public int getY() {
-		// TODO Auto-generated method stub
-		return 0;
+		return mainBlock.getY();
 	}
-
 	@Override
 	public int getZ() {
-		// TODO Auto-generated method stub
-		return 0;
+		return mainBlock.getZ();
 	}
 
+	static String prp = "" + ChatColor.LIGHT_PURPLE;
+	static String r = "" + ChatColor.RESET;
 	@Override
 	public void show(Player p) {
-		// TODO Auto-generated method stub
+		p.sendMessage(prp + "Storage Block \"" + name + "\":");
+
+		String enable = "enabled";
+		if (!enabled) enable = "disabled";
+		p.sendMessage(prp + "  Currently " + enable + ".");
 		
+		String def = "ON";
+		if (!defaultOnOff) def = "OFF";
+		String on = "ON";
+		if (!isOn) on = "OFF";
+		p.sendMessage(prp + "  Is " + on + ","+r+" default"+prp+"s to " + def + ".");
+		
+		p.sendMessage(r + "  Inverted"+prp+"?: " + inverted);
+		
+		p.sendMessage(prp + "  Block: " + mainBlock.getX() + " " + mainBlock.getY() + " " + mainBlock.getZ());
+		
+		p.sendMessage(prp + "  Min XYZ: " + min.getX() + " / " + min.getY() + " / " + min.getZ() + "");
+		p.sendMessage(prp + "  Max XYZ: " + max.getX() + " / " + max.getY() + " / " + max.getZ() + "");
 	}
 
 	@Override
@@ -285,7 +327,16 @@ public class Storage implements Receiver {
 
 	@Override
 	public boolean hasBlock(Block b) {
-		// TODO Auto-generated method stub
+		if (b.equals(mainBlock))
+			return true;
+		for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+        	for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+        		for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+        			if (b.equals(mainBlock.getWorld().getBlockAt(x, y, z)))
+        				return true;
+                }
+            }
+        }
 		return false;
 	}
 	
@@ -321,7 +372,7 @@ public class Storage implements Receiver {
 			String t;
 			for (BlockState bs : blocks) {
 				// TYPE:ID,x,y,z
-				t = bs.getType() + ":" + bs.getData().getData() + "," + Tools.locationAsString(bs.getX(), bs.getY(), bs.getZ());
+				t = bs.getType() + ":" + bs.getData().getData() + ":" + Tools.locationAsString(bs.getX(), bs.getY(), bs.getZ());
 				out.add(t);
 			}
 			return out.toString();
@@ -329,6 +380,10 @@ public class Storage implements Receiver {
 		
         public String getDataJSON() {
 			return "";
+		}
+        
+        public void setDataByJSON(String json) {
+			// code for special blockstate banner/bed/etc data
 		}
 	}
 	
@@ -338,7 +393,7 @@ public class Storage implements Receiver {
 	class FrameThread implements Runnable {	
 		Storage storage;
 		FrameThread(Storage storage) { this.storage = storage; }
-		public void update() { storage.next(); }
+		public void update() { Bukkit.getConsoleSender().sendMessage("THREAD"); storage.animate(); }
 		public void run() {
 		    try { update(); } catch (Exception e) { e.printStackTrace(); }
 		}	

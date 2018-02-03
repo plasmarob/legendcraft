@@ -22,7 +22,7 @@ public class LineConnectEffect extends Effect{
 		double speed;
 		static final ParticleEffect reddust = ParticleEffect.REDSTONE;
 	
-		Random rand;
+		//Random rand;
 		
 		Location currentLoc; 
 		Location location;
@@ -40,6 +40,7 @@ public class LineConnectEffect extends Effect{
 		double zDist;
 		double times;
 		double scale = 3;
+		int af=0;
 		
 		int red1 = 0;
 		int red2 = 0;
@@ -79,7 +80,7 @@ public class LineConnectEffect extends Effect{
 			speed = 2;
 			
 			setLocation(location);
-			rand = new Random();
+			//rand = new Random();
 			
 			distance = loc1.distance(loc2);
 			times = distance*scale;
@@ -107,10 +108,15 @@ public class LineConnectEffect extends Effect{
 				blue.add( (int) (blue1*(1-i/times) + blue2*(i/times)) );
 			}	
 			loc = location.clone().add(0.5,0.5,0.5);
+			
+			
 		}
-
+		
+        double[] ao = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}; // animation offsets
 		@Override
 		public void onRun() {	
+			af = (af + 1) % 10;  // animation frame loop 
+			
 			/*
 			loc = location.clone().add(0.5,0.5,0.5);
 			for (int i = 0; i < times; i++) {
@@ -118,7 +124,7 @@ public class LineConnectEffect extends Effect{
 				loc = loc.clone().add(xDist, yDist, zDist);
 			}
 			*/
-			loc = location.clone().add(0.5,0.5,0.5);
+			loc = location.clone().add(0.5+xDist*ao[af],0.5+yDist*ao[af],0.5+zDist*ao[af]);
 			for (int i = 0; i < times; i++) {
 				reddust.display(null, loc, Color.fromRGB(red.get(i), green.get(i), blue.get(i)), 32, 0f, 0f, 0f, 0, 1);
 				loc.add(xDist, yDist, zDist);

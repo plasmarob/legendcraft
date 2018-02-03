@@ -613,7 +613,7 @@ public class Tools {
 		String[] xyz = string.split(",");
 		return xyz;
 	}	
-	public static Block blockFromString(String string, World world) {
+	public static Block blockFromXYZ(String string, World world) {
 		String[] xyz = xyzFromString(string);
 		return world.getBlockAt(Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]), Integer.parseInt(xyz[2]));
 	}

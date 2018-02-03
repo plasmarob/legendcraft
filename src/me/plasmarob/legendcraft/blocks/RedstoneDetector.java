@@ -48,7 +48,7 @@ public class RedstoneDetector implements Sender, Receiver {
 	public RedstoneDetector(Map<String,Object> data, Dungeon dungeon) {
 		this.name = (String) data.get("name");
 		this.dungeon = dungeon;
-		mainBlock = Tools.blockFromString((String) data.get("location"), dungeon.getWorld());
+		mainBlock = Tools.blockFromXYZ((String) data.get("location"), dungeon.getWorld());
 		defaultOnOff = Boolean.parseBoolean((String) data.get("default"));
 		inverted = Boolean.parseBoolean((String) data.get("inverted"));
 		maxTimes = (int) data.get("times");

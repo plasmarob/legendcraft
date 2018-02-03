@@ -100,11 +100,10 @@ public class SQLite extends Database{
     		"`block_id` INTEGER NOT NULL," +
     		"`frame_id` INTEGER NOT NULL," +
     		"`time` INTEGER NOT NULL," +
-            "`blocks` TEXT," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3
-            "`data` TEXT," + 	// if no metadata, material1,data1,mat2,dat2,m3,d3
-            "FOREIGN KEY(storage_id) REFERENCES storage(id)" +
+            "`blocks` TEXT," + 	// material1:data1:x,y,z;material2:data2:x,y,z;
+            "`data` TEXT," + 	// JSON metadata
+            "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");"; 
-    //TODO: create StorageFrameMetadata Table after finding a way to serialize it into a blob
     
     // --------------------------------------
     

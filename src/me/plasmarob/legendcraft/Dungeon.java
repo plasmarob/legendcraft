@@ -108,8 +108,11 @@ public class Dungeon {
 		}
 		
 		List<Map<String, Object>> storageList = DatabaseMethods.getBlocks("STORAGE");
+		Tools.say("STORAGELIST: " + storageList.size());
 		for (Map<String,Object> m : storageList) {
+			Tools.say(m.get("id"));
 			List<Map<String, Object>> frameList = DatabaseMethods.getStorageFrames((Integer)m.get("id"));
+			Tools.say("DB METHOD FRAMES: " + frameList.size());
 			storages.put((String)m.get("name"), new Storage(m, frameList, this));
 		}
 		
@@ -1033,10 +1036,8 @@ public class Dungeon {
 		BlockIterator bit = new BlockIterator(player, 20);
 		Block next;
 		
-		while (bit.hasNext())
-		{
+		while (bit.hasNext()) {
 			next = bit.next();
-			
 			Selection sel = LegendCraft.worldEditPlugin.getSelection(player);
 		    if (sel instanceof CuboidSelection && 
 		    		sel.getHeight()*sel.getLength()*sel.getWidth() < 3000 ) 
@@ -1052,9 +1053,7 @@ public class Dungeon {
 					storages.put(name, new Storage(player, next, name, this));
 					return true;
 				}
-		    	
 		    	/*
-		    	
 		    	if (next.getType() == Material.EMERALD_ORE)
 				{
 					if (next.getX() < min.getX() || next.getX() > max.getX() || 
@@ -1068,7 +1067,6 @@ public class Dungeon {
 						storages.put(name, new StorageBlock(player, next, name, this));
 						return true;
 					}
-					
 				}
 				*/
 		    }
@@ -1086,6 +1084,24 @@ public class Dungeon {
 		}
 		player.sendMessage(ChatColor.RED + "Storage Block not found. Enter this command while facing " + 
 							Material.EMERALD_ORE.toString());
+		return false;
+	}
+	
+	public boolean tryAddStorageFrame(Player player, String name) {
+		return tryAddStorageFrame(player, name, 20);
+	}
+    public boolean tryAddStorageFrame(Player player, String name, int ticks) {
+    	if (storages.containsKey(name)) {
+			storages.get(name).addFrame(ticks);
+			return true;
+		}
+		return false;
+	}
+    public boolean tryAddStorageFrame(Player player, String name, int ticks, int afterframe) {
+    	if (storages.containsKey(name)) {
+			storages.get(name).addFrame(ticks, afterframe);
+			return true;
+		}
 		return false;
 	}
 	

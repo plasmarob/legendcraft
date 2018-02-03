@@ -69,7 +69,7 @@ public class Detector implements Sender, Receiver {
 	public Detector(Map<String,Object> data, Dungeon dungeon) {
 		this.name = (String) data.get("name");
 		this.dungeon = dungeon;
-		mainBlock = Tools.blockFromString((String) data.get("location"), dungeon.getWorld());
+		mainBlock = Tools.blockFromXYZ((String) data.get("location"), dungeon.getWorld());
 		defaultOnOff = Boolean.parseBoolean((String) data.get("default"));
 		inverted = Boolean.parseBoolean((String) data.get("inverted"));
 		maxTimes = (int) data.get("times");
@@ -77,7 +77,7 @@ public class Detector implements Sender, Receiver {
 		String blockString = (String) data.get("blocks");
 		String[] blocks = blockString.split(";");
 		for (String blk : blocks) {
-			blockList.add(Tools.blockFromString(blk, dungeon.getWorld()));
+			blockList.add(Tools.blockFromXYZ(blk, dungeon.getWorld()));
 		}
 	}
 	
