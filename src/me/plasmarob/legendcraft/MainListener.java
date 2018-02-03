@@ -372,8 +372,8 @@ public class MainListener implements Listener {
 		
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (!p.isSneaking() && (p.getInventory().getItemInMainHand().getType() == Material.AIR || p.getInventory().getItemInMainHand().getType() == null) ) {
-				if (Dungeon.selectedDungeons.containsKey(p)) {
-					String dungeonStr = Dungeon.selectedDungeons.get(p);
+				if (Dungeon.getSelectedDungeons().containsKey(p)) {
+					String dungeonStr = Dungeon.getSelectedDungeons().get(p);
 					Dungeon d = Dungeon.getDungeons().get(dungeonStr);
 					if (!d.isEnabled() && d.getBlock(event.getClickedBlock()) != null) {
 						String block = d.getBlock(event.getClickedBlock());

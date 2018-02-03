@@ -17,6 +17,7 @@ public class LegendCraftTabCompleter implements TabCompleter {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String commandLabel, String[] args) {
 		if (sender instanceof Player) {
+			Player player = (Player)sender;
 			List<String> autoCompleteList = new ArrayList<String>();
 			//alias for /lc add|edit
 			if (commandLabel.equals("lca") || commandLabel.equals("lce")) {
@@ -38,15 +39,22 @@ public class LegendCraftTabCompleter implements TabCompleter {
 			}
 			// block add/edit
 			if (args[0].equals("add") || args[0].equals("edit")) {
-				final String[] BLOCKS = { "Chest","Detector","Door","Music","RSDetector","Spawner","Storage", "Timer", "Torch", "TorchBlock" };
+				final String[] BLOCKS = { "Chest","Detector","Door", "Frame", "Music","RSDetector","Spawner","Storage", "Timer", "Torch", "TorchBlock" };
 				autoCompleteList = new ArrayList<String>(BLOCKS.length);
 				StringUtil.copyPartialMatches(args[1], Arrays.asList(BLOCKS), autoCompleteList);
 			}
 			// dungeon names
 			if (args[0].equals("select")) {
-				Set<String> DUNGEONS = Dungeon.getDungeons().keySet();
+				final Set<String> DUNGEONS = Dungeon.getDungeons().keySet();
 				autoCompleteList = new ArrayList<String>(DUNGEONS.size());
 				StringUtil.copyPartialMatches(args[1], DUNGEONS, autoCompleteList);
+			}
+			// block names
+			if (args[1].equals("frame")) {
+				String dungeon = Dungeon.getSelectedDungeons().get(player);
+				final Set<String> STORAGES = Dungeon.getDungeons().get(dungeon).getStorages().keySet();
+				autoCompleteList = new ArrayList<String>(STORAGES.size());
+				StringUtil.copyPartialMatches(args[2], STORAGES, autoCompleteList);
 			}
 			/*
 			 * TODO:

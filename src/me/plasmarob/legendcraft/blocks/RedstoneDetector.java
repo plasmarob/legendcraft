@@ -2,8 +2,6 @@ package me.plasmarob.legendcraft.blocks;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringJoiner;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

@@ -56,9 +56,9 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 	//TODO: edit all blocks
 	
 	LegendCraft plugin;
-	public static ConcurrentHashMap<String, MobTemplate> mobs = MobTemplate.mobs;
-	public static ConcurrentHashMap<String, Dungeon> dungeons = Dungeon.getDungeons();
-	public static ConcurrentHashMap<Player, String> selectedDungeons = Dungeon.selectedDungeons;
+	private static ConcurrentHashMap<String, MobTemplate> mobs = MobTemplate.mobs;
+	private static ConcurrentHashMap<String, Dungeon> dungeons = Dungeon.getDungeons();
+	private static ConcurrentHashMap<Player, String> selectedDungeons = Dungeon.getSelectedDungeons();
 	String red = "" + ChatColor.RED;
 	String purp = "" + ChatColor.LIGHT_PURPLE;
 	String b = "" + ChatColor.DARK_BLUE;

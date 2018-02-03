@@ -20,7 +20,7 @@ import me.plasmarob.legendcraft.blocks.RedstoneDetector;
 import me.plasmarob.legendcraft.blocks.Sender;
 import me.plasmarob.legendcraft.blocks.SpawnerBlock;
 import me.plasmarob.legendcraft.blocks.Storage;
-import me.plasmarob.legendcraft.blocks.StorageBlock;
+//import me.plasmarob.legendcraft.blocks.StorageBlock;
 import me.plasmarob.legendcraft.blocks.Timer;
 import me.plasmarob.legendcraft.blocks.TorchBlock;
 import me.plasmarob.legendcraft.blocks.Tune;
@@ -58,7 +58,8 @@ public class Dungeon {
 	private static ConcurrentHashMap<String, Dungeon> dungeons = new ConcurrentHashMap<String, Dungeon>();
 	public static ConcurrentHashMap<String, Dungeon> getDungeons() { return dungeons; };
 	public static ConcurrentHashMap<String, FileConfiguration> dungeonConfigs = new ConcurrentHashMap<String, FileConfiguration>();
-	public static ConcurrentHashMap<Player, String> selectedDungeons = new ConcurrentHashMap<Player, String>();
+	private static ConcurrentHashMap<Player, String> selectedDungeons = new ConcurrentHashMap<Player, String>();
+	public static ConcurrentHashMap<Player, String> getSelectedDungeons() { return selectedDungeons; };
 	///////////////////////
 
 	private boolean enabled = false;
@@ -72,6 +73,7 @@ public class Dungeon {
 	public ConcurrentHashMap<String, Detector> detectors = new ConcurrentHashMap<String, Detector>();
 	//private ConcurrentHashMap<String, StorageBlock> storages = new ConcurrentHashMap<String, StorageBlock>();
 	private ConcurrentHashMap<String, Storage> storages = new ConcurrentHashMap<String, Storage>();
+	public ConcurrentHashMap<String, Storage> getStorages() { return storages; }
 	private ConcurrentHashMap<String, SpawnerBlock> spawners = new ConcurrentHashMap<String, SpawnerBlock>();
 	private ConcurrentHashMap<String, MusicBlock> musics = new ConcurrentHashMap<String, MusicBlock>();
 	private ConcurrentHashMap<String, RedstoneDetector> rsDetectors = new ConcurrentHashMap<String, RedstoneDetector>();
@@ -162,6 +164,7 @@ public class Dungeon {
 			}
 		}	
 				
+		/*
 		//add detectors
 		i = 0;
 		j = 1;
@@ -193,7 +196,7 @@ public class Dungeon {
 				detectors.put(name, newDet);
 			}
 		}	
-		
+		*/
 		//add music
 		i = 0;
 		while (true) {
@@ -255,6 +258,7 @@ public class Dungeon {
 			}
 		}	
 		
+		/*
 		//add storage
 		i = 0;
 		while (true)
@@ -277,6 +281,7 @@ public class Dungeon {
 				//storages.put(name, st);
 			}
 		}	
+		*/
 		
 		//add doors
 		i = 0;
@@ -508,7 +513,7 @@ public class Dungeon {
 	public boolean saveObject(File folder, String name, Receiver obj) {
 		
 		if (!(obj instanceof SpawnerBlock) &&
-			!(obj instanceof StorageBlock) &&
+			//!(obj instanceof StorageBlock) &&
 		    !(obj instanceof Door)) 
 			return false;
 		
@@ -520,8 +525,8 @@ public class Dungeon {
 			
 			if (obj instanceof SpawnerBlock)
 				((SpawnerBlock)obj).setConfig(objConfig); // file w/ {mainBlock, min, max, mobList name&count}
-			if (obj instanceof StorageBlock)
-				((StorageBlock)obj).setConfig(objConfig);
+			//if (obj instanceof StorageBlock)
+			//	((StorageBlock)obj).setConfig(objConfig);
 			if (obj instanceof Door)
 				((Door)obj).setConfig(objConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
 			objConfig.save(objFile);
@@ -543,8 +548,8 @@ public class Dungeon {
 			
 			if (obj instanceof SpawnerBlock)
 				((SpawnerBlock)obj).setConfig(objConfig); // file w/ {mainBlock, min, max, mobList name&count}
-			if (obj instanceof StorageBlock)
-				((StorageBlock)obj).setConfig(objConfig);
+			//if (obj instanceof StorageBlock)
+			//	((StorageBlock)obj).setConfig(objConfig);
 			if (obj instanceof Door)
 				((Door)obj).setConfig(objConfig); // file w/ {key mat&dat, min, max, blockList mat&dat}
 			objConfig.save(objFile);
@@ -1256,6 +1261,7 @@ public class Dungeon {
 		Receiver receiver = getReceiver(b2);
 		if (sender != null && receiver != null) {
 			sender.setTarget(receiver, type);
+
 			player.sendMessage(ChatColor.GREEN + type + " link successful.");
 			return true;
 		} else if (receiver == null)
@@ -1443,9 +1449,6 @@ public class Dungeon {
 		listBlocks(player);
 	}
 	
-	
-	
-
 	public void showLinksFrom(Player player, Receiver rec)
 	{
 		for (String s : detectors.keySet()) {
@@ -1479,9 +1482,6 @@ public class Dungeon {
 			}
 		}
 	}
-	
-
-	
 	
 	public void testForRedstone(Block block) {
 		for (String key : rsDetectors.keySet()) {
@@ -1688,6 +1688,7 @@ public class Dungeon {
 		}
 	}
 	
+	/*
 	public static void loadDungeonsX()
 	{
 		try {
@@ -1720,6 +1721,7 @@ public class Dungeon {
 			e.printStackTrace();
 		}	
 	}
+	*/
 	
 	
 	public static void disableDungeons()
