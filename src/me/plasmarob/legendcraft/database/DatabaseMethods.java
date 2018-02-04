@@ -24,7 +24,7 @@ public class DatabaseMethods {
 	
 	
 	public static void addWorld(UUID uuid, String name) {
-		db.updateQuery("REPLACE INTO world (uuid,name) VALUES('"+ uuid.toString() + "','" + name + "');");
+		db.updateQuery("INSERT OR IGNORE INTO world (uuid,name) VALUES('"+ uuid.toString() + "','" + name + "');");
 		return;
 	}
 	public static void removeWorld(UUID uuid) {
@@ -107,12 +107,12 @@ public class DatabaseMethods {
 		return true;
 	}
 	
-	/*
-	public static List<Map<String, Object>> getBlocksIdJoinedBROKEN(String table, String joinedTable) {	
-		List<Map<String, Object>> results = db.readQuery("SELECT x.*,y.* FROM `" + table + "` AS x JOIN '" + joinedTable + "' AS y ON y.block_id=x.id");
+	
+	public static List<Map<String, Object>> getLinks(int dungeon, int sender) {	
+		List<Map<String, Object>> results = db.readQuery("SELECT * FROM link WHERE dungeon_id='"+dungeon+"' AND sender_id='"+sender+"'");
 		return results;
 	}
-	*/
+	
 	public static List<Map<String, Object>> getBlocksIdJoined(String joinedTable) {	
 		List<Map<String, Object>> results = db.readQuery("SELECT block.*,"+joinedTable+".* FROM `block` JOIN '" + joinedTable + "' ON "+joinedTable+".block_id=block.id");
 		return results;

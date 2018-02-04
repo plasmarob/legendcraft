@@ -28,19 +28,19 @@ import me.plasmarob.legendcraft.util.Tools;
 public class Storage implements Receiver {
 
 	private String name;
+	private int id = -1;
+	public int getID() { return this.id; }
+	public void setID(int id) { this.id = id; }
+	
+	
 	private Dungeon dungeon;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
 	private boolean isOn = true;
 	private boolean inverted = false;
 	
-	private int block_id;
-	
 	private int currentFrameIndex=0;
 	
-	//List<Material> matList = new ArrayList<Material>();
-	//List<Byte> datList = new ArrayList<Byte>();
-	//List<BlockState> bsList = new ArrayList<BlockState>();
 	List<Frame> frames = new ArrayList<Frame>();
 	
 	Block mainBlock;
@@ -79,8 +79,7 @@ public class Storage implements Receiver {
 	
 	@SuppressWarnings("deprecation")
 	public Storage(Map<String,Object> block, List<Map<String,Object>> frameList, Dungeon dungeon) {
-		Tools.say("HOW MANY FRAMES: "+frameList.size());
-		this.block_id = (Integer) block.get("id");
+		this.id = (Integer) block.get("id");
 		this.name = (String) block.get("name");
 		this.dungeon = dungeon;
 		this.mainBlock = Tools.blockFromXYZ((String) block.get("location"), dungeon.getWorld());
@@ -128,7 +127,7 @@ public class Storage implements Receiver {
 		data.put("mode", mode);
 		String datastr = data.toJSONString();
 		
-		block_id = new DatabaseInserter("block")
+		id = new DatabaseInserter("block")
 						.dungeon_id(dungeon.getDungeonId())
 						.type_id("STORAGE")
 						.name(name)
@@ -142,15 +141,16 @@ public class Storage implements Receiver {
 		
 		Frame f = frames.get(0);
 		new DatabaseInserter("storageFrame")
-				.add("block_id", block_id)
+				.add("block_id", id)
 				.add("frame_id", 1)
 				.add("time", 20)
 				.add("blocks", f.getBlockTypes())
 				.add("data", f.getDataJSON())
 				.execute();
-		
 		//TODO enhancement: add into column any special block data as JSON
 	}
+	
+	
 	
 	public void addFrame() {
 		addFrame(20);
@@ -175,9 +175,9 @@ public class Storage implements Receiver {
         }}}
         //DB insert
         Frame f = new Frame(bsList);
-        DatabaseMethods.pushStorageFrames(block_id, at_frame); // slide any higher ids
+        DatabaseMethods.pushStorageFrames(id, at_frame); // slide any higher ids
 		new DatabaseInserter("storageFrame")
-				.add("block_id", block_id)
+				.add("block_id", id)
 				.add("frame_id", at_frame)
 				.add("time", ticks)
 				.add("blocks", f.getBlockTypes())
@@ -189,7 +189,6 @@ public class Storage implements Receiver {
 	
 	@Override
 	public void trigger()  {
-		Bukkit.getConsoleSender().sendMessage("TRIGGER");
 		if (!enabled || !isOn)
 			return;
 		// kick off an animation sequence
@@ -203,7 +202,6 @@ public class Storage implements Receiver {
 	
 	@SuppressWarnings("deprecation")
 	private void animate() {
-		Bukkit.getConsoleSender().sendMessage("ANIMATE "+currentFrameIndex+" of "+frames.size()+" >"+mode);
 		// stop after end
 		if (mode.equals("ONCE")) 
 			if (currentFrameIndex >= frames.size()) return;	
@@ -218,13 +216,12 @@ public class Storage implements Receiver {
 		int maxz = max.getBlockZ();
         World w = dungeon.getWorld();
 
-        Tools.say("Animate Loop:");
+       
 		int i = 0;
 		for (int x = minx; x <= maxx; x++)  {
         	for (int y = miny; y <= maxy; y++)  {
         		for (int z = minz; z <= maxz; z++) {
         			w.getBlockAt(x, y, z).setTypeIdAndData(blocks.get(i).getTypeId(), blocks.get(i).getData().getData(), false);
-        			Tools.say(x+","+y+","+z+":"+blocks.get(i).getTypeId()+":"+blocks.get(i).getData().getData());
         			i++;
         }}}
             
@@ -350,20 +347,20 @@ public class Storage implements Receiver {
 		public int getTime() { return ticks; }
 		public void setTime(int t) { ticks=t; }
 		
-		private int id = -1;
+		private int fid = -1;
 		
-		public int getId() { return id; }
-		public void setId(int id) { this.id=id; }
+		public int getId() { return fid; }
+		public void setId(int id) { this.fid=id; }
 		
 		Frame(List<BlockState> blocks, int id, int time) {
 			this.blocks = blocks;
-			this.id = id;
+			this.fid = id;
 			this.ticks = time;
 		}
 		
 		Frame(List<BlockState> blocks) {
 			this.blocks = blocks;
-			this.id = -1;
+			this.fid = -1;
 		}
 		
 		@SuppressWarnings("deprecation")
@@ -393,7 +390,7 @@ public class Storage implements Receiver {
 	class FrameThread implements Runnable {	
 		Storage storage;
 		FrameThread(Storage storage) { this.storage = storage; }
-		public void update() { Bukkit.getConsoleSender().sendMessage("THREAD"); storage.animate(); }
+		public void update() { storage.animate(); }
 		public void run() {
 		    try { update(); } catch (Exception e) { e.printStackTrace(); }
 		}	

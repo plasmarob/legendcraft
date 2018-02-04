@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.plasmarob.legendcraft.blocks.Link;
 import me.plasmarob.legendcraft.blocks.MobTemplate;
 import me.plasmarob.legendcraft.blocks.Tune;
 import me.plasmarob.legendcraft.database.Database;
@@ -589,7 +590,7 @@ public class LegendCraftCommandExecutor implements CommandExecutor {
 				say(red + "No dungeon selected. Select one using\n /lc select <dungeon>");
 			else {
 				String dungeonStr = selectedDungeons.get(player);
-				if (!dungeons.get(dungeonStr).tryLink(player, args[1], args[2], type))
+				if (!Link.valid(type) || !dungeons.get(dungeonStr).tryLink(player, args[1], args[2], Link.get(type.toUpperCase())))
 					say(red + "Linking failed.");
 			}
 		}

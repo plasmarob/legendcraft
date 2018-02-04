@@ -95,7 +95,6 @@ public class LegendCraft extends JavaPlugin {
 	    
 	    //------------------------
 	  	// Send off valid commands
-	    //TODO: implement Tab Completion
 	    List<String> commands = Arrays.asList("lca","lce","lc","legendcraft");
 	    for (String cmd : commands) {
 	    	this.getCommand(cmd).setExecutor(new LegendCraftCommandExecutor(this));

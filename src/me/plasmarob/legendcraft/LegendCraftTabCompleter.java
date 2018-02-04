@@ -3,6 +3,7 @@ package me.plasmarob.legendcraft;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -49,8 +50,18 @@ public class LegendCraftTabCompleter implements TabCompleter {
 				autoCompleteList = new ArrayList<String>(DUNGEONS.size());
 				StringUtil.copyPartialMatches(args[1], DUNGEONS, autoCompleteList);
 			}
+			// show all blocks
+			if (args[0].equals("show") && Dungeon.getSelectedDungeons().get(player) != null) {
+				Dungeon d = Dungeon.getDungeons().get(Dungeon.getSelectedDungeons().get(player));
+				Set<String> BLOCKS = new HashSet<String>();
+				BLOCKS.addAll(d.getDetectors().keySet());
+				BLOCKS.addAll(d.getStorages().keySet());
+				BLOCKS.addAll(d.getChestBlocks().keySet());
+				autoCompleteList = new ArrayList<String>(BLOCKS.size());
+				StringUtil.copyPartialMatches(args[1], BLOCKS, autoCompleteList);
+			}
 			// block names
-			if (args[1].equals("frame")) {
+			if (args.length==3 && args[1].equals("frame")) {
 				String dungeon = Dungeon.getSelectedDungeons().get(player);
 				final Set<String> STORAGES = Dungeon.getDungeons().get(dungeon).getStorages().keySet();
 				autoCompleteList = new ArrayList<String>(STORAGES.size());

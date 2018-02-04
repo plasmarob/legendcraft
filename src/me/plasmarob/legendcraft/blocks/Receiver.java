@@ -7,9 +7,10 @@ import org.bukkit.entity.Player;
 
 @SuppressWarnings("unused")
 public interface Receiver {
+	public int getID();
+	public void setID(int id);
 	
 	// 0 is start by default, 0 and 1 are switched if it is inverted.
-	
 	// 0,1 -> 1
 	public void trigger();
 	// turns a block on/off from its default.

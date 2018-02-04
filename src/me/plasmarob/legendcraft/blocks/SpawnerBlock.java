@@ -23,6 +23,9 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class SpawnerBlock implements Receiver, Sender{
 
+	private int id = -1;
+	public int getID() { return this.id; }
+	public void setID(int id) { this.id= id; }
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
@@ -37,8 +40,7 @@ public class SpawnerBlock implements Receiver, Sender{
 	Map<MobTemplate,Integer> mobList = new HashMap<MobTemplate,Integer>();
 	List<Entity> entityList = new ArrayList<Entity>();
 	
-	HashMap<Receiver, String> receivers = new HashMap<Receiver, String>();
-	HashMap<Receiver, String> messageTypes = new HashMap<Receiver, String>();
+	HashMap<Receiver, Link> links = new HashMap<Receiver, Link>();
 	
 	public SpawnerBlock(Player player, Block block, String name) {
 		this.block = block;
@@ -159,17 +161,9 @@ public class SpawnerBlock implements Receiver, Sender{
 	
 	@Override
 	public void run() {
-		for (Receiver r : receivers.keySet()) {
-			if (messageTypes.get(r).equals("trigger"))
-				r.trigger();
-			else if (messageTypes.get(r).equals("set"))
-				r.set();
-			else if (messageTypes.get(r).equals("reset"))
-				r.reset();
-			else if (messageTypes.get(r).equals("on"))
-				r.on();
-			else if (messageTypes.get(r).equals("off"))
-				r.off();
+		//send the message to the receivers
+		for (Receiver r : links.keySet()) {
+			links.get(r).call(r);
 		}
 	}
 	
@@ -211,8 +205,7 @@ public class SpawnerBlock implements Receiver, Sender{
 
 	@Override
 	public void clearLinks() {
-		receivers.clear();
-		messageTypes.clear();
+		links.clear();
 	}
 	
 	@Override
@@ -220,21 +213,19 @@ public class SpawnerBlock implements Receiver, Sender{
 		return "spawner";
 	}
 
+
 	@Override
-	public HashMap<Receiver, String> getTargets(){
-		return receivers;
-	}
-	@Override
-	public HashMap<Receiver, String> getMessageTypes(){
-		return messageTypes;
+	public HashMap<Receiver, Link> getLinks(){
+		return links;
 	}
 
 	@Override
-	public void setTarget(Receiver target, String linkType) {
-		if (receivers.containsKey(target))
-			receivers.remove(target);
-		receivers.put(target, target.type());
-		messageTypes.put(target, linkType);
+	public boolean setTarget(Receiver target, Link linkType) {
+		try {
+			if (links.containsKey(target)) links.remove(target);
+			links.put(target, linkType);
+			return true;
+		} catch (Exception e) { return false; }
 	}
 
 	@Override
@@ -244,9 +235,8 @@ public class SpawnerBlock implements Receiver, Sender{
 
 	@Override
 	public boolean removeLink(Receiver block) {
-		if (receivers.containsKey(block)) {
-			receivers.remove(block);
-			messageTypes.remove(block);
+		if (links.containsKey(block)) {
+			links.remove(block);
 			return true;
 		}
 		return false;
@@ -279,8 +269,8 @@ public class SpawnerBlock implements Receiver, Sender{
 			p.sendMessage(prp + "  " + mt.getMyName() + " x " + mobList.get(mt));
 		}
 		
-		for (Receiver r : receivers.keySet()) {
-			p.sendMessage(prp + "  Links to " + r.name() + " ("+messageTypes.get(r)+")");
+		for (Receiver r : links.keySet()) {
+			p.sendMessage(prp + "  Links to " + r.name() + " ("+links.get(r).NAME+")");
 			Tools.showLine(world, this, r);
 		}
 	}

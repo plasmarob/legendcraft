@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 
 public class MusicBlock implements Receiver {
 	
+	private int id = -1;
+	public int getID() { return this.id; }
+	public void setID(int id) { this.id= id; }
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;

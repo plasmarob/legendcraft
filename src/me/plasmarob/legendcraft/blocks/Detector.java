@@ -17,6 +17,9 @@ import me.plasmarob.legendcraft.util.Tools;
 
 public class Detector implements Sender, Receiver {
 	private Dungeon dungeon;
+	private int id = -1;
+	public int getID() { return this.id; }
+	public void setID(int id) { this.id= id; }
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
@@ -28,8 +31,8 @@ public class Detector implements Sender, Receiver {
 	Block mainBlock;
 	boolean isWaiting = false;
 	
-	HashMap<Receiver, String> receivers = new HashMap<Receiver, String>();
-	HashMap<Receiver, String> messageTypes = new HashMap<Receiver, String>();
+	//HashMap<Receiver, String> receivers = new HashMap<Receiver, String>();
+	HashMap<Receiver, Link> links = new HashMap<Receiver, Link>();
 
 	private int maxTimes = -1; //max times it can be triggered (-1 infinite)
 	private int timesRun = 0; //how many times triggered
@@ -67,6 +70,7 @@ public class Detector implements Sender, Receiver {
 	}
 	
 	public Detector(Map<String,Object> data, Dungeon dungeon) {
+		id = (int) data.get("id");
 		this.name = (String) data.get("name");
 		this.dungeon = dungeon;
 		mainBlock = Tools.blockFromXYZ((String) data.get("location"), dungeon.getWorld());
@@ -88,7 +92,7 @@ public class Detector implements Sender, Receiver {
 			blocks.add(Tools.locationAsString(b.getX(), b.getY(), b.getZ()));
 		}
 		
-		new DatabaseInserter("block")
+		id = new DatabaseInserter("block")
 				.dungeon_id(dungeon.getDungeonId())
 				.type_id("PLAYER_DETECTOR")
 				.name(name)
@@ -115,20 +119,17 @@ public class Detector implements Sender, Receiver {
 	}
 	
 	@Override
-	public HashMap<Receiver, String> getTargets(){
-		return receivers;
-	}
-	@Override
-	public HashMap<Receiver, String> getMessageTypes(){
-		return messageTypes;
+	public HashMap<Receiver, Link> getLinks(){
+		return links;
 	}
 	
 	@Override
-	public void setTarget(Receiver target, String linkType) {
-		if (receivers.containsKey(target))
-			receivers.remove(target);
-		receivers.put(target, target.type());
-		messageTypes.put(target, linkType);
+	public boolean setTarget(Receiver target, Link linkType) {
+		try {
+			if (links.containsKey(target)) links.remove(target);
+			links.put(target, linkType);
+			return true;
+		} catch (Exception e) { return false; }
 	}
 
 	public boolean isEnabled() {
@@ -240,35 +241,24 @@ public class Detector implements Sender, Receiver {
 	}
 	
 	@Override
-	public void run()
-	{
+	public void run() {
 		isWaiting = false;
 		timesRun++;
 		//send the message to the receivers
-		for (Receiver r : receivers.keySet()) {
-			if (messageTypes.get(r).equals("trigger"))
-				r.trigger();
-			else if (messageTypes.get(r).equals("set"))
-				r.set();
-			else if (messageTypes.get(r).equals("reset"))
-				r.reset();
-			else if (messageTypes.get(r).equals("on"))
-				r.on();
-			else if (messageTypes.get(r).equals("off"))
-				r.off();
+		for (Receiver r : links.keySet()) {
+			links.get(r).call(r);
 		}
 	}
 	
 	public void displayTargets(Player p) {
-		for (Receiver r : receivers.keySet()) {
-			p.sendMessage("  Links to " + receivers.get(r) + "("+messageTypes.get(r)+")");
+		for (Receiver r : links.keySet()) {
+			p.sendMessage("  Links to " + r.name() + "("+links.get(r).NAME+")");
 		}
 	}
 
 	public boolean removeLink(Receiver receiver) {
-		if (receivers.containsKey(receiver)) {
-			receivers.remove(receiver);
-			messageTypes.remove(receiver);
+		if (links.containsKey(receiver)) {
+			links.remove(receiver);
 			return true;
 		}
 		return false;
@@ -280,8 +270,7 @@ public class Detector implements Sender, Receiver {
 	}
 		
 	public void clearLinks() {
-		receivers.clear();
-		messageTypes.clear();
+		links.clear();
 	}
 
 	@Override
@@ -318,8 +307,8 @@ public class Detector implements Sender, Receiver {
 		p.sendMessage(prp + "  Times run: " + timesRun);
 		p.sendMessage(prp + "  Main block: " + mainBlock.getX() + " " + mainBlock.getY() + " " + mainBlock.getZ());
 		
-		for (Receiver r : receivers.keySet()) {
-			p.sendMessage(prp + "  Links to " + r.name() + " ("+messageTypes.get(r)+")");
+		for (Receiver r : links.keySet()) {
+			p.sendMessage(prp + "  Links to " + r.name() + " ("+links.get(r).NAME+")");
 			Tools.showLine(mainBlock.getWorld(), this, r);
 		}
 	}

@@ -14,6 +14,9 @@ import org.bukkit.entity.Player;
 
 public class Timer implements Sender, Receiver {
 	private Dungeon dungeon;
+	private int id = -1;
+	public int getID() { return this.id; }
+	public void setID(int id) { this.id= id; }
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
@@ -21,8 +24,7 @@ public class Timer implements Sender, Receiver {
 	private boolean inverted = false;
 	
 	Block mainBlock;
-	HashMap<Receiver, String> receivers = new HashMap<Receiver, String>();
-	HashMap<Receiver, String> messageTypes = new HashMap<Receiver, String>();
+	HashMap<Receiver, Link> messageTypes = new HashMap<Receiver, Link>();
 	
 	private int maxTimes = -1; //max times it can be triggered (-1 infinite)
 	private int timesRun = 0; //how many times triggered
@@ -146,42 +148,29 @@ public class Timer implements Sender, Receiver {
 	public void run() {
 		isWaiting = false;
 		timesRun++;
-		//send the messages to the receivers
-		for (Receiver r : receivers.keySet()) {
-			if (messageTypes.get(r).equals("trigger"))
-				r.trigger();
-			else if (messageTypes.get(r).equals("set"))
-				r.set();
-			else if (messageTypes.get(r).equals("reset"))
-				r.reset();
-			else if (messageTypes.get(r).equals("on"))
-				r.on();
-			else if (messageTypes.get(r).equals("off"))
-				r.off();
+		//send the message to the receivers
+		for (Receiver r : messageTypes.keySet()) {
+			messageTypes.get(r).call(r);
 		}
 	}
 
 	@Override
-	public HashMap<Receiver, String> getTargets() {
-		return receivers;
+	public boolean setTarget(Receiver target, Link linkType) {
+		try {
+			if (messageTypes.containsKey(target)) messageTypes.remove(target);
+			messageTypes.put(target, linkType);
+			return true;
+		} catch (Exception e) { return false; }
 	}
 	@Override
-	public void setTarget(Receiver target, String linkType) {
-		if (receivers.containsKey(target))
-			receivers.remove(target);
-		receivers.put(target, target.type());
-		messageTypes.put(target, linkType);
-	}
-	@Override
-	public HashMap<Receiver, String> getMessageTypes() {
+	public HashMap<Receiver, Link> getLinks() {
 		return messageTypes;
 	}
 	// No setMessageType necessary - setTarget overrides anyway
 
 	@Override
 	public boolean removeLink(Receiver receiver) {
-		if (receivers.containsKey(receiver)) {
-			receivers.remove(receiver);
+		if (messageTypes.containsKey(receiver)) {
 			messageTypes.remove(receiver);
 			return true;
 		}
@@ -189,7 +178,6 @@ public class Timer implements Sender, Receiver {
 	}
 	@Override
 	public void clearLinks() {
-		receivers.clear();
 		messageTypes.clear();
 	}
 	
@@ -225,8 +213,8 @@ public class Timer implements Sender, Receiver {
 		p.sendMessage(prp + "  Times triggered: " + timesRun);
 		p.sendMessage(prp + "  Main block: " + mainBlock.getX() + " " + mainBlock.getY() + " " + mainBlock.getZ());
 		
-		for (Receiver r : receivers.keySet()) {
-			p.sendMessage(prp + "  Links to " + r.name() + " ("+messageTypes.get(r)+")");
+		for (Receiver r : messageTypes.keySet()) {
+			p.sendMessage(prp + "  Links to " + r.name() + " ("+messageTypes.get(r).NAME+")");
 			Tools.showLine(mainBlock.getWorld(), this, r);
 		}
 		//TODO: show inbound links

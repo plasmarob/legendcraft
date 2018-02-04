@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.plasmarob.legendcraft.blocks.Door;
+import me.plasmarob.legendcraft.blocks.Link;
 import me.plasmarob.legendcraft.blocks.ChestBlock;
 import me.plasmarob.legendcraft.blocks.Detector;
 import me.plasmarob.legendcraft.blocks.MobTemplate;
@@ -24,6 +24,7 @@ import me.plasmarob.legendcraft.blocks.Storage;
 import me.plasmarob.legendcraft.blocks.Timer;
 import me.plasmarob.legendcraft.blocks.TorchBlock;
 import me.plasmarob.legendcraft.blocks.Tune;
+import me.plasmarob.legendcraft.database.DatabaseInserter;
 import me.plasmarob.legendcraft.database.DatabaseMethods;
 import me.plasmarob.legendcraft.util.Tools;
 
@@ -33,7 +34,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -70,8 +70,8 @@ public class Dungeon {
 	private Vector min;
 	private Vector max;
 	
-	public ConcurrentHashMap<String, Detector> detectors = new ConcurrentHashMap<String, Detector>();
-	//private ConcurrentHashMap<String, StorageBlock> storages = new ConcurrentHashMap<String, StorageBlock>();
+	private ConcurrentHashMap<String, Detector> detectors = new ConcurrentHashMap<String, Detector>();
+	public ConcurrentHashMap<String, Detector> getDetectors() { return detectors; }
 	private ConcurrentHashMap<String, Storage> storages = new ConcurrentHashMap<String, Storage>();
 	public ConcurrentHashMap<String, Storage> getStorages() { return storages; }
 	private ConcurrentHashMap<String, SpawnerBlock> spawners = new ConcurrentHashMap<String, SpawnerBlock>();
@@ -80,12 +80,12 @@ public class Dungeon {
 	private ConcurrentHashMap<String, TorchBlock> torchBlocks = new ConcurrentHashMap<String, TorchBlock>();
 	private ConcurrentHashMap<String, Timer> timerBlocks = new ConcurrentHashMap<String, Timer>();
 	private ConcurrentHashMap<String, ChestBlock> chestBlocks = new ConcurrentHashMap<String, ChestBlock>();
+	public ConcurrentHashMap<String, ChestBlock> getChestBlocks() { return chestBlocks; }
 	private ConcurrentHashMap<String, Door> autoDoors = new ConcurrentHashMap<String, Door>();
 	
 	private List<Player> players = new ArrayList<Player>();
 	
-	public Dungeon(String name, World world, Vector min, Vector max)
-	{
+	public Dungeon(String name, World world, Vector min, Vector max) {
 		this.name = name;
 		this.world = world;
 		this.min = min;
@@ -104,9 +104,17 @@ public class Dungeon {
 		this.world = Bukkit.getWorld(UUID.fromString((String) data.get("uuid")));
 		dungeons.put(name, this);
 		
+		
+		// Make list for linking up
+		List<Sender> senderList = new ArrayList<Sender>();
+		List<Receiver> receiverList = new ArrayList<Receiver>();
+		
 		List<Map<String, Object>> detectorList = DatabaseMethods.getBlocks("PLAYER_DETECTOR");
 		for (Map<String,Object> m : detectorList) {
-			detectors.put((String)m.get("name"), new Detector(m, this));
+			Detector d =  new Detector(m, this);
+			detectors.put((String)m.get("name"), d);
+			senderList.add(d);
+			receiverList.add(d);
 		}
 		
 		List<Map<String, Object>> storageList = DatabaseMethods.getBlocks("STORAGE");
@@ -115,16 +123,39 @@ public class Dungeon {
 			Tools.say(m.get("id"));
 			List<Map<String, Object>> frameList = DatabaseMethods.getStorageFrames((Integer)m.get("id"));
 			Tools.say("DB METHOD FRAMES: " + frameList.size());
-			storages.put((String)m.get("name"), new Storage(m, frameList, this));
+			Storage s = new Storage(m, frameList, this);
+			storages.put((String)m.get("name"), s);
+			receiverList.add(s);
 		}
 		
 		List<Map<String, Object>> chestList = DatabaseMethods.getBlocksIdJoined("chest");
 		for (Map<String,Object> m : chestList) {
-			chestBlocks.put((String)m.get("name"), new ChestBlock(m, this));
+			ChestBlock c = new ChestBlock(m, this);
+			chestBlocks.put((String)m.get("name"), c);
+			receiverList.add(c);
 		}
+		
+		// Loop through senders and call DB query for links
+	    for (Sender sender : senderList) {
+		   List<Map<String, Object>> linkList = DatabaseMethods.getLinks(dungeon_id, sender.getID());
+		   // Loop through rows returned for IDs
+		   for (Map<String,Object> link : linkList) {
+			   int rec_id = (Integer)link.get("receiver_id");
+			   Link type = Link.get((Integer)link.get("trigger_type_id"));
+			   // Loop through receivers and find a match
+			   for (Receiver receiver : receiverList) {
+				   if (receiver.getID() == rec_id) {
+					   sender.setTarget(receiver, type);
+					   break;
+				   }
+			   }
+		   }
+	    }
+		
 	}
 	
-	@Deprecated
+	//@Deprecated
+	/*
 	public Dungeon(File folder, FileConfiguration config)
 	{	
 		this.world = Bukkit.getWorld(config.getString("world"));
@@ -196,7 +227,7 @@ public class Dungeon {
 				detectors.put(name, newDet);
 			}
 		}	
-		*/
+		
 		//add music
 		i = 0;
 		while (true) {
@@ -281,7 +312,7 @@ public class Dungeon {
 				//storages.put(name, st);
 			}
 		}	
-		*/
+		
 		
 		//add doors
 		i = 0;
@@ -369,7 +400,9 @@ public class Dungeon {
 		//
 		// all must be loaded (above) before we can get them to point to each other.
 		//------------------------------------------
+		
 		int k = 1;	
+		/*
 		for (String name : detectors.keySet()) {
 			Detector det = detectors.get(name);
 			i = 1; //find detector in file
@@ -396,6 +429,7 @@ public class Dungeon {
 				inName = config.getString("detectors.d" + i + ".name");
 			}	
 		}
+		
 		
 		k = 1;	
 		for (String name : rsDetectors.keySet()) {
@@ -505,7 +539,7 @@ public class Dungeon {
 			}	
 		}
 	}
-	
+	*/
 	
 	
 	
@@ -567,7 +601,7 @@ public class Dungeon {
 	public void setConfig(File folder, FileConfiguration config) {
 		
 		int i = 1; // block #
-		int j = 1; // receiver #
+		//int j = 1; // receiver #
 		
 		i = 1;
 		for (String name : chestBlocks.keySet())
@@ -591,6 +625,7 @@ public class Dungeon {
 			i++;
 		}
 		
+		/*
 		i = 1;
 		for (String name : detectors.keySet())
 		{
@@ -624,6 +659,7 @@ public class Dungeon {
 			
 			i++;
 		}
+		*/
 				
 		i = 1;
 		for (String name : musics.keySet())
@@ -641,6 +677,7 @@ public class Dungeon {
 			i++;
 		}
 		
+		/*
 		i = 1;
 		for (String name : rsDetectors.keySet())
 		{
@@ -689,7 +726,7 @@ public class Dungeon {
 			i++;
 		}
 		
-		/*
+		
 		i = 1;
 		for (String name : storages.keySet()) {
 			StorageBlock sb = storages.get(name);
@@ -699,7 +736,7 @@ public class Dungeon {
 			saveObject(folder, name, sb);
 			i++;
 		}
-		*/
+		
 		
 		i = 1;
 		for (String name : autoDoors.keySet()) {
@@ -737,6 +774,7 @@ public class Dungeon {
 			i++;
 		}
 		
+		
 		i = 1;
 		for (String name : torchBlocks.keySet()) {
 			TorchBlock torchBlk = torchBlocks.get(name);
@@ -771,7 +809,7 @@ public class Dungeon {
 			
 			i++;
 		}
-		
+		*/
 		
 	}
 	
@@ -1110,26 +1148,6 @@ public class Dungeon {
 		return false;
 	}
 	
-	/*
-	 * DELETED SOON
-	 * 
-	public boolean tryAddToStorageBlock(Player player, String block) {
-		if (storages.containsKey(block)) {
-			storages.get(block).addFrame();
-			return true;
-		}
-		return false;
-	}
-	public boolean tryAddToStorageBlock(Player player, String block, String frame) {
-		if (storages.containsKey(block)) {
-			storages.get(block).addFrame(Integer.parseInt(frame));
-			return true;
-		}
-		return false;
-	}
-	*/
-	
-	
 	// AUTO DOOR
 	public boolean tryAddDoor(Player player, String name)
 	{
@@ -1255,15 +1273,23 @@ public class Dungeon {
 	}
 
 	
-	public boolean tryLink(Player player, String b1, String b2, String type) {
+	public boolean tryLink(Player player, String b1, String b2, Link type) {
 		
 		Sender sender = getSender(b1);
 		Receiver receiver = getReceiver(b2);
 		if (sender != null && receiver != null) {
-			sender.setTarget(receiver, type);
-
-			player.sendMessage(ChatColor.GREEN + type + " link successful.");
-			return true;
+			if (sender.setTarget(receiver, type)) {
+				int sid = sender.getID();
+				int rid = receiver.getID();
+				new DatabaseInserter("link")
+					.add("sender_id", sid)
+					.add("receiver_id", rid)
+					.add("trigger_type_id", type.ID)
+					.add("dungeon_id", dungeon_id)
+					.execute();
+				player.sendMessage(ChatColor.GREEN + type.NAME + " link successful.");
+				return true;
+			}
 		} else if (receiver == null)
 			player.sendMessage(ChatColor.RED + b2 + " does not exist.");
 		else
@@ -1452,32 +1478,32 @@ public class Dungeon {
 	public void showLinksFrom(Player player, Receiver rec)
 	{
 		for (String s : detectors.keySet()) {
-			if (detectors.get(s).getTargets().containsKey(rec)) {
-				player.sendMessage(prp + "  Link from " + s + " ("+ detectors.get(s).getMessageTypes().get(rec) +")" );
+			if (detectors.get(s).getLinks().containsKey(rec)) {
+				player.sendMessage(prp + "  Link from " + s + " ("+ detectors.get(s).getLinks().get(rec) +")" );
 				Tools.showLine(world, detectors.get(s), rec);
 			}
 		}
 		for (String s : rsDetectors.keySet()) {
-			if (rsDetectors.get(s).getTargets().containsKey(rec)) {
-				player.sendMessage(prp + "  Link from " + s + " ("+ rsDetectors.get(s).getMessageTypes().get(rec) +")" );
+			if (rsDetectors.get(s).getLinks().containsKey(rec)) {
+				player.sendMessage(prp + "  Link from " + s + " ("+ rsDetectors.get(s).getLinks().get(rec) +")" );
 				Tools.showLine(world, rsDetectors.get(s), rec);
 			}
 		}
 		for (String s : spawners.keySet()) {
-			if (spawners.get(s).getTargets().containsKey(rec)) {
-				player.sendMessage(prp + "  Link from " + s + " ("+ spawners.get(s).getMessageTypes().get(rec) +")" );
+			if (spawners.get(s).getLinks().containsKey(rec)) {
+				player.sendMessage(prp + "  Link from " + s + " ("+ spawners.get(s).getLinks().get(rec) +")" );
 				Tools.showLine(world, spawners.get(s), rec);
 			}
 		}
 		for (String s : torchBlocks.keySet()) {
-			if (torchBlocks.get(s).getTargets().containsKey(rec)) {
-				player.sendMessage(prp + "  Link from " + s + " ("+ torchBlocks.get(s).getMessageTypes().get(rec) +")" );
+			if (torchBlocks.get(s).getLinks().containsKey(rec)) {
+				player.sendMessage(prp + "  Link from " + s + " ("+ torchBlocks.get(s).getLinks().get(rec) +")" );
 				Tools.showLine(world, torchBlocks.get(s), rec);
 			}
 		}
 		for (String s : timerBlocks.keySet()) {
-			if (timerBlocks.get(s).getTargets().containsKey(rec)) {
-				player.sendMessage(prp + "  Link from " + s + " ("+ timerBlocks.get(s).getMessageTypes().get(rec) +")" );
+			if (timerBlocks.get(s).getLinks().containsKey(rec)) {
+				player.sendMessage(prp + "  Link from " + s + " ("+ timerBlocks.get(s).getLinks().get(rec) +")" );
 				Tools.showLine(world, timerBlocks.get(s), rec);
 			}
 		}
@@ -1682,9 +1708,12 @@ public class Dungeon {
 	// -----------------------
 	public static void loadDungeons()
 	{
+		Tools.say("Loading Dungeons");
 		List<Map<String, Object>> rows = DatabaseMethods.getDungeons();
+		Tools.say("Rows: "+rows.size());
 		for (Map<String,Object> m : rows) {
 			new Dungeon(m);
+			Tools.say("Dunegon Added.");
 		}
 	}
 	

@@ -8,12 +8,15 @@ import org.bukkit.entity.Player;
 
 @SuppressWarnings("unused")
 public interface Sender {
-	public HashMap<Receiver, String> getTargets();
-	public HashMap<Receiver, String> getMessageTypes();
+	public int getID();
+	public void setID(int id);
+	
+	//public HashMap<Receiver, String> getTargets();
+	public HashMap<Receiver, Link> getLinks();
 	public void clearLinks();
 	public boolean removeLink(Receiver receiver);
 	
-	public void setTarget(Receiver receiver, String type);
+	public boolean setTarget(Receiver receiver, Link type);
 	
 	public String type();
 	public String name();

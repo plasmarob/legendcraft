@@ -20,6 +20,8 @@ public class SQLite extends Database{
         dbname = plugin.getConfig().getString("SQLite.Filename", "legendcraft"); // Database filename
     }
     
+    //----------------------------------------------------------------------------
+    // World
     public String SQLiteCreateWorldTable = 
     		"CREATE TABLE IF NOT EXISTS world (" + 
     		"`id` INTEGER PRIMARY KEY," +
@@ -27,7 +29,7 @@ public class SQLite extends Database{
             "`name` varchar(255) NOT NULL," +
             "CONSTRAINT uuid_unique UNIQUE (uuid)" +
             ");";
-    
+    // Dungeon
     public String SQLiteCreateDungeonTable = 
     		"CREATE TABLE IF NOT EXISTS dungeon (" + 
     		"`id` INTEGER PRIMARY KEY," +
@@ -38,17 +40,8 @@ public class SQLite extends Database{
             "CONSTRAINT name_unique UNIQUE (name)" +
             ");";
             //"); CREATE UNIQUE INDEX IF NOT EXISTS world_uuid ON world(uuid);";
-    public String SQLiteCreateLinkTable = 
-    		"CREATE TABLE IF NOT EXISTS link (" + 
-    		"`id` INTEGER PRIMARY KEY," +
-    		"`sender_id` INTEGER NOT NULL," +
-    		"`receiver_id` INTEGER NOT NULL," +
-    		"`trigger_type_id` INTEGER NOT NULL," +
-            "FOREIGN KEY(sender_id) REFERENCES block(id)," +
-            "FOREIGN KEY(receiver_id) REFERENCES block(id)," +
-            "FOREIGN KEY(trigger_type_id) REFERENCES triggerType(id)" +
-            ");";
-    
+    //----------------------------------------------------------------------------
+    // BlockType
     public String SQLiteCreateBlockTypeTable = 
     		"CREATE TABLE IF NOT EXISTS blockType (" + 
     		"`id` INTEGER PRIMARY KEY," +
@@ -64,6 +57,7 @@ public class SQLite extends Database{
     		"REPLACE INTO blockType VALUES (70,'REDSTONE_DETECTOR');" +
     		"REPLACE INTO blockType VALUES (80,'CHEST');" +
     		"REPLACE INTO blockType VALUES (90,'DOOR');";   
+    // Block
     public String SQLiteCreateBlockTable = 
     		"CREATE TABLE IF NOT EXISTS block (" + 
     		"`id` INTEGER PRIMARY KEY," +
@@ -82,8 +76,35 @@ public class SQLite extends Database{
             "FOREIGN KEY(type_id) REFERENCES blockType(id)," +
             "UNIQUE (name, dungeon_id)" +
             ");";
-    
-
+    //----------------------------------------------------------------------------
+    // Link Trigger Type
+    public String SQLiteCreateTriggerTypeTable = 
+    		"CREATE TABLE IF NOT EXISTS triggerType (" + 
+    		"`id` INTEGER PRIMARY KEY," +
+            "`name` varchar(255) NOT NULL" +
+            ");";
+    public String SQLitePopulateTriggerTypeTable = 
+    		"REPLACE INTO triggerType VALUES (10,'TRIGGER');" +
+    		"REPLACE INTO triggerType VALUES (20,'SET');" +
+    		"REPLACE INTO triggerType VALUES (30,'RESET');"+   
+		    "REPLACE INTO triggerType VALUES (40,'ON');" +
+			"REPLACE INTO triggerType VALUES (50,'OFF');";   
+    // Link
+    public String SQLiteCreateLinkTable = 
+    		"CREATE TABLE IF NOT EXISTS link (" + 
+    		"`id` INTEGER PRIMARY KEY," +
+    		"`sender_id` INTEGER NOT NULL," +
+    		"`receiver_id` INTEGER NOT NULL," +
+    		"`trigger_type_id` INTEGER NOT NULL," +
+    		"`dungeon_id` INTEGER NOT NULL," +
+            "FOREIGN KEY(sender_id) REFERENCES block(id)," +
+            "FOREIGN KEY(receiver_id) REFERENCES block(id)," +
+            "FOREIGN KEY(trigger_type_id) REFERENCES triggerType(id)" +
+            "UNIQUE (sender_id, receiver_id, dungeon_id) ON CONFLICT REPLACE" +
+            ");";
+    //----------------------------------------------------------------------------
+    // Other: --------------------------------------------------------------------
+    // Chest
     public String SQLiteCreateChestTable = 
     		"CREATE TABLE IF NOT EXISTS chest (" + 
     		"`id` INTEGER PRIMARY KEY," +
@@ -92,8 +113,7 @@ public class SQLite extends Database{
             "`inventory` BLOB," +
             "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
-    
-    
+    // StorageFrame
     public String SQLiteCreateStorageFrameTable = 
     		"CREATE TABLE IF NOT EXISTS storageFrame (" + 
     		"`id` INTEGER PRIMARY KEY," +
@@ -105,7 +125,8 @@ public class SQLite extends Database{
             "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");"; 
     
-    // --------------------------------------
+    //----------------------------------------------------------------------------
+    // Unimplemented: ------------------------------------------------------------
     
     public String SQLiteCreateDoorTable = 
     		"CREATE TABLE IF NOT EXISTS door (" + 
@@ -117,7 +138,6 @@ public class SQLite extends Database{
             "`blockdata` varchar(255) NOT NULL," + 	// material1,data1,mat2,dat2,m3,d3
             "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
-    
     
     public String SQLiteCreatePlayerDetectorTable = 
     		"CREATE TABLE IF NOT EXISTS playerDetector (" + 
@@ -138,15 +158,6 @@ public class SQLite extends Database{
             "FOREIGN KEY(block_id) REFERENCES block(id)" +
             ");";
     
-    
-    
-    public String SQLiteCreateTriggerTypeTable = 
-    		"CREATE TABLE IF NOT EXISTS triggerType (" + 
-    		"`id` INTEGER PRIMARY KEY," +
-            "`name` varchar(255) NOT NULL" +
-            ");";
-    //TODO: add Replace Into
-    
     public String SQLiteCreateMobTable = 
     		"CREATE TABLE IF NOT EXISTS mob (" + 
     		"`id` INTEGER PRIMARY KEY," +
@@ -166,7 +177,6 @@ public class SQLite extends Database{
             "FOREIGN KEY(mob_id) REFERENCES mob(id)," +
             "FOREIGN KEY(spawner_id) REFERENCES block(id)" +
             ");";
-    
     
    //------------------------------------
    //For [much] later updates
@@ -219,17 +229,19 @@ public class SQLite extends Database{
         connection = getSQLConnection();
         try {
             Statement s = connection.createStatement();
-            //s.executeUpdate(SQLiteCreateTokensTable);
+
             s.executeUpdate(SQLiteCreateWorldTable);
             s.executeUpdate(SQLiteCreateDungeonTable);
-            s.executeUpdate(SQLiteCreateLinkTable);
             
             s.executeUpdate(SQLiteCreateBlockTypeTable);
-            s.executeUpdate(SQLiteCreateBlockTable);
             s.executeUpdate(SQLitePopulateBlockTypeTable);
+            s.executeUpdate(SQLiteCreateBlockTable);
+            
+            s.executeUpdate(SQLiteCreateTriggerTypeTable);
+            s.executeUpdate(SQLitePopulateTriggerTypeTable);
+            s.executeUpdate(SQLiteCreateLinkTable);
             
             s.executeUpdate(SQLiteCreateChestTable);
-            
             s.executeUpdate(SQLiteCreateStorageFrameTable);
             
             s.close();

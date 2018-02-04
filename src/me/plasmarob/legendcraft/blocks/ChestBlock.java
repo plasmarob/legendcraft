@@ -29,6 +29,9 @@ import me.plasmarob.legendcraft.util.Tools;
 
 public class ChestBlock implements Receiver {
 	private Dungeon dungeon;
+	private int id = -1;
+	public int getID() { return this.id; }
+	public void setID(int id) { this.id= id; }
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;

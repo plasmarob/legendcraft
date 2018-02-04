@@ -14,6 +14,9 @@ import me.plasmarob.legendcraft.util.Tools;
 
 public class RedstoneDetector implements Sender, Receiver {
 	private Dungeon dungeon;
+	private int id = -1;
+	public int getID() { return this.id; }
+	public void setID(int id) { this.id= id; }
 	private String name;
 	private boolean enabled = false;
 	private boolean defaultOnOff = true;
@@ -27,8 +30,8 @@ public class RedstoneDetector implements Sender, Receiver {
 	
 	Block mainBlock;
 	
-	HashMap<Receiver, String> receivers = new HashMap<Receiver, String>();
-	HashMap<Receiver, String> messageTypes = new HashMap<Receiver, String>();
+	//HashMap<Receiver, String> receivers = new HashMap<Receiver, String>();
+	HashMap<Receiver, Link> links = new HashMap<Receiver, Link>();
 
 	/*
 	public RedstoneDetector(Player player, Block mainBlock, String name, Dungeon dungeon) {
@@ -65,29 +68,22 @@ public class RedstoneDetector implements Sender, Receiver {
 				.execute();
 	}
 	
-	
-	
 	public Block getMainBlock() {
 		return mainBlock;
 	}
 	
 	@Override
-	public HashMap<Receiver, String> getTargets(){
-		return receivers;
-	}
-	@Override
-	public HashMap<Receiver, String> getMessageTypes(){
-		return messageTypes;
+	public HashMap<Receiver, Link> getLinks(){
+		return links;
 	}
 	
 	@Override
-	public void setTarget(Receiver target, String linkType) {
-		if (receivers.containsKey(target))
-			receivers.remove(target);
-		receivers.put(target, target.type());
-		messageTypes.put(target, linkType);
-		
-		// TODO: ADD DB TABLE THAT LINKS
+	public boolean setTarget(Receiver target, Link linkType) {
+		try {
+			if (links.containsKey(target)) links.remove(target);
+			links.put(target, linkType);
+			return true;
+		} catch (Exception e) { return false; }
 	}
 
 	public boolean isEnabled() {
@@ -132,8 +128,8 @@ public class RedstoneDetector implements Sender, Receiver {
 	}
 
 	public void displayTargets(Player p) {
-		for (Receiver r : receivers.keySet()) {
-			p.sendMessage("  Links to " + receivers.get(r) + "("+messageTypes.get(r)+")");
+		for (Receiver r : links.keySet()) {
+			p.sendMessage("  Links to " + r.name() + "("+links.get(r).NAME+")");
 		}
 	}
 	
@@ -178,37 +174,24 @@ public class RedstoneDetector implements Sender, Receiver {
 	}
 	
 	@Override
-	public void run()
-	{
+	public void run() {
 		timesRun++;
-		
-		//when i'm triggered, trigger my targets
-		for (Receiver r : receivers.keySet()) {
-			if (messageTypes.get(r).equals("trigger"))
-				r.trigger();
-			else if (messageTypes.get(r).equals("set"))
-				r.set();
-			else if (messageTypes.get(r).equals("reset"))
-				r.reset();
-			else if (messageTypes.get(r).equals("on"))
-				r.on();
-			else if (messageTypes.get(r).equals("off"))
-				r.off();
+		//send the message to the receivers
+		for (Receiver r : links.keySet()) {
+			links.get(r).call(r);
 		}
 	}
 
 	public boolean removeLink(Receiver block) {
-		if (receivers.containsKey(block)) {
-			receivers.remove(block);
-			messageTypes.remove(block);
+		if (links.containsKey(block)) {
+			links.remove(block);
 			return true;
 		}
 		return false;
 	}
 
 	public void clearLinks() {
-		receivers.clear();
-		messageTypes.clear();
+		links.clear();
 	}
 
 	@Override
@@ -245,8 +228,8 @@ public class RedstoneDetector implements Sender, Receiver {
 		p.sendMessage(prp + "  Times run: " + timesRun);
 		p.sendMessage(prp + "  Main block: " + mainBlock.getX() + " " + mainBlock.getY() + " " + mainBlock.getZ());
 		
-		for (Receiver r : receivers.keySet()) {
-			p.sendMessage(prp + "  Links to " + r.name() + " ("+messageTypes.get(r)+")");
+		for (Receiver r : links.keySet()) {
+			p.sendMessage(prp + "  Links to " + r.name() + " ("+links.get(r).NAME+")");
 			Tools.showLine(mainBlock.getWorld(), this, r);
 		}
 	}
